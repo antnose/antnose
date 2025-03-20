@@ -1,18 +1,17 @@
 <h1 align="center">Hi there, I'm Antnose! 👋</h1>
 
 <p align="center">
-  🚀 MERN Stack Developer | 💡 Tech Enthusiast | 🎯 Lifelong Learner
+  Learner
 </p>
 
 ---
 
 ## 🌟 About Me  
-- 🔭 I’m currently working on **MERN stack projects**.  
-- 🌱 I’m passionate about **full-stack web development**.  
-- 👯 I’m looking to collaborate on **exciting open-source projects**.  
-- 💬 Ask me about **JavaScript, React, Node.js, and MongoDB**.  
-- 📫 How to reach me: **[LinkedIn](https://www.linkedin.com/in/antnose/)** | **[Twitter](#)** | **[Email](#)**  
-- ⚡ Fun fact: **I love turning complex ideas into scalable web applications!**  
+- 🔭 I’m currently on my learning stage.
+- 🌱 I’m passionate about programming  
+- 💬 You can ask me some basics about **JavaScript, React, Node.js, and MongoDB**.  
+- 📫 How to reach me: **[LinkedIn](https://www.linkedin.com/in/antnose/)** | **[Facebook](https://www.facebook.com/antnose2.0/)** | **[Email](antnose28@gmail.com)**  
+- ⚡ Fun fact: **I love to watch just coding tutorial 😅**  
 
 ---
 
@@ -25,8 +24,10 @@
   <img src="https://img.shields.io/badge/Node.js-%23339933.svg?style=for-the-badge&logo=node.js&logoColor=white" />
   <img src="https://img.shields.io/badge/Express.js-%23000000.svg?style=for-the-badge&logo=express&logoColor=white" />
   <img src="https://img.shields.io/badge/MongoDB-%2347A248.svg?style=for-the-badge&logo=mongodb&logoColor=white" />
+  <p>Another Fun fact: **This badge are just for decoration😅**</p>
 </p>
-![](https://komarev.com/ghpvc/?username=your-github-antnose)
+![](https://komarev.com/ghpvc/?username=antnose)
+
 ---
 
 ## 📊 GitHub Stats  
