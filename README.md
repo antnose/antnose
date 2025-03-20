@@ -1,7 +1,7 @@
 <h1 align="center">Hi there, I'm Antnose! 👋</h1>
 
 <p align="center">
-  Learner
+  Learner!
 </p>
 
 ---
@@ -26,9 +26,7 @@
   <img src="https://img.shields.io/badge/MongoDB-%2347A248.svg?style=for-the-badge&logo=mongodb&logoColor=white" />
   <p>Another Fun fact: **This badge are just for decoration😅**</p>
 </p>
-![](https://komarev.com/ghpvc/?username=antnose)
-
----
+[l(https://komarev.com/ghpvc/Pusername=antnose)
 
 ## 📊 GitHub Stats  
 <p align="center">
