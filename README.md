@@ -7,11 +7,11 @@
 ---
 
 ## 🌟 About Me  
-- 🔭 I’m currently on my learning stage.
-- 🌱 I’m passionate about programming  
+- 🔭 I’m currently learning.  
+- 🌱 I’m passionate about programming.  
 - 💬 You can ask me some basics about **JavaScript, React, Node.js, and MongoDB**.  
-- 📫 How to reach me: **[LinkedIn](https://www.linkedin.com/in/antnose/)** | **[Facebook](https://www.facebook.com/antnose2.0/)** | **[Email](antnose28@gmail.com)**  
-- ⚡ Fun fact: **I love to watch just coding tutorial 😅**  
+- 📫 How to reach me: **[LinkedIn](https://www.linkedin.com/in/antnose/)** | **[Facebook](https://www.facebook.com/antnose2.0/)** | **[Email](mailto:antnose28@gmail.com)**  
+- ⚡ Fun fact: **I love watching coding tutorials 😅**  
 
 ---
 
@@ -24,9 +24,15 @@
   <img src="https://img.shields.io/badge/Node.js-%23339933.svg?style=for-the-badge&logo=node.js&logoColor=white" />
   <img src="https://img.shields.io/badge/Express.js-%23000000.svg?style=for-the-badge&logo=express&logoColor=white" />
   <img src="https://img.shields.io/badge/MongoDB-%2347A248.svg?style=for-the-badge&logo=mongodb&logoColor=white" />
-  <p>Another Fun fact: **This badge are just for decoration😅**</p>
 </p>
-[l(https://komarev.com/ghpvc/Pusername=jisan-05)
+
+<p align="center">Another Fun Fact: **These badges are just for decoration! 😅**</p>
+
+<p align="center">
+  <img src="https://komarev.com/ghpvc/?username=antnose" alt="Profile Views">
+</p>
+
+---
 
 ## 📊 GitHub Stats  
 <p align="center">
@@ -36,4 +42,4 @@
 
 ---
 
-⭐ **Let’s build something awesome together!** 🚀  
+⭐ **Let’s try build something awesome together!** 🚀  
