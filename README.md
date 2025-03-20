@@ -42,4 +42,4 @@
 
 ---
 
-⭐ **Let’s try build something awesome together!** 🚀  
+⭐ **Let’s try to build something awesome together!** 🚀  
