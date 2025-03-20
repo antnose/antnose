@@ -11,7 +11,7 @@
 - 🌱 I’m passionate about **full-stack web development**.  
 - 👯 I’m looking to collaborate on **exciting open-source projects**.  
 - 💬 Ask me about **JavaScript, React, Node.js, and MongoDB**.  
-- 📫 How to reach me: **[LinkedIn](#)** | **[Twitter](#)** | **[Email](#)**  
+- 📫 How to reach me: **[LinkedIn](https://www.linkedin.com/in/antnose/)** | **[Twitter](#)** | **[Email](#)**  
 - ⚡ Fun fact: **I love turning complex ideas into scalable web applications!**  
 
 ---
