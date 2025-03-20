@@ -26,7 +26,7 @@
   <img src="https://img.shields.io/badge/MongoDB-%2347A248.svg?style=for-the-badge&logo=mongodb&logoColor=white" />
   <p>Another Fun fact: **This badge are just for decoration😅**</p>
 </p>
-[l(https://komarev.com/ghpvc/Pusername=antnose)
+[](https://komarev.com/ghpvc/Pusername=antnose)
 
 ## 📊 GitHub Stats  
 <p align="center">
