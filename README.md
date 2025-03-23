@@ -8,11 +8,7 @@
 
 ## About Me 
 - I’m currently on learning stage.  
-- I’m passionate about programming.  
-- You can ask me some basics about **JavaScript, React, Node.js, and MongoDB**.  
 - How to reach me: **[LinkedIn](https://www.linkedin.com/in/antnose/)** | **[Facebook](https://www.facebook.com/antnose2.0/)** | **[Email](mailto:antnose28@gmail.com)**  
-- ⚡ Fun fact: **I love watching coding tutorials 😅**  
-
 ---
 
 ## 🛠 Tech Stack  
