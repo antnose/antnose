@@ -1,4 +1,4 @@
-<h1 align="center">Hi there, I'm Antnose!</h1>
+<h1 align="center">Hi there, I'm Ant Nose!</h1>
 
 <p align="center">
   Learner! :) 
