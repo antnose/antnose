@@ -1,9 +1,3 @@
-<h1 align="center">👋 Hey, I'm Ant Nose!</h1>
-
-<p align="center">
-  <img src="https://readme-typing-svg.demolab.com/?lines=Web+Dev+Learner;MERN+Stack+Explorer;Always+Curious+%F0%9F%98%83&center=true&width=440&height=45" />
-</p>
-
 ## 🧑‍💻 About Me  
 - 📚 Try To Be A Programmer
 - 🌐 Connect with me:  
