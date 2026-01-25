@@ -92,24 +92,27 @@ I believe in **learning step by step**, building real projects and being honest 
 
 ---
 
-## 📊 GitHub Stats
+## 📊 GitHub Analytics
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api?username=antnose&show_icons=true&theme=radical" />
-  <br/>
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=antnose&theme=radical" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=1E90FF&height=120&section=header&text=System%20Metrics&fontSize=50&animation=fadeIn" />
 </p>
 
----
-
-## ⏱ WakaTime Coding Stats
-
-I started tracking my coding activity on **January 5, 2025**.  
+<p align="center">
+  <!-- Top Languages Animated -->
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=antnose&langs_count=10&layout=compact&theme=radical&hide_border=true&card_width=320" alt="Top Languages"/>
+  &nbsp;&nbsp;
+  <!-- GitHub Stats Animated -->
+  <img src="https://github-readme-stats.vercel.app/api?username=antnose&show_icons=true&theme=radical&hide_border=true&count_private=true&hide=stars" alt="GitHub Stats"/>
+</p>
 
 <p align="center">
-  <a href="https://wakatime.com/@antnose" target="_blank" title="WakaTime Coding Stats">
-    <img src="https://wakatime.com/share/@antnose/64b5b089-c938-4308-8229-457da90180eb.svg" alt="WakaTime Coding Stats" />
-  </a>
+  <!-- Streak Stats Animated -->
+  <img src="https://github-readme-streak-stats.herokuapp.com/?user=antnose&theme=radical&hide_border=true" alt="GitHub Streak"/>
+</p>
+
+<p align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=1E90FF&height=60&section=footer" />
 </p>
 
 ---
