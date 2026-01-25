@@ -92,28 +92,21 @@ I believe in **learning step by step**, building real projects and being honest 
 
 ---
 
-## 📊 GitHub Analytics
+## 📊 GitHub Stats
 
 <p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=1E90FF&height=120&section=header&text=System%20Metrics&fontSize=50&animation=fadeIn" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=120&section=header&text=System%20Metrics&fontSize=50&animation=twinkling&fontAlignY=50&reversal=true&desc=Developer%20Analytics&descAlignY=70&descSize=20" />
 </p>
 
-<p align="center">
-  <!-- Top Languages Animated -->
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=antnose&langs_count=10&layout=compact&theme=radical&hide_border=true&card_width=320" alt="Top Languages"/>
-  &nbsp;&nbsp;
-  <!-- GitHub Stats Animated -->
-  <img src="https://github-readme-stats.vercel.app/api?username=antnose&show_icons=true&theme=radical&hide_border=true&count_private=true&hide=stars" alt="GitHub Stats"/>
-</p>
+<p align="center"> <!-- Streak Stats Animated --> <img src="https://github-readme-streak-stats.herokuapp.com/?user=antnose&theme=radical&hide_border=true" alt="GitHub Streak"/> </p>
+
+<p align="center"> <!-- Top Languages Animated --> <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=antnose&langs_count=10&layout=compact&theme=radical&hide_border=true&card_width=320" alt="Top Languages"/> &nbsp;&nbsp; <!-- GitHub Stats Animated --> <img src="https://github-readme-stats.vercel.app/api?username=antnose&show_icons=true&theme=radical&hide_border=true&count_private=true&hide=stars" alt="GitHub Stats"/> </p>
+
 
 <p align="center">
-  <!-- Streak Stats Animated -->
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=antnose&theme=radical&hide_border=true" alt="GitHub Streak"/>
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=60&section=footer&animation=twinkling&reversal=true" />
 </p>
 
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=1E90FF&height=60&section=footer" />
-</p>
 
 ---
 
