@@ -1,87 +1,142 @@
-<!-- Banner Image --> 
-
-<!-- Animated Typing Headline -->  
-
+<!-- Animated Typing Headline -->
 <h1 align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code:semibold&size=24&duration=4000&pause=500&color=1E90FF&center=true&vCenter=true&width=600&lines=Hi+there+%F0%9F%91%8B%2C+I'm+Md+Ibrahim+Sarkar;A+MERN+Stack+Developer;Building+Scalable+Web+Apps;Open+Source+Contributor" />
-</h1>
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code:700&size=28&duration=4000&pause=600&color=1E90FF&center=true&vCenter=true&width=820&lines=HELL+HOHOMO+SAPIENS!+I'm+Ibrahim;Who+Aspiring+Backend+Developer;Learning+Golang+%7C+Docker+%7C+Kubernetes;Also+A+MERN+Stack+Developer" />
+</h1> 
 
-<!-- Profile Views Counter -->
 
+
+<!-- Banner -->
 <p align="center">
-  <img src="https://komarev.com/ghpvc/?username=antnose&label=Profile%20Views&color=1E90FF&style=plastic" alt="Profile Views" />
+  <img src="https://i.ibb.co.com/11bpXf0/Git-Hub-Banner.png" alt="GitHub Banner" />
+</p>
+
+<!-- Profile Views -->
+<p align="center">
+  <img src="https://komarev.com/ghpvc/?username=antnose&label=Profile%20Views&color=1E90FF&style=plastic" />
 </p>
 
 ---
 
-### 👋 Hi, I'm **Md Ibrahim Sarkar**
+## 👋 Hi, I'm **Md Ibrahim Sarkar**
 
-I'm a passionate *MERN Stack Developer* who loves building full-stack web applications with clean UI, powerful backend, and smooth user experience.
+I’m a **MERN Stack Developer** who is gradually moving towards **Backend Development**.
 
-🔧 *Tech Stack I Use:*
+Right now, I’m **exploring backend engineering concepts** and learning **Golang, Docker and Kubernetes**, with a long-term goal of becoming a **Backend Developer by mid-2026**.
 
-* *Frontend:* React.js, Tailwind CSS
-* *Backend:* Node.js, Express.js
-* *Database:* MongoDB
-* *Authentication:* Firebase, JWT
-
-🔐 I specialize in creating secure, responsive, and scalable web apps with authentication, CRUD functionalities, and protected routes.
-🚀 I believe in learning by building. Every project I create helps me grow and push boundaries.
-🌱 Currently learning **TypeScript & Next.js** to level up my full-stack journey.
+I believe in **learning step by step**, building real projects and being honest about what I know and what I’m still learning.
 
 ---
 
-### 🌎 Connect with Me
+## 🔧 What I Work With
+
+### 🧠 Backend (Current Skills)
+- **Node.js**
+- **Express.js**
+- REST API development  
+- CRUD operations  
+- Authentication with **JWT & Firebase**
+
+### 🌐 Frontend (Supporting Skills)
+- **React.js**
+- **Tailwind CSS**
+- **Responsive UI design**
+
+### 🗄 Databases
+- **MongoDB** (current)
+- **PostgreSQL** (learning)
+
+---
+
+## Currently Exploring & Learning
+
+> Beginner level — learning with practice and small projects
+
+- **Golang (Go)** – Basics & simple REST APIs  
+- **Docker** – Container fundamentals  
+- **Kubernetes** – Core concepts (intro level)  
+- **Redis** – Basic caching ideas  
+- **CI/CD** – Basic understanding
+- **Linux** – Command-line & server  
+
+---
+
+## 🛠 Tech Stack
 
 <p align="center">
-  <a href="https://www.linkedin.com/in/antnose/" target="_blank"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white"/></a>
-  <a href="https://www.facebook.com/antnose.dev" target="_blank"><img src="https://img.shields.io/badge/Facebook-1877F2?style=for-the-badge&logo=facebook&logoColor=white"/></a>
-  <a href="mailto:md.ibrahim.sarkar.dev@gmail.com" target="_blank"><img src="https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white"/></a>
-  <a href="https://github.com/antnose" target="_blank"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"/></a>
+  <img src="https://skillicons.dev/icons?i=go,docker,kubernetes,postgres,git,github,linux,nodejs,express,react,tailwind,mongodb,js,vscode" />
 </p>
 
 ---
 
-### 🛠 Tech Stack
+## 🎯 Career Goal
 
-<p align="center">
-  <img src="https://skillicons.dev/icons?i=react,redux,nodejs,express,mongodb,js,tailwind,html,css,github,vscode,ts,nextjs" />
-</p>
+🎯 **Goal:** Become a **Backend Developer by mid-2026**
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/Trilokia/Trilokia/379277808c61ef204768a61bbc5d25bc7798ccf1/bottom_header.svg" width="100%"/>
-</div>
+📌 Focus areas:
+- Strong backend fundamentals  
+- Golang for backend services  
+- Databases & API design  
+- Docker & Kubernetes basics  
+- Real-world backend projects  
 
 ---
 
-### 📊 GitHub Stats & Activity
+## 🌎 Connect With Me
 
 <p align="center">
-  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=antnose&langs_count=10&layout=compact&theme=radical" alt="Top Languages"/>
+  <a href="https://antnose.vercel.app/" target="_blank" title="Portfolio">
+    <img src="https://cdn.simpleicons.org/vercel/000000" height="28" />
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://www.linkedin.com/in/antnose/" target="_blank" title="LinkedIn">
+    <img src="https://cdn.simpleicons.org/linkedin/0A66C2" height="28" />
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://x.com/_antnose" target="_blank" title="X (Twitter)">
+    <img src="https://cdn.simpleicons.org/x/1DA1F2" height="28" />
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://www.facebook.com/antnose.dev" target="_blank" title="Facebook">
+    <img src="https://cdn.simpleicons.org/facebook/1877F2" height="28" />
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="mailto:md.ibrahim.sarkar.dev@gmail.com" title="Email">
+    <img src="https://cdn.simpleicons.org/gmail/D14836" height="28" />
+  </a>
+</p>
+
+---
+
+## 📊 GitHub Stats
+
+<p align="center">
+  <img src="https://github-readme-stats.vercel.app/api?username=antnose&show_icons=true&theme=radical" />
   <br/>
-  <img src="https://github-readme-stats.vercel.app/api?username=antnose&show_icons=true&theme=radical&count_private=true" alt="GitHub Stats"/>
-  <img src="https://github-readme-streak-stats.herokuapp.com/?user=antnose&theme=radical" alt="GitHub Streak"/>
+  <img src="https://github-readme-streak-stats.herokuapp.com/?user=antnose&theme=radical" />
 </p>
 
-[![Activity Graph](https://github-readme-activity-graph.vercel.app/graph?username=antnose\&theme=react-dark\&area=true\&hide_border=true\&color=5783a6\&line=00a1ff\&point=00a1ff)](https://github.com/ashutosh00710/github-readme-activity-graph)
-
 ---
 
-### 🎯 Achievements & Contributions
+## ⏱ WakaTime Coding Stats
 
-* 🌟 *Active Open Source Contributor*
-* 🔥 *Continuously improving MERN skills*
-* 💡 *Building real-world projects that solve practical problems*
-
----
-
-### ⚡ Fun Animated Widgets
+I started tracking my coding activity on **January 5, 2025**.  
 
 <p align="center">
-  <img src="https://github-profile-trophy.vercel.app/?username=antnose&theme=onedark&no-frame=true&column=6" alt="Trophies"/>
+  <a href="https://wakatime.com/@antnose" target="_blank" title="WakaTime Coding Stats">
+    <img src="https://wakatime.com/share/@antnose/64b5b089-c938-4308-8229-457da90180eb.svg" alt="WakaTime Coding Stats" />
+  </a>
 </p>
 
 ---
 
-🔥 Coding is an art, and I’m here to make it beautiful.
-🚀 Let's connect and build something amazing!
+## 🧠 Mindset
+
+- 📚 Learning consistently  
+- 🛠 Building projects while learning  
+- 🧩 Improving backend knowledge step by step  
+- 🚀 Focused on long-term growth  
+
+---
+
+🔥 Learning backend engineering takes time — and I’m enjoying the journey.  
+🚀 Let’s grow and build together.
