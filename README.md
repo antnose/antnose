@@ -1,6 +1,6 @@
 <!-- Animated Typing Headline -->
 <h1 align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code:700&size=28&duration=4000&pause=600&color=1E90FF&center=true&vCenter=true&width=820&lines=HELL+HOHOMO+SAPIENS!+I'm+Ibrahim;Who+Aspiring+Backend+Developer;Learning+Golang+%7C+Docker+%7C+Kubernetes;Also+A+MERN+Stack+Developer" />
+  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code:700&size=28&duration=4000&pause=600&color=1E90FF&center=true&vCenter=true&width=820&lines=Hello+Elite+Sapiens!+I'm+Ibrahim;Who+Aspiring+Backend+Developer;Learning+Golang+%7C+Docker+%7C+Kubernetes;Also+A+MERN+Stack+Developer" />
 </h1> 
 
 
@@ -81,28 +81,13 @@ I believe in **learning step by step**, building real projects and being honest 
 
 ---
 
-## 🌎 Connect With Me
+## 🔗 **Connect with me**
 
 <p align="center">
-  <a href="https://antnose.vercel.app/" target="_blank" title="Portfolio">
-    <img src="https://cdn.simpleicons.org/vercel/000000" height="28" />
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://www.linkedin.com/in/antnose/" target="_blank" title="LinkedIn">
-    <img src="https://cdn.simpleicons.org/linkedin/0A66C2" height="28" />
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://x.com/_antnose" target="_blank" title="X (Twitter)">
-    <img src="https://cdn.simpleicons.org/x/1DA1F2" height="28" />
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://www.facebook.com/antnose.dev" target="_blank" title="Facebook">
-    <img src="https://cdn.simpleicons.org/facebook/1877F2" height="28" />
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="mailto:md.ibrahim.sarkar.dev@gmail.com" title="Email">
-    <img src="https://cdn.simpleicons.org/gmail/D14836" height="28" />
-  </a>
+  <a href="https://antnose.vercel.app" target="blank"><img align="center" src="https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/dev-dot-to.svg" alt="gautamkrishnar" height="30" width="40" /></a>
+<a href="https://x.com/_antnose" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/twitter.svg" alt="gautamkrishnar" height="30" width="40" /></a>
+<a href="https://linkedin.com/in/antnose" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="gautamkrishnar" height="30" width="40" /></a>
+<a href="https://stackoverflow.com/users/29213804/ant-nose" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/stack-overflow.svg" alt="4214976" height="30" width="40" /></a>
 </p>
 
 ---
