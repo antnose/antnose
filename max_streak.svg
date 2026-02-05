@@ -29,6 +29,10 @@
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
       }
+      @keyframes progressFill {
+        from { width: 0; }
+        to { width: var(--target-width); }
+      }
       .card { 
         fill: #0d1117; 
         stroke: #30363d; 
@@ -74,8 +78,18 @@
       .icon {
         filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
       }
-      .progress-bar {
-        transition: width 1s ease-out;
+      .progress-bar-bg {
+        fill: #30363d;
+        rx: 3;
+      }
+      .progress-bar-fill {
+        rx: 3;
+        animation: progressFill 1.5s ease-out forwards;
+        transform-origin: left;
+      }
+      .repo-count {
+        font-size: 12px;
+        fill: #8b949e;
       }
     </style>
     <defs>
