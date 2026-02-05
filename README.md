@@ -90,14 +90,20 @@ I believe in **learning step by step**, building real projects and being honest 
 <a href="https://stackoverflow.com/users/29213804/ant-nose" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/stack-overflow.svg" alt="4214976" height="30" width="40" /></a>
 </p>
 
----
-
-## 📊 GitHub Stats
-
-<p align="center"> <img src="max_streak.svg" width="24%" /> <img src="current_streak.svg" width="24%" /> <img src="languages.svg" width="24%" /> <img src="contributions.svg" width="24%" /> </p>
-
 
 ---
+
+## 📊 GitHub Metrics
+
+<p align="center">
+  <img src="max_streak.svg" width="24%" alt="Max Streak" />
+  <img src="current_streak.svg" width="24%" alt="Current Streak" />
+  <img src="languages.svg" width="24%" alt="Top Languages" />
+  <img src="contributions.svg" width="24%" alt="Total Contributions" />
+</p>
+
+---
+
 
 ## 🧠 Mindset
 
