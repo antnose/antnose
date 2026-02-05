@@ -81,23 +81,24 @@ I believe in **learning step by step**, building real projects and being honest 
 
 ---
 
-## 🌐 Connect with me
+## 🔗 Connect With Me
 
 <p align="center">
   <a href="https://antnose.vercel.app/" target="_blank">
-    <img src="socials_card.svg" width="600" />
+    <img src="portfolio.svg" width="250" alt="Portfolio" />
+  </a>
+  <a href="https://x.com/_antnose" target="_blank">
+    <img src="twitter.svg" width="250" alt="Twitter" />
+  </a>
+  <a href="https://www.linkedin.com/in/antnose/" target="_blank">
+    <img src="linkedin.svg" width="250" alt="LinkedIn" />
   </a>
 </p>
 
-<p align="center">
-  <a href="https://antnose.vercel.app/" target="_blank">Portfolio</a> • 
-  <a href="https://x.com/_antnose" target="_blank">Twitter (X)</a> • 
-  <a href="https://www.linkedin.com/in/antnose/" target="_blank">LinkedIn</a> • 
-  <a href="https://stackoverflow.com/users/29213804/ant-nose" target="_blank">StackOverflow</a>
-</p>
 
 
 ---
+
 
 ## 📊 GitHub Metrics
 
