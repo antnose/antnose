@@ -94,11 +94,7 @@ I believe in **learning step by step**, building real projects and being honest 
 
 ## 📊 GitHub Stats
 
-<p align="center">
-  <img src="streak.svg" width="32%" />
-  <img src="languages.svg" width="32%" />
-  <img src="contributions.svg" width="32%" />
-</p>
+<p align="center"> <img src="max_streak.svg" width="24%" /> <img src="current_streak.svg" width="24%" /> <img src="languages.svg" width="24%" /> <img src="contributions.svg" width="24%" /> </p>
 
 
 ---
