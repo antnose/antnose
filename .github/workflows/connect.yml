@@ -30,21 +30,9 @@ jobs:
               from { opacity: 0; transform: translateY(20px) scale(0.95); }
               to { opacity: 1; transform: translateY(0) scale(1); }
             }
-            @keyframes pulse {
-              0%, 100% { opacity: 1; }
-              50% { opacity: 0.7; }
-            }
             @keyframes borderGlow {
               0%, 100% { stroke: #30363d; }
               50% { stroke: var(--hover-color); }
-            }
-            @keyframes countUp {
-              from { opacity: 0; transform: translateY(10px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-            @keyframes iconPulse {
-              0%, 100% { transform: scale(1); }
-              50% { transform: scale(1.1); }
             }
             .card { 
               fill: #0d1117; 
@@ -76,20 +64,12 @@ jobs:
               text-transform: uppercase;
             }
             .value { 
-              animation: countUp 1s ease-out forwards;
+              animation: fadeInUp 1s ease-out forwards;
               animation-delay: 0.3s;
               opacity: 0;
             }
             .accent-text {
               animation: float 3s ease-in-out infinite;
-            }
-            .icon {
-              filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-              animation: iconPulse 2s ease-in-out infinite;
-            }
-            .stats {
-              font-size: 10px;
-              fill: #8b949e;
             }
           </style>`;
 
@@ -158,9 +138,6 @@ jobs:
                   <stop offset="0%" stop-color="${platform.color}" />
                   <stop offset="100%" stop-color="${platform.hoverColor}" />
                 </linearGradient>
-                <filter id="shadow${index}">
-                  <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="${platform.color}" flood-opacity="0.1"/>
-                </filter>
               </defs>
               
               <a href="${platform.link}" target="_blank">
@@ -173,7 +150,7 @@ jobs:
                 <text x="25" y="45" class="text label" style="animation-delay: ${animationDelay + 0.1}s">${platform.name}</text>
                 
                 <!-- Icon -->
-                <g class="icon" style="opacity: 0.8; animation-delay: ${animationDelay + 0.2}s">
+                <g style="opacity: 0.8; animation-delay: ${animationDelay + 0.2}s">
                   <circle cx="280" cy="80" r="30" fill="url(#${platform.gradient})" opacity="0.2"/>
                   <text x="280" y="85" text-anchor="middle" font-size="${platform.name === 'PORTFOLIO' || platform.name === 'GITHUB' ? '24' : '20'}" 
                         fill="url(#${platform.gradient})">${platform.icon}</text>
@@ -184,12 +161,12 @@ jobs:
                       style="animation-delay: ${animationDelay + 0.3}s">${platform.description}</text>
                 
                 <!-- Stats -->
-                <text x="25" y="110" class="stats" style="animation-delay: ${animationDelay + 0.4}s">
+                <text x="25" y="110" class="text" font-size="10" fill="#8b949e" style="animation-delay: ${animationDelay + 0.4}s">
                   ${platform.stat}
                 </text>
                 
                 <!-- Click Hint -->
-                <text x="25" y="130" class="stats" fill="${platform.color}" style="animation-delay: ${animationDelay + 0.5}s">
+                <text x="25" y="130" class="text" font-size="10" fill="${platform.color}" style="animation-delay: ${animationDelay + 0.5}s">
                   Click to visit →
                 </text>
                 
@@ -198,8 +175,6 @@ jobs:
                         style="animation-delay: ${animationDelay + 0.6}s"/>
                 <circle cx="40" cy="140" r="2" fill="url(#${platform.gradient})" class="accent-text" 
                         style="animation-delay: ${animationDelay + 0.7}s"/>
-                <circle cx="55" cy="140" r="1.5" fill="url(#${platform.gradient})" class="accent-text" 
-                        style="animation-delay: ${animationDelay + 0.8}s"/>
               </a>
             </svg>`;
           };
@@ -218,47 +193,7 @@ jobs:
             console.log('Generated: ' + fileName);
           });
 
-          // Generate a combined showcase
-          const portfolioSvg = fs.readFileSync('portfolio.svg').toString('base64');
-          const twitterSvg = fs.readFileSync('twitter.svg').toString('base64');
-          const linkedinSvg = fs.readFileSync('linkedin.svg').toString('base64');
-          const stackSvg = fs.readFileSync('stack.svg').toString('base64');
-          const githubSvg = fs.readFileSync('github.svg').toString('base64');
-
-          const showcase = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" viewBox="0 0 680 520">
-            <style>
-              .title { font-family: 'Segoe UI', sans-serif; fill: #ffffff; font-size: 24px; font-weight: bold; }
-              .subtitle { font-family: 'Segoe UI', sans-serif; fill: #8b949e; font-size: 14px; }
-            </style>
-            <rect width="676" height="516" x="2" y="2" rx="20" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
-            <text x="30" y="50" class="title">🔗 Connect With Me</text>
-            <text x="30" y="75" class="subtitle">Click any card to connect on that platform</text>
-            
-            <!-- Row 1 -->
-            <g transform="translate(20, 100)">
-              <image href="data:image/svg+xml;base64,${portfolioSvg}" width="320" height="160"/>
-            </g>
-            <g transform="translate(350, 100)">
-              <image href="data:image/svg+xml;base64,${twitterSvg}" width="320" height="160"/>
-            </g>
-            
-            <!-- Row 2 -->
-            <g transform="translate(20, 280)">
-              <image href="data:image/svg+xml;base64,${linkedinSvg}" width="320" height="160"/>
-            </g>
-            <g transform="translate(350, 280)">
-              <image href="data:image/svg+xml;base64,${stackSvg}" width="320" height="160"/>
-            </g>
-            
-            <!-- Row 3 (centered GitHub card) -->
-            <g transform="translate(180, 460)">
-              <image href="data:image/svg+xml;base64,${githubSvg}" width="320" height="160"/>
-            </g>
-          </svg>`;
-
-          fs.writeFileSync('connect_showcase.svg', showcase);
-          console.log('✅ All connect cards generated successfully!');
+          console.log('✅ All 5 connect cards generated successfully!');
           EOF
           node generate-connect-cards.js
 
@@ -266,6 +201,6 @@ jobs:
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add *.svg
+          git add portfolio.svg twitter.svg linkedin.svg stack.svg github.svg
           git commit -m "✨ Generated 5 connect cards matching GitHub metrics design" || exit 0
           git push
