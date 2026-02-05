@@ -1,4 +1,4 @@
-name: Modern 3-Card Metrics
+name: Genuine Modern 4-Card Metrics
 on:
   schedule:
     - cron: "0 0 * * *"
@@ -21,81 +21,112 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Generate 3 Animated Cards
+      - name: Generate 4 Animated Cards
         run: |
           npm install axios
           cat > generate-cards.js << 'EOF'
           const axios = require('axios');
           const fs = require('fs');
-          const username = 'antnose'; // Your GitHub username
+          const username = 'antnose';
           const token = process.env.GITHUB_TOKEN;
 
           async function fetchData() {
             const headers = { 'Authorization': `token ${token}` };
             
-            // Fetch User & Repo Data
-            const userRes = await axios.get(`https://api.github.com/users/${username}`, { headers });
-            const reposRes = await axios.get(`https://api.github.com/users/${username}/repos?per_page=100`, { headers });
+            // GraphQL Query for Genuine Streaks & Contributions
+            const query = `
+            query {
+              user(login: "${username}") {
+                contributionsCollection {
+                  contributionCalendar {
+                    totalContributions
+                    weeks {
+                      contributionDays {
+                        contributionCount
+                        date
+                      }
+                    }
+                  }
+                }
+                repositories(first: 100, ownerAffiliations: OWNER) {
+                  nodes {
+                    primaryLanguage { name }
+                  }
+                }
+              }
+            }`;
+
+            const res = await axios.post('https://api.github.com/graphql', { query }, { headers });
+            const data = res.data.data.user;
+
+            // --- CALCULATE GENUINE STREAKS ---
+            const days = data.contributionsCollection.contributionCalendar.weeks
+              .flatMap(w => w.contributionDays)
+              .reverse();
             
-            const userData = userRes.data;
-            
-            // Calculate Language Stats (Simplified for Card 2)
-            const langs = {};
-            for (const repo of reposRes.data) {
-              if (repo.language) langs[repo.language] = (langs[repo.language] || 0) + 1;
+            let currentStreak = 0;
+            for (let day of days) {
+              if (day.contributionCount > 0) currentStreak++;
+              else if (currentStreak > 0) break;
             }
-            const topLangs = Object.entries(langs).sort((a,b) => b[1] - a[1]).slice(0, 3);
 
-            // 1. STREAK CARD
-            const streakSvg = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="400" height="150" viewBox="0 0 400 150">
+            let maxStreak = 0, tempStreak = 0;
+            [...days].reverse().forEach(day => {
+              if (day.contributionCount > 0) {
+                tempStreak++;
+                maxStreak = Math.max(maxStreak, tempStreak);
+              } else {
+                tempStreak = 0;
+              }
+            });
+
+            // --- CALCULATE LANGUAGES ---
+            const langMap = {};
+            data.repositories.nodes.forEach(r => {
+              if (r.primaryLanguage) langMap[r.primaryLanguage.name] = (langMap[r.primaryLanguage.name] || 0) + 1;
+            });
+            const topLangs = Object.entries(langMap).sort((a,b) => b[1] - a[1]).slice(0, 3);
+
+            const commonStyle = `
               <style>
-                @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-                .card { fill: #0d1117; stroke: #30363d; rx: 15; }
-                .fire { font-size: 40px; animation: pulse 2s infinite; }
-                .text { font-family: 'Segoe UI', sans-serif; fill: #ffffff; }
+                .card { fill: #0d1117; stroke: #30363d; rx: 15; transition: all 0.3s ease; }
+                .card:hover { stroke: #58a6ff; fill: #161b22; transform: translateY(-5px); }
+                .text { font-family: 'Segoe UI', Tahoma, sans-serif; fill: #ffffff; }
+                .label { fill: #8b949e; font-size: 12px; }
+                @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                .animate { animation: fadeUp 0.6s ease forwards; }
               </style>
-              <rect class="card" width="398" height="148" x="1" y="1"/>
-              <text x="30" y="85" class="fire">🔥</text>
-              <text x="90" y="75" class="text" font-size="40" font-weight="bold">157</text>
-              <text x="90" y="105" class="text" font-size="14" fill="#8b949e">CURRENT DAILY STREAK</text>
-            </svg>`;
+            `;
 
-            // 2. LANGUAGES CARD
-            const langSvg = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="400" height="150" viewBox="0 0 400 150">
-              <style>
-                @keyframes slide { from { width: 0; } to { width: var(--w); } }
-                .card { fill: #0d1117; stroke: #30363d; rx: 15; }
-                .text { font-family: 'Segoe UI', sans-serif; fill: #c9d1d9; font-size: 14px; }
-                .bar { height: 8px; rx: 4; animation: slide 1.5s ease-out forwards; }
-              </style>
-              <rect class="card" width="398" height="148" x="1" y="1"/>
-              <text x="25" y="35" class="text" font-weight="bold" fill="#58a6ff">Most Used Languages</text>
-              ${topLangs.map((l, i) => `
-                <text x="25" y="${65 + (i*30)}" class="text">${l[0]}</text>
-                <rect x="120" y="${55 + (i*30)}" width="230" height="8" fill="#161b22" rx="4"/>
-                <rect x="120" y="${55 + (i*30)}" style="--w: ${(l[1]/reposRes.data.length)*400}px" width="0" height="8" fill="#8250df" class="bar"/>
-              `).join('')}
-            </svg>`;
+            const createCard = (content) => `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="120" viewBox="0 0 300 120">${commonStyle}${content}</svg>`;
 
-            // 3. COMMITS/CONTRIBUTIONS CARD
-            const contribSvg = `
-            <svg xmlns="http://www.w3.org/2000/svg" width="400" height="150" viewBox="0 0 400 150">
-              <style>
-                .card { fill: #0d1117; stroke: #30363d; rx: 15; }
-                .text { font-family: 'Segoe UI', sans-serif; fill: #ffffff; }
-                .icon { fill: #3fb950; font-size: 30px; }
-              </style>
-              <rect class="card" width="398" height="148" x="1" y="1"/>
-              <text x="30" y="85" class="icon">📈</text>
-              <text x="80" y="75" class="text" font-size="35" font-weight="bold">${userData.public_repos + 144}</text>
-              <text x="80" y="105" class="text" font-size="14" fill="#8b949e">TOTAL CONTRIBUTIONS</text>
-            </svg>`;
+            // CARD 1: MAX STREAK
+            fs.writeFileSync('max_streak.svg', createCard(`
+              <rect class="card" width="298" height="118" x="1" y="1"/>
+              <text x="20" y="40" class="text label animate">GENUINE MAX STREAK</text>
+              <text x="20" y="85" class="text animate" font-size="40" font-weight="bold" fill="#f1e05a">${maxStreak} Days</text>
+            `));
 
-            fs.writeFileSync('streak.svg', streakSvg);
-            fs.writeFileSync('languages.svg', langSvg);
-            fs.writeFileSync('contributions.svg', contribSvg);
+            // CARD 2: CURRENT STREAK
+            fs.writeFileSync('current_streak.svg', createCard(`
+              <rect class="card" width="298" height="118" x="1" y="1"/>
+              <text x="20" y="40" class="text label animate">CURRENT STREAK</text>
+              <text x="20" y="85" class="text animate" font-size="40" font-weight="bold" fill="#ff7b72">${currentStreak} Days</text>
+            `));
+
+            // CARD 3: TOP LANGUAGES
+            fs.writeFileSync('languages.svg', createCard(`
+              <rect class="card" width="298" height="118" x="1" y="1"/>
+              <text x="20" y="30" class="text label animate">TOP LANGUAGES</text>
+              ${topLangs.map((l, i) => `<text x="20" y="${55+(i*20)}" class="text animate" font-size="14" style="animation-delay:${i*0.1}s">• ${l[0]}</text>`).join('')}
+            `));
+
+            // CARD 4: CONTRIBUTIONS
+            fs.writeFileSync('contributions.svg', createCard(`
+              <rect class="card" width="298" height="118" x="1" y="1"/>
+              <text x="20" y="40" class="text label animate">TOTAL CONTRIBUTIONS</text>
+              <text x="20" y="85" class="text animate" font-size="40" font-weight="bold" fill="#7ee787">${data.contributionsCollection.contributionCalendar.totalContributions}</text>
+            `));
           }
           fetchData();
           EOF
@@ -105,8 +136,8 @@ jobs:
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add streak.svg languages.svg contributions.svg
+          git add *.svg
           if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "🚀 Update 3-card animated dashboard"
+            git commit -m "💎 Update genuine 4-card aesthetic dashboard"
             git push --force https://x-access-token:${{ secrets.METRICS_TOKEN }}@github.com/${{ github.repository }}.git main
           fi
