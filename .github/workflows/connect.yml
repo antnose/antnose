@@ -1,4 +1,4 @@
-name: Generate Connect Cards
+name: Generate GitHub Metrics & Connect Cards
 on:
   schedule:
     - cron: "0 0 * * *"
@@ -15,72 +15,152 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Generate Cards
+      - name: Generate All Cards
         run: |
-          # Portfolio Card
-          cat > portfolio.svg << 'EOF'
-          <svg xmlns="http://www.w3.org/2000/svg" width="250" height="125" viewBox="0 0 250 125">
+          # Generate GitHub Metrics Cards (320x160)
+          cat > generate-metrics.js << 'EOF'
+          const fs = require('fs');
+          
+          // Common SVG template for metrics cards
+          const createMetricsCard = (title, value, color, gradient, icon) => `
+          <svg xmlns="http://www.w3.org/2000/svg" width="320" height="160" viewBox="0 0 320 160">
             <style>
-              @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(10px); }
+              @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(20px); }
                 to { opacity: 1; transform: translateY(0); }
               }
               @keyframes float {
                 0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-3px); }
+                50% { transform: translateY(-5px); }
               }
               .card {
                 fill: #0d1117;
                 stroke: #30363d;
-                rx: 12;
-                animation: fadeIn 0.6s ease-out;
+                rx: 20;
+                animation: fadeInUp 0.8s ease-out;
               }
-              .card:hover {
-                stroke: #2193b0;
-                stroke-width: 2;
+              .text { 
+                font-family: 'Segoe UI', sans-serif; 
+                fill: #ffffff; 
               }
-              .text {
-                font-family: 'Segoe UI', sans-serif;
-                fill: #ffffff;
-              }
-              .label {
-                fill: #8b949e;
-                font-size: 10px;
+              .label { 
+                fill: #8b949e; 
+                font-size: 12px; 
                 font-weight: 600;
                 letter-spacing: 0.5px;
                 text-transform: uppercase;
               }
-              .value {
-                font-size: 22px;
-                font-weight: bold;
-              }
-              .icon {
+              .icon-float {
                 animation: float 3s ease-in-out infinite;
               }
             </style>
             <defs>
-              <linearGradient id="portfolioGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <linearGradient id="${gradient}" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="${color}" />
+                <stop offset="100%" stop-color="${color}99" />
+              </linearGradient>
+            </defs>
+            <rect class="card" width="316" height="156" x="2" y="2" rx="20"/>
+            <rect width="316" height="156" x="2" y="2" rx="20" fill="url(#${gradient})" opacity="0.1"/>
+            
+            <text x="25" y="45" class="text label">${title}</text>
+            <text x="25" y="100" class="text" font-size="48" font-weight="bold" fill="url(#${gradient})">${value}</text>
+            
+            <g class="icon-float">
+              <circle cx="280" cy="80" r="30" fill="url(#${gradient})" opacity="0.2"/>
+              <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#${gradient})">${icon}</text>
+            </g>
+          </svg>`;
+          
+          // Generate metrics cards
+          fs.writeFileSync('max_streak.svg', createMetricsCard('MAX STREAK', '30', '#f1e05a', 'goldGradient', '🏆'));
+          fs.writeFileSync('current_streak.svg', createMetricsCard('CURRENT STREAK', '2', '#ff7b72', 'fireGradient', '🔥'));
+          fs.writeFileSync('contributions.svg', createMetricsCard('TOTAL CONTRIBUTIONS', '1,065', '#7ee787', 'greenGradient', '✨'));
+          
+          // Languages card (special)
+          const languagesSVG = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="320" height="160" viewBox="0 0 320 160">
+            <style>
+              @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+              @keyframes slideIn {
+                from { transform: translateX(-20px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+              }
+              .card {
+                fill: #0d1117;
+                stroke: #30363d;
+                rx: 20;
+                animation: fadeInUp 0.8s ease-out;
+              }
+              .text { 
+                font-family: 'Segoe UI', sans-serif; 
+                fill: #ffffff; 
+              }
+              .label { 
+                fill: #8b949e; 
+                font-size: 12px; 
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+              }
+              .lang-item {
+                animation: slideIn 0.6s ease-out forwards;
+                opacity: 0;
+              }
+            </style>
+            <defs>
+              <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#2193b0" />
                 <stop offset="100%" stop-color="#6dd5ed" />
               </linearGradient>
             </defs>
-            <rect class="card" width="246" height="121" x="2" y="2" rx="12"/>
-            <rect width="246" height="121" x="2" y="2" rx="12" fill="url(#portfolioGrad)" opacity="0.1"/>
-            <text x="15" y="30" class="text label">PORTFOLIO</text>
-            <text x="15" y="65" class="text value" fill="url(#portfolioGrad)">Personal Site</text>
-            <text x="15" y="85" class="text" font-size="9" fill="#8b949e">Latest Projects</text>
-            <g class="icon">
-              <circle cx="210" cy="60" r="22" fill="url(#portfolioGrad)" opacity="0.2"/>
-              <text x="210" y="65" text-anchor="middle" font-size="20" fill="url(#portfolioGrad)">🌐</text>
+            <rect class="card" width="316" height="156" x="2" y="2" rx="20"/>
+            <rect width="316" height="156" x="2" y="2" rx="20" fill="url(#blueGradient)" opacity="0.1"/>
+            
+            <text x="25" y="45" class="text label">TOP LANGUAGES</text>
+            
+            <g class="lang-item" style="animation-delay: 0.1s">
+              <text x="25" y="75" class="text" font-size="14" fill="#ffffff">JavaScript</text>
+              <text x="200" y="75" class="text" font-size="14" fill="#f1e05a" font-weight="bold">62.2%</text>
+              <rect x="25" y="80" width="150" height="4" fill="#30363d" rx="2"/>
+              <rect x="25" y="80" width="93" height="4" fill="#f1e05a" rx="2"/>
             </g>
-          </svg>
+            
+            <g class="lang-item" style="animation-delay: 0.3s">
+              <text x="25" y="100" class="text" font-size="14" fill="#ffffff">HTML</text>
+              <text x="200" y="100" class="text" font-size="14" fill="#e34c26" font-weight="bold">28.4%</text>
+              <rect x="25" y="105" width="150" height="4" fill="#30363d" rx="2"/>
+              <rect x="25" y="105" width="43" height="4" fill="#e34c26" rx="2"/>
+            </g>
+            
+            <g class="lang-item" style="animation-delay: 0.5s">
+              <text x="25" y="125" class="text" font-size="14" fill="#ffffff">Go</text>
+              <text x="200" y="125" class="text" font-size="14" fill="#00ADD8" font-weight="bold">5.4%</text>
+              <rect x="25" y="130" width="150" height="4" fill="#30363d" rx="2"/>
+              <rect x="25" y="130" width="8" height="4" fill="#00ADD8" rx="2"/>
+            </g>
+            
+            <circle cx="280" cy="80" r="30" fill="url(#blueGradient)" opacity="0.2"/>
+            <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#blueGradient)">💻</text>
+          </svg>`;
+          
+          fs.writeFileSync('languages.svg', languagesSVG);
+          
+          console.log('✅ GitHub metrics cards generated!');
           EOF
-
-          # Twitter Card
-          cat > twitter.svg << 'EOF'
+          node generate-metrics.js
+          
+          # Generate Connect Cards (250x125)
+          cat > generate-connect.js << 'EOF'
+          const fs = require('fs');
+          
+          const createConnectCard = (platform, color, hoverColor, icon, link) => `
           <svg xmlns="http://www.w3.org/2000/svg" width="250" height="125" viewBox="0 0 250 125">
             <style>
-              @keyframes fadeIn {
+              @keyframes fadeInUp {
                 from { opacity: 0; transform: translateY(10px); }
                 to { opacity: 1; transform: translateY(0); }
               }
@@ -92,236 +172,113 @@ jobs:
                 fill: #0d1117;
                 stroke: #30363d;
                 rx: 12;
-                animation: fadeIn 0.6s ease-out;
+                animation: fadeInUp 0.6s ease-out;
+                cursor: pointer;
+                transition: all 0.3s ease;
               }
               .card:hover {
-                stroke: #1DA1F2;
+                stroke: ${hoverColor};
                 stroke-width: 2;
+                transform: translateY(-3px);
               }
-              .text {
-                font-family: 'Segoe UI', sans-serif;
-                fill: #ffffff;
+              .text { 
+                font-family: 'Segoe UI', sans-serif; 
+                fill: #ffffff; 
               }
-              .label {
-                fill: #8b949e;
-                font-size: 10px;
+              .label { 
+                fill: #8b949e; 
+                font-size: 10px; 
                 font-weight: 600;
                 letter-spacing: 0.5px;
                 text-transform: uppercase;
               }
-              .value {
-                font-size: 22px;
-                font-weight: bold;
-              }
-              .icon {
+              .icon-float {
                 animation: float 3s ease-in-out infinite;
-                animation-delay: 0.5s;
               }
             </style>
             <defs>
-              <linearGradient id="twitterGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#1DA1F2" />
-                <stop offset="100%" stop-color="#1a8cd8" />
+              <linearGradient id="${platform}Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="${color}" />
+                <stop offset="100%" stop-color="${hoverColor}" />
               </linearGradient>
             </defs>
-            <rect class="card" width="246" height="121" x="2" y="2" rx="12"/>
-            <rect width="246" height="121" x="2" y="2" rx="12" fill="url(#twitterGrad)" opacity="0.1"/>
-            <text x="15" y="30" class="text label">TWITTER</text>
-            <text x="15" y="65" class="text value" fill="url(#twitterGrad)">Tech Thoughts</text>
-            <text x="15" y="85" class="text" font-size="9" fill="#8b949e">Daily Updates</text>
-            <g class="icon">
-              <circle cx="210" cy="60" r="22" fill="url(#twitterGrad)" opacity="0.2"/>
-              <text x="210" y="65" text-anchor="middle" font-size="18" fill="url(#twitterGrad)">𝕏</text>
-            </g>
-          </svg>
+            
+            <a href="${link}" target="_blank">
+              <rect class="card" width="246" height="121" x="2" y="2" rx="12"/>
+              <rect width="246" height="121" x="2" y="2" rx="12" fill="url(#${platform}Gradient)" opacity="0.1"/>
+              
+              <text x="15" y="30" class="text label">${platform}</text>
+              <text x="15" y="65" class="text" font-size="22" font-weight="bold" fill="url(#${platform}Gradient)">${getDescription(platform)}</text>
+              <text x="15" y="85" class="text" font-size="9" fill="#8b949e">${getStat(platform)}</text>
+              
+              <g class="icon-float" style="animation-delay: ${getAnimationDelay(platform)}s">
+                <circle cx="210" cy="60" r="22" fill="url(#${platform}Gradient)" opacity="0.2"/>
+                <text x="210" y="65" text-anchor="middle" font-size="${getIconSize(platform)}" 
+                      fill="url(#${platform}Gradient)">${icon}</text>
+              </g>
+            </a>
+          </svg>`;
+          
+          function getDescription(platform) {
+            const descriptions = {
+              'PORTFOLIO': 'Personal Site',
+              'TWITTER': 'Tech Thoughts',
+              'LINKEDIN': 'Professional',
+              'STACK': 'Stack Overflow',
+              'GITHUB': 'Open Source'
+            };
+            return descriptions[platform] || 'Connect';
+          }
+          
+          function getStat(platform) {
+            const stats = {
+              'PORTFOLIO': 'Latest Projects',
+              'TWITTER': 'Daily Updates',
+              'LINKEDIN': 'Network',
+              'STACK': 'Q&A Expert',
+              'GITHUB': 'Repositories'
+            };
+            return stats[platform] || 'Connect';
+          }
+          
+          function getIconSize(platform) {
+            return (platform === 'PORTFOLIO' || platform === 'GITHUB') ? '20' : '18';
+          }
+          
+          function getAnimationDelay(platform) {
+            const delays = {
+              'PORTFOLIO': 0,
+              'TWITTER': 0.5,
+              'LINKEDIN': 1,
+              'STACK': 1.5,
+              'GITHUB': 2
+            };
+            return delays[platform] || 0;
+          }
+          
+          // Generate connect cards
+          const platforms = [
+            { name: 'PORTFOLIO', color: '#6dd5ed', hoverColor: '#2193b0', icon: '🌐', link: 'https://antnose.vercel.app/' },
+            { name: 'TWITTER', color: '#1DA1F2', hoverColor: '#1a8cd8', icon: '𝕏', link: 'https://x.com/_antnose' },
+            { name: 'LINKEDIN', color: '#0A66C2', hoverColor: '#004182', icon: 'in', link: 'https://www.linkedin.com/in/antnose/' },
+            { name: 'STACK', color: '#F48024', hoverColor: '#e76b11', icon: 'SO', link: 'https://stackoverflow.com/users/29213804/ant-nose' },
+            { name: 'GITHUB', color: '#bc8cff', hoverColor: '#6e40c9', icon: '🐙', link: 'https://github.com/antnose' }
+          ];
+          
+          platforms.forEach(platform => {
+            const fileName = platform.name.toLowerCase() + '.svg';
+            fs.writeFileSync(fileName, createConnectCard(platform.name, platform.color, platform.hoverColor, platform.icon, platform.link));
+            console.log('Generated: ' + fileName);
+          });
+          
+          console.log('✅ Connect cards generated!');
           EOF
-
-          # LinkedIn Card
-          cat > linkedin.svg << 'EOF'
-          <svg xmlns="http://www.w3.org/2000/svg" width="250" height="125" viewBox="0 0 250 125">
-            <style>
-              @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
-              }
-              @keyframes float {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-3px); }
-              }
-              .card {
-                fill: #0d1117;
-                stroke: #30363d;
-                rx: 12;
-                animation: fadeIn 0.6s ease-out;
-              }
-              .card:hover {
-                stroke: #0A66C2;
-                stroke-width: 2;
-              }
-              .text {
-                font-family: 'Segoe UI', sans-serif;
-                fill: #ffffff;
-              }
-              .label {
-                fill: #8b949e;
-                font-size: 10px;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-                text-transform: uppercase;
-              }
-              .value {
-                font-size: 22px;
-                font-weight: bold;
-              }
-              .icon {
-                animation: float 3s ease-in-out infinite;
-                animation-delay: 1s;
-              }
-            </style>
-            <defs>
-              <linearGradient id="linkedinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#0A66C2" />
-                <stop offset="100%" stop-color="#004182" />
-              </linearGradient>
-            </defs>
-            <rect class="card" width="246" height="121" x="2" y="2" rx="12"/>
-            <rect width="246" height="121" x="2" y="2" rx="12" fill="url(#linkedinGrad)" opacity="0.1"/>
-            <text x="15" y="30" class="text label">LINKEDIN</text>
-            <text x="15" y="65" class="text value" fill="url(#linkedinGrad)">Professional</text>
-            <text x="15" y="85" class="text" font-size="9" fill="#8b949e">Network</text>
-            <g class="icon">
-              <circle cx="210" cy="60" r="22" fill="url(#linkedinGrad)" opacity="0.2"/>
-              <text x="210" y="65" text-anchor="middle" font-size="18" fill="url(#linkedinGrad)">in</text>
-            </g>
-          </svg>
-          EOF
-
-          # Stack Overflow Card
-          cat > stack.svg << 'EOF'
-          <svg xmlns="http://www.w3.org/2000/svg" width="250" height="125" viewBox="0 0 250 125">
-            <style>
-              @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
-              }
-              @keyframes float {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-3px); }
-              }
-              .card {
-                fill: #0d1117;
-                stroke: #30363d;
-                rx: 12;
-                animation: fadeIn 0.6s ease-out;
-              }
-              .card:hover {
-                stroke: #F48024;
-                stroke-width: 2;
-              }
-              .text {
-                font-family: 'Segoe UI', sans-serif;
-                fill: #ffffff;
-              }
-              .label {
-                fill: #8b949e;
-                font-size: 10px;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-                text-transform: uppercase;
-              }
-              .value {
-                font-size: 22px;
-                font-weight: bold;
-              }
-              .icon {
-                animation: float 3s ease-in-out infinite;
-                animation-delay: 1.5s;
-              }
-            </style>
-            <defs>
-              <linearGradient id="stackGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#F48024" />
-                <stop offset="100%" stop-color="#e76b11" />
-              </linearGradient>
-            </defs>
-            <rect class="card" width="246" height="121" x="2" y="2" rx="12"/>
-            <rect width="246" height="121" x="2" y="2" rx="12" fill="url(#stackGrad)" opacity="0.1"/>
-            <text x="15" y="30" class="text label">STACK OVERFLOW</text>
-            <text x="15" y="65" class="text value" fill="url(#stackGrad)">Q&A Expert</text>
-            <text x="15" y="85" class="text" font-size="9" fill="#8b949e">Problem Solver</text>
-            <g class="icon">
-              <circle cx="210" cy="60" r="22" fill="url(#stackGrad)" opacity="0.2"/>
-              <text x="210" y="65" text-anchor="middle" font-size="18" fill="url(#stackGrad)">SO</text>
-            </g>
-          </svg>
-          EOF
-
-          # GitHub Card
-          cat > github.svg << 'EOF'
-          <svg xmlns="http://www.w3.org/2000/svg" width="250" height="125" viewBox="0 0 250 125">
-            <style>
-              @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(10px); }
-                to { opacity: 1; transform: translateY(0); }
-              }
-              @keyframes float {
-                0%, 100% { transform: translateY(0); }
-                50% { transform: translateY(-3px); }
-              }
-              .card {
-                fill: #0d1117;
-                stroke: #30363d;
-                rx: 12;
-                animation: fadeIn 0.6s ease-out;
-              }
-              .card:hover {
-                stroke: #6e40c9;
-                stroke-width: 2;
-              }
-              .text {
-                font-family: 'Segoe UI', sans-serif;
-                fill: #ffffff;
-              }
-              .label {
-                fill: #8b949e;
-                font-size: 10px;
-                font-weight: 600;
-                letter-spacing: 0.5px;
-                text-transform: uppercase;
-              }
-              .value {
-                font-size: 22px;
-                font-weight: bold;
-              }
-              .icon {
-                animation: float 3s ease-in-out infinite;
-                animation-delay: 2s;
-              }
-            </style>
-            <defs>
-              <linearGradient id="githubGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#6e40c9" />
-                <stop offset="100%" stop-color="#bc8cff" />
-              </linearGradient>
-            </defs>
-            <rect class="card" width="246" height="121" x="2" y="2" rx="12"/>
-            <rect width="246" height="121" x="2" y="2" rx="12" fill="url(#githubGrad)" opacity="0.1"/>
-            <text x="15" y="30" class="text label">GITHUB</text>
-            <text x="15" y="65" class="text value" fill="url(#githubGrad)">Open Source</text>
-            <text x="15" y="85" class="text" font-size="9" fill="#8b949e">Repositories</text>
-            <g class="icon">
-              <circle cx="210" cy="60" r="22" fill="url(#githubGrad)" opacity="0.2"/>
-              <text x="210" y="65" text-anchor="middle" font-size="20" fill="url(#githubGrad)">🐙</text>
-            </g>
-          </svg>
-          EOF
-
-          echo "✅ All connect cards generated successfully!"
+          node generate-connect.js
 
       - name: Commit and Push
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add portfolio.svg twitter.svg linkedin.svg stack.svg github.svg
-          git commit -m "✨ Generated 250px connect cards with animations" || exit 0
+          git add max_streak.svg current_streak.svg languages.svg contributions.svg portfolio.svg twitter.svg linkedin.svg stack.svg github.svg
+          git commit -m "🚀 Generated GitHub metrics (320px) & Connect cards (250px)" || exit 0
           git push
