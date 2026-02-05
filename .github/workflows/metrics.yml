@@ -475,7 +475,18 @@ jobs:
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add public/ || true
-          git commit -m "📊 Update modern GitHub dashboard" || echo "No changes"
+          
+          # 1. Remove temporary scripts so they don't block the rebase
+          rm -f generate-stats.js
+          
+          # 2. Add all changes in the public folder
+          git add public/
+          
+          # 3. Commit only if there are changes
+          git commit -m "📊 Update modern GitHub dashboard" || echo "No changes to commit"
+          
+          # 4. Pull with rebase, now that the directory is cleaner
           git pull --rebase origin main
+          
+          # 5. Push the final result
           git push origin main
