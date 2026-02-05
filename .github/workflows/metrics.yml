@@ -137,6 +137,18 @@ jobs:
               console.log('Languages detected:', langMap);
               console.log(`Repos with language: ${totalReposWithLang}`);
 
+              // Convert to percentages based on Repo Count
+              const langPercentages = Object.entries(langMap)
+                .map(([name, count]) => ({
+                  name,
+                  count,
+                  percentage: totalReposWithLang > 0 ? ((count / totalReposWithLang) * 100).toFixed(1) : '0.0'
+                }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 3);
+
+              console.log('Top languages:', langPercentages);
+
               // Language color mapping
               const langColors = {
                 'JavaScript': '#f1e05a',
