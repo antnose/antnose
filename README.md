@@ -95,12 +95,9 @@ I believe in **learning step by step**, building real projects and being honest 
 ## 📊 GitHub Stats
 
 <p align="center">
-  <img src="github-metrics.svg" alt="GitHub Metrics" />
-</p>
-
-
-<p align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=60&section=footer&animation=twinkling&reversal=true" />
+  <img src="streak.svg" width="32%" />
+  <img src="languages.svg" width="32%" />
+  <img src="contributions.svg" width="32%" />
 </p>
 
 
