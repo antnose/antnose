@@ -33,7 +33,7 @@ jobs:
           async function fetchData() {
             const headers = { 'Authorization': `token ${token}` };
             
-            // Enhanced GraphQL Query for better language data
+            // Optimized GraphQL Query - simpler but effective
             const query = `
             query {
               user(login: "${username}") {
@@ -50,19 +50,14 @@ jobs:
                 }
                 repositories(
                   first: 100,
-                  ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER],
+                  ownerAffiliations: [OWNER, COLLABORATOR],
                   orderBy: {field: PUSHED_AT, direction: DESC}
                 ) {
                   nodes {
                     name
-                    languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
-                      edges {
-                        size
-                        node {
-                          name
-                          color
-                        }
-                      }
+                    primaryLanguage {
+                      name
+                      color
                     }
                     isFork
                   }
@@ -95,41 +90,33 @@ jobs:
                 }
               });
 
-              // --- CALCULATE LANGUAGES PROPERLY ---
+              // --- SMART LANGUAGE DETECTION (Based on Primary Usage) ---
               const langMap = {};
-              let totalLangSize = 0;
-              
-              // Process all repositories
+              let totalReposWithLang = 0;
+
               data.repositories.nodes.forEach(repo => {
-                // Skip forks if you want only original repos
-                // if (repo.isFork) return;
-                
-                if (repo.languages && repo.languages.edges) {
-                  repo.languages.edges.forEach(edge => {
-                    const langName = edge.node.name;
-                    const langSize = edge.size;
-                    
-                    if (langName) {
-                      langMap[langName] = (langMap[langName] || 0) + langSize;
-                      totalLangSize += langSize;
-                    }
-                  });
+                // We only count the PRIMARY language of each repo to avoid "bloat"
+                if (repo.primaryLanguage && repo.primaryLanguage.name) {
+                  const langName = repo.primaryLanguage.name;
+                  langMap[langName] = (langMap[langName] || 0) + 1;
+                  totalReposWithLang++;
                 }
               });
 
-              // Convert to percentages and sort
+              // Convert to percentages based on Repo Count
               const langPercentages = Object.entries(langMap)
-                .map(([name, size]) => ({
+                .map(([name, count]) => ({
                   name,
-                  size,
-                  percentage: ((size / totalLangSize) * 100).toFixed(1)
+                  count,
+                  percentage: ((count / totalReposWithLang) * 100).toFixed(1)
                 }))
-                .sort((a, b) => b.size - a.size)
+                .sort((a, b) => b.count - a.count)
                 .slice(0, 3);
 
-              console.log('Top languages found:', langPercentages);
+              console.log('Top languages (smart detection):', langPercentages);
+              console.log(`Total repos with language: ${totalReposWithLang}`);
 
-              // Language color mapping (fallback)
+              // Language color mapping with fallback to GitHub colors
               const langColors = {
                 'JavaScript': '#f1e05a',
                 'TypeScript': '#3178c6',
@@ -150,6 +137,7 @@ jobs:
                 'Vue': '#41b883',
                 'React': '#61dafb',
                 'Shell': '#89e051',
+                'Bash': '#89e051',
                 'Dart': '#00B4AB',
                 'Scala': '#c22d40',
                 'R': '#198CE7',
@@ -160,7 +148,14 @@ jobs:
                 'JSON': '#292929',
                 'YAML': '#cb171e',
                 'Markdown': '#083fa1',
-                'TeX': '#3D6117'
+                'TeX': '#3D6117',
+                'PowerShell': '#012456',
+                'Lua': '#000080',
+                'Perl': '#0298c3',
+                'Elixir': '#6e4a7e',
+                'Clojure': '#db5855',
+                'Haskell': '#5e5086',
+                'OCaml': '#3be133'
               };
 
               const commonStyle = `
@@ -192,6 +187,10 @@ jobs:
                 @keyframes countUp {
                   from { opacity: 0; transform: translateY(10px); }
                   to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes progressFill {
+                  from { width: 0; }
+                  to { width: var(--target-width); }
                 }
                 .card { 
                   fill: #0d1117; 
@@ -238,8 +237,18 @@ jobs:
                 .icon {
                   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
                 }
-                .progress-bar {
-                  transition: width 1s ease-out;
+                .progress-bar-bg {
+                  fill: #30363d;
+                  rx: 3;
+                }
+                .progress-bar-fill {
+                  rx: 3;
+                  animation: progressFill 1.5s ease-out forwards;
+                  transform-origin: left;
+                }
+                .repo-count {
+                  font-size: 12px;
+                  fill: #8b949e;
                 }
               </style>
               <defs>
@@ -311,34 +320,45 @@ jobs:
               <circle cx="65" cy="125" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.5s"/>
             `, 'fireGradient'));
 
-            // CARD 3: TOP LANGUAGES - Blue Theme (FIXED)
+            // CARD 3: TOP LANGUAGES - Blue Theme (Using SMART DETECTION)
             const langContent = langPercentages.length > 0 
               ? langPercentages.map((lang, i) => {
                   const color = langColors[lang.name] || '#58a6ff';
-                  const yPos = 70 + (i * 28);
+                  const yPos = 65 + (i * 28);
                   const percentage = lang.percentage;
+                  const progressWidth = (150 * (percentage / 100));
                   
                   return `
-                    <circle cx="25" cy="${yPos - 10}" r="5" fill="${color}" class="language-dot" style="--delay: ${i * 0.2}s"/>
-                    <text x="40" y="${yPos}" class="text value" font-size="16" fill="#ffffff" style="animation-delay: ${0.3 + i * 0.1}s">
+                    <circle cx="25" cy="${yPos - 8}" r="5" fill="${color}" class="language-dot" style="--delay: ${i * 0.2}s"/>
+                    <text x="40" y="${yPos}" class="text value" font-size="14" fill="#ffffff" font-weight="600" style="animation-delay: ${0.3 + i * 0.1}s">
                       ${lang.name}
                     </text>
-                    <text x="200" y="${yPos}" class="text value" font-size="16" fill="${color}" font-weight="bold" style="animation-delay: ${0.5 + i * 0.1}s">
+                    <text x="200" y="${yPos}" class="text value" font-size="14" fill="${color}" font-weight="bold" style="animation-delay: ${0.5 + i * 0.1}s">
                       ${percentage}%
                     </text>
+                    <text x="260" y="${yPos}" class="repo-count" style="animation-delay: ${0.7 + i * 0.1}s">
+                      (${lang.count})
+                    </text>
                     <!-- Progress bar -->
-                    <rect x="40" y="${yPos + 8}" width="150" height="4" rx="2" fill="#30363d"/>
-                    <rect x="40" y="${yPos + 8}" width="${150 * (percentage / 100)}" height="4" rx="2" fill="${color}" class="progress-bar" style="animation-delay: ${0.7 + i * 0.1}s"/>
+                    <rect x="40" y="${yPos + 8}" width="150" height="6" rx="3" class="progress-bar-bg"/>
+                    <rect x="40" y="${yPos + 8}" width="0" height="6" rx="3" fill="${color}" class="progress-bar-fill" 
+                          style="--target-width: ${progressWidth}px; animation-delay: ${0.9 + i * 0.1}s"/>
                   `;
                 }).join('')
               : `
                 <text x="25" y="80" class="text value" font-size="16" fill="#8b949e" style="animation-delay: 0.3s">
-                  No language data available
+                  Analyzing repositories...
+                </text>
+                <text x="25" y="100" class="text value" font-size="14" fill="#8b949e" style="animation-delay: 0.5s">
+                  (Primary language data being processed)
                 </text>
               `;
 
             fs.writeFileSync('languages.svg', createCard(`
               <text x="25" y="45" class="text label" style="animation-delay: 0.3s">💻 TOP LANGUAGES</text>
+              <text x="25" y="55" class="text" font-size="10" fill="#8b949e" style="animation-delay: 0.4s">
+                By primary language across ${totalReposWithLang} repos
+              </text>
               ${langContent}
               <g class="icon" style="opacity: 0.8">
                 <circle cx="280" cy="80" r="30" fill="url(#blueGradient)" opacity="0.2"/>
@@ -416,6 +436,6 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add *.svg
           if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "✨ Fixed language detection + Enhanced 4-card dashboard"
+            git commit -m "🎯 Smart language detection + Enhanced animations"
             git push --force https://x-access-token:${{ secrets.METRICS_TOKEN }}@github.com/${{ github.repository }}.git main
           fi
