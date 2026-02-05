@@ -1,8 +1,8 @@
 name: Modern GitHub Metrics
 on:
   schedule:
-    - cron: "0 0 * * *" # Daily at midnight UTC
-  workflow_dispatch: # Manual trigger
+    - cron: "0 0 * * *" 
+  workflow_dispatch: 
   push:
     branches: [main, master]
 
@@ -10,7 +10,6 @@ permissions:
   contents: write
   pages: write
   id-token: write
-  actions: write # Use this instead of 'workflows' to fix access errors
 
 jobs:
   generate-metrics:
@@ -18,8 +17,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Folders
         run: mkdir -p metrics public
@@ -34,57 +31,37 @@ jobs:
           base: ""
           config_timezone: America/New_York
           plugin_achievements: yes
-          plugin_achievements_threshold: C
-          plugin_achievements_display: detailed
           plugin_habits: yes
-          plugin_habits_from: 200
-          plugin_habits_days: 365
-          plugin_isocalendar: yes
-          plugin_isocalendar_duration: full-year
           plugin_languages: yes
           plugin_languages_limit: 8
-          plugin_notable: yes
-          plugin_stars: yes
 
       - name: Generate GitHub Stats Card
-        uses: anuraghazra/github-readme-stats@master 
+        # Using the specific latest stable version tag
+        uses: anuraghazra/github-readme-stats@v2.11.0
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           username: antnose
           show_icons: true
-          include_all_commits: true
           theme: modern
-          bg_color: 0D1117
-          title_color: 58A6FF
-          text_color: C9D1D9
-          icon_color: 58A6FF
-          border_color: 30363D
           output: metrics/stats.svg
 
       - name: Generate Streak Stats
-        uses: denvercoder1/github-readme-streak-stats@master 
+        # Switched to the specific main branch pointer for this action
+        uses: denvercoder1/github-readme-streak-stats@main
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           user: antnose
           theme: modern
-          background: 0D1117
-          dates: 58A6FF
-          ring: 58A6FF
-          fire: FF6D00
           output: metrics/streak.svg
 
       - name: Generate Top Languages
-        uses: anuraghazra/github-readme-stats@master
+        uses: anuraghazra/github-readme-stats@v2.11.0
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           username: antnose
           hide: stars,commits,prs,issues,contribs
           layout: compact
           theme: modern
-          bg_color: 0D1117
-          title_color: 58A6FF
-          text_color: C9D1D9
-          border_color: 30363D
           langs_count: 8
           output: metrics/languages.svg
 
@@ -127,7 +104,7 @@ jobs:
           EOF
 
       - name: Upload Artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
 
@@ -143,4 +120,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
+        uses: actions/deploy-pages@v4
