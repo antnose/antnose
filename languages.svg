@@ -1,14 +1,145 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="300" height="120" viewBox="0 0 300 120">
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="160" viewBox="0 0 320 160">
+      
     <style>
-      .card { fill: #0d1117; stroke: #30363d; rx: 15; transition: all 0.3s ease; }
-      .card:hover { stroke: #58a6ff; fill: #161b22; transform: translateY(-5px); }
-      .text { font-family: 'Segoe UI', Tahoma, sans-serif; fill: #ffffff; }
-      .label { fill: #8b949e; font-size: 12px; }
-      @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-      .animate { animation: fadeUp 0.6s ease forwards; }
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+      }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+      @keyframes shimmer {
+        0% { background-position: -200% center; }
+        100% { background-position: 200% center; }
+      }
+      @keyframes borderGlow {
+        0%, 100% { stroke: #30363d; }
+        50% { stroke: #58a6ff; }
+      }
+      @keyframes slideIn {
+        from { transform: translateX(-20px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes countUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .card { 
+        fill: #0d1117; 
+        stroke: #30363d; 
+        rx: 20; 
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        animation: fadeInUp 0.8s ease-out forwards;
+      }
+      .card:hover { 
+        transform: translateY(-8px) scale(1.02);
+        stroke: #58a6ff;
+        stroke-width: 2;
+        filter: drop-shadow(0 10px 20px rgba(88, 166, 255, 0.2));
+      }
+      .card-glow {
+        animation: borderGlow 3s ease-in-out infinite;
+      }
+      .text { 
+        font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+        fill: #ffffff; 
+        font-weight: 500;
+      }
+      .label { 
+        fill: #8b949e; 
+        font-size: 12px; 
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        animation: slideIn 0.6s ease-out forwards;
+      }
+      .value { 
+        animation: countUp 1s ease-out forwards;
+        animation-delay: 0.3s;
+        opacity: 0;
+      }
+      .accent-text {
+        animation: float 3s ease-in-out infinite;
+      }
+      .language-dot {
+        animation: pulse 2s ease-in-out infinite;
+        animation-delay: var(--delay);
+      }
+      .icon {
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      }
     </style>
+    <defs>
+      <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FFD700" />
+        <stop offset="50%" stop-color="#FFA500" />
+        <stop offset="100%" stop-color="#FF6B00" />
+      </linearGradient>
+      <linearGradient id="fireGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FF416C" />
+        <stop offset="100%" stop-color="#FF4B2B" />
+      </linearGradient>
+      <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00b09b" />
+        <stop offset="100%" stop-color="#96c93d" />
+      </linearGradient>
+      <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#2193b0" />
+        <stop offset="100%" stop-color="#6dd5ed" />
+      </linearGradient>
+      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(88, 166, 255, 0.1)"/>
+      </filter>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
   
-    <rect class="card" width="298" height="118" x="1" y="1"/>
-    <text x="20" y="30" class="text label animate">TOP LANGUAGES</text>
-    <text x="20" y="55" class="text animate" font-size="14" style="animation-delay:0s">• JavaScript</text><text x="20" y="75" class="text animate" font-size="14" style="animation-delay:0.1s">• HTML</text><text x="20" y="95" class="text animate" font-size="14" style="animation-delay:0.2s">• Python</text>
-  </svg>
+      <rect class="card card-glow" width="316" height="156" x="2" y="2" rx="20"/>
+      <rect width="316" height="156" x="2" y="2" rx="20" fill="url(#blueGradient)" opacity="0.1"/>
+      
+    <text x="25" y="45" class="text label" style="animation-delay: 0.3s">💻 TOP LANGUAGES</text>
+    
+      <circle cx="25" cy="60" r="5" fill="#f1e05a" class="language-dot" style="--delay: 0s"/>
+      <text x="40" y="70" class="text value" font-size="16" fill="#ffffff" style="animation-delay: 0.3s">
+        JavaScript
+      </text>
+      <text x="180" y="70" class="text value" font-size="16" fill="#8b949e" style="animation-delay: 0.5s">
+        57 repos
+      </text>
+    
+      <circle cx="25" cy="88" r="5" fill="#e34c26" class="language-dot" style="--delay: 0.2s"/>
+      <text x="40" y="98" class="text value" font-size="16" fill="#ffffff" style="animation-delay: 0.4s">
+        HTML
+      </text>
+      <text x="180" y="98" class="text value" font-size="16" fill="#8b949e" style="animation-delay: 0.6s">
+        26 repos
+      </text>
+    
+      <circle cx="25" cy="116" r="5" fill="#3572A5" class="language-dot" style="--delay: 0.4s"/>
+      <text x="40" y="126" class="text value" font-size="16" fill="#ffffff" style="animation-delay: 0.5s">
+        Python
+      </text>
+      <text x="180" y="126" class="text value" font-size="16" fill="#8b949e" style="animation-delay: 0.7s">
+        1 repos
+      </text>
+    
+    <g class="icon" style="opacity: 0.8">
+      <circle cx="280" cy="80" r="30" fill="url(#blueGradient)" opacity="0.2"/>
+      <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#blueGradient)">💻</text>
+    </g>
+    <rect x="25" y="125" width="30" height="3" rx="1.5" fill="url(#blueGradient)" class="accent-text"/>
+    <rect x="60" y="125" width="20" height="3" rx="1.5" fill="url(#blueGradient)" class="accent-text" style="animation-delay: 0.3s"/>
+    <rect x="85" y="125" width="15" height="3" rx="1.5" fill="url(#blueGradient)" class="accent-text" style="animation-delay: 0.6s"/>
+  
+    </svg>
