@@ -13,10 +13,6 @@
         0%, 100% { opacity: 1; }
         50% { opacity: 0.7; }
       }
-      @keyframes shimmer {
-        0% { background-position: -200% center; }
-        100% { background-position: 200% center; }
-      }
       @keyframes borderGlow {
         0%, 100% { stroke: #30363d; }
         50% { stroke: #58a6ff; }
@@ -32,6 +28,10 @@
       @keyframes progressFill {
         from { width: 0; }
         to { width: var(--target-width); }
+      }
+      @keyframes glow {
+        0%, 100% { filter: drop-shadow(0 0 2px currentColor); }
+        50% { filter: drop-shadow(0 0 8px currentColor); }
       }
       .card { 
         fill: #0d1117; 
@@ -88,8 +88,12 @@
         transform-origin: left;
       }
       .repo-count {
-        font-size: 12px;
+        font-size: 11px;
         fill: #8b949e;
+        font-weight: 500;
+      }
+      .glowing-text {
+        animation: glow 2s ease-in-out infinite;
       }
     </style>
     <defs>
@@ -120,17 +124,21 @@
           <feMergeNode in="SourceGraphic"/>
         </feMerge>
       </filter>
+      <pattern id="codePattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M0 10 L10 0 M10 20 L20 10" stroke="#58a6ff" stroke-width="0.5" stroke-opacity="0.1"/>
+      </pattern>
     </defs>
   
       <rect class="card card-glow" width="316" height="156" x="2" y="2" rx="20"/>
       <rect width="316" height="156" x="2" y="2" rx="20" fill="url(#goldGradient)" opacity="0.1"/>
+      <rect width="316" height="156" x="2" y="2" rx="20" fill="url(#codePattern)" opacity="0.05"/>
       
     <text x="25" y="45" class="text label" style="animation-delay: 0.1s">🏆 MAX STREAK</text>
     <text x="25" y="100" class="text value" font-size="48" font-weight="bold" fill="url(#goldGradient)">30</text>
     <text x="81" y="100" class="text value" font-size="32" fill="#8b949e">Days</text>
     <g class="icon" style="opacity: 0.8">
       <circle cx="280" cy="80" r="30" fill="url(#goldGradient)" opacity="0.2"/>
-      <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#goldGradient)">🏆</text>
+      <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#goldGradient)" class="glowing-text">🏆</text>
     </g>
     <circle cx="25" cy="125" r="4" fill="url(#goldGradient)" class="accent-text"/>
     <circle cx="40" cy="125" r="4" fill="url(#goldGradient)" class="accent-text" style="animation-delay: 0.2s"/>
