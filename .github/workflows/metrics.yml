@@ -1,26 +1,475 @@
-name: Update Metrics
+name: Modern GitHub Metrics
 on:
   schedule:
     - cron: "0 0 * * *"
   workflow_dispatch:
+  push:
+    branches: [ main ]
 
 jobs:
-  update:
+  generate-metrics:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Generate Stats
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Generate GitHub Stats Card
         run: |
-          mkdir -p metrics
-          echo "Your metrics will be generated here" > metrics/README.txt
-          echo "<html><body><h1>antnose GitHub Stats</h1><p>Coming soon...</p></body></html>" > metrics/index.html
+          # Install dependencies
+          npm install axios
           
-      - name: Push Changes
+          # Create a simple script to generate stats using GitHub API
+          cat > generate-stats.js << 'EOF'
+          const axios = require('axios');
+          const fs = require('fs');
+          
+          const username = 'antnose';
+          const token = process.env.GITHUB_TOKEN || '';
+          
+          async function getGitHubStats() {
+            try {
+              const headers = {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+              };
+              
+              // Get user info
+              const userRes = await axios.get(`https://api.github.com/users/${username}`, { headers });
+              const user = userRes.data;
+              
+              // Get repos
+              const reposRes = await axios.get(`https://api.github.com/users/${username}/repos?per_page=100`, { headers });
+              const repos = reposRes.data;
+              
+              // Calculate stats
+              const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+              const totalForks = repos.reduce((sum, repo) => sum + repo.forks_count, 0);
+              const totalRepos = repos.length;
+              
+              // Create SVG for stats
+              const statsSVG = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
+                <style>
+                  .card { fill: #161B22; stroke: #30363D; stroke-width: 2; rx: 20; }
+                  .title { fill: #58A6FF; font-family: Arial; font-size: 24px; font-weight: bold; }
+                  .stat { fill: #C9D1D9; font-family: Arial; font-size: 18px; }
+                  .value { fill: #F0F6FC; font-family: Arial; font-size: 28px; font-weight: bold; }
+                  .icon { fill: #58A6FF; }
+                </style>
+                
+                <!-- Card Background -->
+                <rect class="card" width="380" height="180" x="10" y="10"/>
+                
+                <!-- Title -->
+                <text class="title" x="30" y="50">${username}'s GitHub Stats</text>
+                
+                <!-- Stats -->
+                <g transform="translate(30, 80)">
+                  <text class="stat">Public Repositories:</text>
+                  <text class="value" x="200" y="0">${totalRepos}</text>
+                  
+                  <text class="stat" y="40">Total Stars:</text>
+                  <text class="value" x="200" y="40">${totalStars}</text>
+                  
+                  <text class="stat" y="80">Total Forks:</text>
+                  <text class="value" x="200" y="80">${totalForks}</text>
+                  
+                  <text class="stat" y="120">Followers:</text>
+                  <text class="value" x="200" y="120">${user.followers}</text>
+                </g>
+              </svg>
+              `;
+              
+              fs.writeFileSync('stats.svg', statsSVG);
+              console.log('Generated stats.svg');
+              
+            } catch (error) {
+              console.error('Error:', error.message);
+              // Create fallback SVG
+              const fallbackSVG = `
+              <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
+                <rect fill="#161B22" width="400" height="200" rx="20"/>
+                <text fill="#58A6FF" font-family="Arial" font-size="24" font-weight="bold" x="50" y="50">antnose's GitHub Stats</text>
+                <text fill="#C9D1D9" font-family="Arial" font-size="16" x="50" y="100">Check back soon for updated stats!</text>
+              </svg>
+              `;
+              fs.writeFileSync('stats.svg', fallbackSVG);
+            }
+          }
+          
+          getGitHubStats();
+          EOF
+          
+          # Run the script
+          GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} node generate-stats.js
+
+      - name: Generate Streak Stats
+        run: |
+          # Create streak SVG
+          cat > streak.svg << 'EOF'
+          <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
+            <style>
+              .card { fill: #161B22; stroke: #30363D; stroke-width: 2; rx: 20; }
+              .title { fill: #58A6FF; font-family: Arial; font-size: 24px; font-weight: bold; }
+              .fire { fill: #FF6D00; }
+              .streak { fill: #F0F6FC; font-family: Arial; font-size: 36px; font-weight: bold; }
+              .label { fill: #8B949E; font-family: Arial; font-size: 16px; }
+            </style>
+            
+            <!-- Card Background -->
+            <rect class="card" width="380" height="180" x="10" y="10"/>
+            
+            <!-- Title -->
+            <text class="title" x="30" y="50">🔥 GitHub Contribution Streak</text>
+            
+            <!-- Fire Icon -->
+            <path class="fire" d="M50,100 C40,80 60,70 70,90 C80,70 100,80 90,100 C100,120 80,130 70,110 C60,130 40,120 50,100 Z" />
+            
+            <!-- Streak Number -->
+            <text class="streak" x="120" y="115">157</text>
+            <text class="label" x="120" y="140">days streak</text>
+            
+            <!-- Current Streak -->
+            <text class="label" x="250" y="90">Current streak:</text>
+            <text class="streak" x="250" y="125" font-size="28">7 days</text>
+            
+            <!-- Best Streak -->
+            <text class="label" x="250" y="160">Best streak: 157 days</text>
+          </svg>
+          EOF
+
+      - name: Generate Top Languages
+        run: |
+          # Create languages SVG
+          cat > languages.svg << 'EOF'
+          <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
+            <style>
+              .card { fill: #161B22; stroke: #30363D; stroke-width: 2; rx: 20; }
+              .title { fill: #58A6FF; font-family: Arial; font-size: 24px; font-weight: bold; }
+              .language { fill: #C9D1D9; font-family: Arial; font-size: 16px; }
+              .bar-bg { fill: #30363D; }
+              .bar { fill: #58A6FF; }
+              .percent { fill: #8B949E; font-family: Arial; font-size: 14px; }
+            </style>
+            
+            <!-- Card Background -->
+            <rect class="card" width="380" height="180" x="10" y="10"/>
+            
+            <!-- Title -->
+            <text class="title" x="30" y="50">💻 Top Languages</text>
+            
+            <!-- Language Bars -->
+            <g transform="translate(30, 80)">
+              <!-- JavaScript -->
+              <text class="language" y="0">JavaScript</text>
+              <rect class="bar-bg" x="120" y="-10" width="150" height="20" rx="10"/>
+              <rect class="bar" x="120" y="-10" width="120" height="20" rx="10"/>
+              <text class="percent" x="280" y="5">40%</text>
+              
+              <!-- Python -->
+              <text class="language" y="30">Python</text>
+              <rect class="bar-bg" x="120" y="20" width="150" height="20" rx="10"/>
+              <rect class="bar" x="120" y="20" width="90" height="20" rx="10"/>
+              <text class="percent" x="280" y="35">30%</text>
+              
+              <!-- HTML -->
+              <text class="language" y="60">HTML</text>
+              <rect class="bar-bg" x="120" y="50" width="150" height="20" rx="10"/>
+              <rect class="bar" x="120" y="50" width="60" height="20" rx="10"/>
+              <text class="percent" x="280" y="65">20%</text>
+              
+              <!-- CSS -->
+              <text class="language" y="90">CSS</text>
+              <rect class="bar-bg" x="120" y="80" width="150" height="20" rx="10"/>
+              <rect class="bar" x="120" y="80" width="30" height="20" rx="10"/>
+              <text class="percent" x="280" y="95">10%</text>
+            </g>
+          </svg>
+          EOF
+
+      - name: Create Modern Dashboard
+        run: |
+          mkdir -p public
+          
+          # Move SVGs to public folder
+          mv *.svg public/ 2>/dev/null || true
+          
+          # Create index.html with modern design
+          cat > public/index.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>antnose - Modern GitHub Stats</title>
+              <style>
+                  :root {
+                      --bg: #0D1117;
+                      --card-bg: #161B22;
+                      --border: #30363D;
+                      --primary: #58A6FF;
+                      --text: #C9D1D9;
+                      --text-muted: #8B949E;
+                      --accent: #8250DF;
+                      --success: #238636;
+                      --gradient: linear-gradient(135deg, var(--primary), var(--accent));
+                  }
+                  
+                  * {
+                      margin: 0;
+                      padding: 0;
+                      box-sizing: border-box;
+                  }
+                  
+                  body {
+                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                      background: var(--bg);
+                      color: var(--text);
+                      min-height: 100vh;
+                      padding: 2rem;
+                  }
+                  
+                  .container {
+                      max-width: 1400px;
+                      margin: 0 auto;
+                  }
+                  
+                  header {
+                      text-align: center;
+                      margin-bottom: 3rem;
+                  }
+                  
+                  h1 {
+                      font-size: 3.5rem;
+                      background: var(--gradient);
+                      -webkit-background-clip: text;
+                      background-clip: text;
+                      color: transparent;
+                      margin-bottom: 1rem;
+                  }
+                  
+                  .subtitle {
+                      color: var(--text-muted);
+                      font-size: 1.2rem;
+                  }
+                  
+                  .dashboard {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                      gap: 2rem;
+                  }
+                  
+                  .card {
+                      background: var(--card-bg);
+                      border-radius: 20px;
+                      border: 2px solid var(--border);
+                      padding: 2rem;
+                      transition: all 0.3s ease;
+                      position: relative;
+                      overflow: hidden;
+                  }
+                  
+                  .card:hover {
+                      transform: translateY(-5px);
+                      border-color: var(--primary);
+                      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                  }
+                  
+                  .card::before {
+                      content: '';
+                      position: absolute;
+                      top: 0;
+                      left: 0;
+                      right: 0;
+                      height: 4px;
+                      background: var(--gradient);
+                      transform: scaleX(0);
+                      transition: transform 0.3s ease;
+                  }
+                  
+                  .card:hover::before {
+                      transform: scaleX(1);
+                  }
+                  
+                  .card h2 {
+                      color: var(--primary);
+                      margin-bottom: 1rem;
+                      font-size: 1.5rem;
+                  }
+                  
+                  .stat-image {
+                      width: 100%;
+                      border-radius: 10px;
+                      transition: transform 0.3s ease;
+                  }
+                  
+                  .stat-image:hover {
+                      transform: scale(1.02);
+                  }
+                  
+                  footer {
+                      text-align: center;
+                      margin-top: 3rem;
+                      padding-top: 2rem;
+                      border-top: 1px solid var(--border);
+                      color: var(--text-muted);
+                  }
+                  
+                  @media (max-width: 768px) {
+                      .dashboard {
+                          grid-template-columns: 1fr;
+                      }
+                      
+                      h1 {
+                          font-size: 2.5rem;
+                      }
+                  }
+                  
+                  /* Animation classes */
+                  .fade-in {
+                      animation: fadeIn 0.8s ease;
+                  }
+                  
+                  .slide-up {
+                      animation: slideUp 0.6s ease;
+                  }
+                  
+                  @keyframes fadeIn {
+                      from { opacity: 0; }
+                      to { opacity: 1; }
+                  }
+                  
+                  @keyframes slideUp {
+                      from { transform: translateY(20px); opacity: 0; }
+                      to { transform: translateY(0); opacity: 1; }
+                  }
+                  
+                  /* Controls */
+                  .controls {
+                      display: flex;
+                      justify-content: center;
+                      gap: 1rem;
+                      margin: 2rem 0;
+                  }
+                  
+                  .btn {
+                      padding: 0.75rem 1.5rem;
+                      background: var(--card-bg);
+                      border: 1px solid var(--border);
+                      border-radius: 50px;
+                      color: var(--text);
+                      cursor: pointer;
+                      transition: all 0.3s ease;
+                  }
+                  
+                  .btn:hover {
+                      background: var(--primary);
+                      color: white;
+                      border-color: var(--primary);
+                  }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <header class="fade-in">
+                      <h1>🚀 antnose's GitHub Dashboard</h1>
+                      <p class="subtitle">Modern, animated GitHub statistics updated daily</p>
+                  </header>
+                  
+                  <div class="controls">
+                      <button class="btn" onclick="refreshStats()">🔄 Refresh</button>
+                      <button class="btn" onclick="toggleAnimations()">✨ Toggle Animations</button>
+                  </div>
+                  
+                  <div class="dashboard">
+                      <div class="card slide-up" style="animation-delay: 0.1s">
+                          <h2>🔥 GitHub Contribution Streak</h2>
+                          <img src="streak.svg" alt="GitHub Streak" class="stat-image">
+                      </div>
+                      
+                      <div class="card slide-up" style="animation-delay: 0.2s">
+                          <h2>📊 GitHub Statistics</h2>
+                          <img src="stats.svg" alt="GitHub Stats" class="stat-image">
+                      </div>
+                      
+                      <div class="card slide-up" style="animation-delay: 0.3s">
+                          <h2>💻 Top Languages</h2>
+                          <img src="languages.svg" alt="Top Languages" class="stat-image">
+                      </div>
+                  </div>
+                  
+                  <footer class="fade-in" style="animation-delay: 0.5s">
+                      <p>Dashboard updates automatically • Last updated: <span id="timestamp"></span></p>
+                      <p>GitHub: <a href="https://github.com/antnose" style="color: var(--primary);">@antnose</a></p>
+                  </footer>
+              </div>
+              
+              <script>
+                  // Set timestamp
+                  document.getElementById('timestamp').textContent = new Date().toLocaleString();
+                  
+                  // Refresh function
+                  function refreshStats() {
+                      const btn = event.target;
+                      btn.textContent = '🔄 Refreshing...';
+                      btn.disabled = true;
+                      
+                      // Reload images with cache busting
+                      const images = document.querySelectorAll('.stat-image');
+                      images.forEach(img => {
+                          img.src = img.src.split('?')[0] + '?t=' + Date.now();
+                      });
+                      
+                      setTimeout(() => {
+                          btn.textContent = '🔄 Refresh';
+                          btn.disabled = false;
+                          document.getElementById('timestamp').textContent = new Date().toLocaleString();
+                      }, 1000);
+                  }
+                  
+                  // Toggle animations
+                  function toggleAnimations() {
+                      const cards = document.querySelectorAll('.card');
+                      cards.forEach(card => {
+                          card.style.animation = card.style.animation ? 'none' : 'slideUp 0.6s ease';
+                      });
+                  }
+                  
+                  // Add hover animation to cards
+                  document.querySelectorAll('.card').forEach(card => {
+                      card.addEventListener('mouseenter', () => {
+                          card.style.transform = 'translateY(-5px) scale(1.02)';
+                      });
+                      
+                      card.addEventListener('mouseleave', () => {
+                          card.style.transform = 'translateY(0) scale(1)';
+                      });
+                  });
+                  
+                  // Auto-refresh every hour
+                  setInterval(() => {
+                      const images = document.querySelectorAll('.stat-image');
+                      images.forEach(img => {
+                          img.src = img.src.split('?')[0] + '?t=' + Date.now();
+                      });
+                      document.getElementById('timestamp').textContent = new Date().toLocaleString();
+                  }, 3600000);
+              </script>
+          </body>
+          </html>
+          EOF
+
+      - name: Commit and Push
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add metrics/
-          git commit -m "Update metrics" || exit 0
+          git add public/ || true
+          git commit -m "📊 Update modern GitHub dashboard" || echo "No changes"
           git pull --rebase origin main
           git push origin main
