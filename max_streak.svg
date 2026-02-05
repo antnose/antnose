@@ -9,6 +9,6 @@
     </style>
   
     <rect class="card" width="298" height="118" x="1" y="1"/>
-    <text x="20" y="30" class="text label animate">TOP LANGUAGES</text>
-    <text x="20" y="55" class="text animate" font-size="14" style="animation-delay:0s">• JavaScript</text><text x="20" y="75" class="text animate" font-size="14" style="animation-delay:0.1s">• HTML</text><text x="20" y="95" class="text animate" font-size="14" style="animation-delay:0.2s">• Python</text>
+    <text x="20" y="40" class="text label animate">GENUINE MAX STREAK</text>
+    <text x="20" y="85" class="text animate" font-size="40" font-weight="bold" fill="#f1e05a">30 Days</text>
   </svg>

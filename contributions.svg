@@ -1,12 +1,14 @@
-
-  <svg xmlns="http://www.w3.org/2000/svg" width="400" height="150" viewBox="0 0 400 150">
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="120" viewBox="0 0 300 120">
     <style>
-      .card { fill: #0d1117; stroke: #30363d; rx: 15; }
-      .text { font-family: 'Segoe UI', sans-serif; fill: #ffffff; }
-      .icon { fill: #3fb950; font-size: 30px; }
+      .card { fill: #0d1117; stroke: #30363d; rx: 15; transition: all 0.3s ease; }
+      .card:hover { stroke: #58a6ff; fill: #161b22; transform: translateY(-5px); }
+      .text { font-family: 'Segoe UI', Tahoma, sans-serif; fill: #ffffff; }
+      .label { fill: #8b949e; font-size: 12px; }
+      @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      .animate { animation: fadeUp 0.6s ease forwards; }
     </style>
-    <rect class="card" width="398" height="148" x="1" y="1"/>
-    <text x="30" y="85" class="icon">📈</text>
-    <text x="80" y="75" class="text" font-size="35" font-weight="bold">224</text>
-    <text x="80" y="105" class="text" font-size="14" fill="#8b949e">TOTAL CONTRIBUTIONS</text>
+  
+    <rect class="card" width="298" height="118" x="1" y="1"/>
+    <text x="20" y="40" class="text label animate">TOTAL CONTRIBUTIONS</text>
+    <text x="20" y="85" class="text animate" font-size="40" font-weight="bold" fill="#7ee787">1056</text>
   </svg>
