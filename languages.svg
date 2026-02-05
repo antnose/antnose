@@ -134,9 +134,6 @@
       <rect width="316" height="156" x="2" y="2" rx="20" fill="url(#codePattern)" opacity="0.05"/>
       
     <text x="25" y="45" class="text label" style="animation-delay: 0.3s">💻 TOP LANGUAGES</text>
-    <text x="25" y="55" class="text" font-size="10" fill="#8b949e" style="animation-delay: 0.4s">
-      Based on 74 repos with primary language
-    </text>
     
           <circle cx="25" cy="57" r="5" fill="#f1e05a" class="language-dot" style="--delay: 0s"/>
           <text x="40" y="65" class="text value" font-size="14" fill="#ffffff" font-weight="600" style="animation-delay: 0.3s">
