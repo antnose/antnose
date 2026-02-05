@@ -103,7 +103,7 @@ jobs:
             // CARD 1: MAX STREAK
             fs.writeFileSync('max_streak.svg', createCard(`
               <rect class="card" width="298" height="118" x="1" y="1"/>
-              <text x="20" y="40" class="text label animate">GENUINE MAX STREAK</text>
+              <text x="20" y="40" class="text label animate">MAX STREAK</text>
               <text x="20" y="85" class="text animate" font-size="40" font-weight="bold" fill="#f1e05a">${maxStreak} Days</text>
             `));
 
