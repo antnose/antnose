@@ -404,9 +404,6 @@ jobs:
 
             fs.writeFileSync('languages.svg', createCard(`
               <text x="25" y="45" class="text label" style="animation-delay: 0.3s">💻 TOP LANGUAGES</text>
-              <text x="25" y="55" class="text" font-size="10" fill="#8b949e" style="animation-delay: 0.4s">
-                Based on ${totalReposWithLang} repos with primary language
-              </text>
               ${langContent}
               <g class="icon" style="opacity: 0.8">
                 <circle cx="280" cy="80" r="30" fill="url(#blueGradient)" opacity="0.2"/>
