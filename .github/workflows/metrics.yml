@@ -87,48 +87,256 @@ jobs:
             });
             const topLangs = Object.entries(langMap).sort((a,b) => b[1] - a[1]).slice(0, 3);
 
+            // Language color mapping
+            const langColors = {
+              'JavaScript': '#f1e05a',
+              'TypeScript': '#3178c6',
+              'Python': '#3572A5',
+              'Java': '#b07219',
+              'Go': '#00ADD8',
+              'Rust': '#dea584',
+              'C++': '#f34b7d',
+              'C#': '#178600',
+              'PHP': '#4F5D95',
+              'Ruby': '#701516',
+              'Swift': '#ffac45',
+              'Kotlin': '#A97BFF',
+              'HTML': '#e34c26',
+              'CSS': '#563d7c',
+              'Vue': '#41b883',
+              'React': '#61dafb',
+              'Shell': '#89e051',
+              'Dart': '#00B4AB',
+              'Scala': '#c22d40'
+            };
+
             const commonStyle = `
               <style>
-                .card { fill: #0d1117; stroke: #30363d; rx: 15; transition: all 0.3s ease; }
-                .card:hover { stroke: #58a6ff; fill: #161b22; transform: translateY(-5px); }
-                .text { font-family: 'Segoe UI', Tahoma, sans-serif; fill: #ffffff; }
-                .label { fill: #8b949e; font-size: 12px; }
-                @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                .animate { animation: fadeUp 0.6s ease forwards; }
+                @keyframes float {
+                  0%, 100% { transform: translateY(0px); }
+                  50% { transform: translateY(-10px); }
+                }
+                @keyframes fadeInUp {
+                  from { opacity: 0; transform: translateY(20px) scale(0.95); }
+                  to { opacity: 1; transform: translateY(0) scale(1); }
+                }
+                @keyframes pulse {
+                  0%, 100% { opacity: 1; }
+                  50% { opacity: 0.7; }
+                }
+                @keyframes shimmer {
+                  0% { background-position: -200% center; }
+                  100% { background-position: 200% center; }
+                }
+                @keyframes borderGlow {
+                  0%, 100% { stroke: #30363d; }
+                  50% { stroke: #58a6ff; }
+                }
+                @keyframes slideIn {
+                  from { transform: translateX(-20px); opacity: 0; }
+                  to { transform: translateX(0); opacity: 1; }
+                }
+                @keyframes countUp {
+                  from { opacity: 0; transform: translateY(10px); }
+                  to { opacity: 1; transform: translateY(0); }
+                }
+                .card { 
+                  fill: #0d1117; 
+                  stroke: #30363d; 
+                  rx: 20; 
+                  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+                  animation: fadeInUp 0.8s ease-out forwards;
+                }
+                .card:hover { 
+                  transform: translateY(-8px) scale(1.02);
+                  stroke: #58a6ff;
+                  stroke-width: 2;
+                  filter: drop-shadow(0 10px 20px rgba(88, 166, 255, 0.2));
+                }
+                .card-glow {
+                  animation: borderGlow 3s ease-in-out infinite;
+                }
+                .text { 
+                  font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+                  fill: #ffffff; 
+                  font-weight: 500;
+                }
+                .label { 
+                  fill: #8b949e; 
+                  font-size: 12px; 
+                  font-weight: 600;
+                  letter-spacing: 0.5px;
+                  text-transform: uppercase;
+                  animation: slideIn 0.6s ease-out forwards;
+                }
+                .value { 
+                  animation: countUp 1s ease-out forwards;
+                  animation-delay: 0.3s;
+                  opacity: 0;
+                }
+                .accent-text {
+                  animation: float 3s ease-in-out infinite;
+                }
+                .language-dot {
+                  animation: pulse 2s ease-in-out infinite;
+                  animation-delay: var(--delay);
+                }
+                .icon {
+                  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+                }
               </style>
+              <defs>
+                <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#FFD700" />
+                  <stop offset="50%" stop-color="#FFA500" />
+                  <stop offset="100%" stop-color="#FF6B00" />
+                </linearGradient>
+                <linearGradient id="fireGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#FF416C" />
+                  <stop offset="100%" stop-color="#FF4B2B" />
+                </linearGradient>
+                <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#00b09b" />
+                  <stop offset="100%" stop-color="#96c93d" />
+                </linearGradient>
+                <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#2193b0" />
+                  <stop offset="100%" stop-color="#6dd5ed" />
+                </linearGradient>
+                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(88, 166, 255, 0.1)"/>
+                </filter>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
             `;
 
-            const createCard = (content) => `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="120" viewBox="0 0 300 120">${commonStyle}${content}</svg>`;
+            const createCard = (content, bgGradient = null) => {
+              const bgFill = bgGradient ? `fill="url(#${bgGradient})" opacity="0.1"` : '';
+              return `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="160" viewBox="0 0 320 160">
+                ${commonStyle}
+                <rect class="card card-glow" width="316" height="156" x="2" y="2" rx="20"/>
+                <rect width="316" height="156" x="2" y="2" rx="20" ${bgFill}/>
+                ${content}
+              </svg>`;
+            };
 
-            // CARD 1: MAX STREAK
+            // CARD 1: MAX STREAK - Gold Theme
             fs.writeFileSync('max_streak.svg', createCard(`
-              <rect class="card" width="298" height="118" x="1" y="1"/>
-              <text x="20" y="40" class="text label animate">MAX STREAK</text>
-              <text x="20" y="85" class="text animate" font-size="40" font-weight="bold" fill="#f1e05a">${maxStreak} Days</text>
-            `));
+              <text x="25" y="45" class="text label" style="animation-delay: 0.1s">🏆 MAX STREAK</text>
+              <text x="25" y="100" class="text value" font-size="48" font-weight="bold" fill="url(#goldGradient)">${maxStreak}</text>
+              <text x="${25 + (maxStreak.toString().length * 28)}" y="100" class="text value" font-size="32" fill="#8b949e">Days</text>
+              <g class="icon" style="opacity: 0.8">
+                <circle cx="280" cy="80" r="30" fill="url(#goldGradient)" opacity="0.2"/>
+                <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#goldGradient)">🏆</text>
+              </g>
+              <circle cx="25" cy="125" r="4" fill="url(#goldGradient)" class="accent-text"/>
+              <circle cx="40" cy="125" r="4" fill="url(#goldGradient)" class="accent-text" style="animation-delay: 0.2s"/>
+              <circle cx="55" cy="125" r="4" fill="url(#goldGradient)" class="accent-text" style="animation-delay: 0.4s"/>
+            `, 'goldGradient'));
 
-            // CARD 2: CURRENT STREAK
+            // CARD 2: CURRENT STREAK - Fire Theme
             fs.writeFileSync('current_streak.svg', createCard(`
-              <rect class="card" width="298" height="118" x="1" y="1"/>
-              <text x="20" y="40" class="text label animate">CURRENT STREAK</text>
-              <text x="20" y="85" class="text animate" font-size="40" font-weight="bold" fill="#ff7b72">${currentStreak} Days</text>
-            `));
+              <text x="25" y="45" class="text label" style="animation-delay: 0.2s">🔥 CURRENT STREAK</text>
+              <text x="25" y="100" class="text value" font-size="48" font-weight="bold" fill="url(#fireGradient)">${currentStreak}</text>
+              <text x="${25 + (currentStreak.toString().length * 28)}" y="100" class="text value" font-size="32" fill="#8b949e">Days</text>
+              <g class="icon" style="opacity: 0.8">
+                <circle cx="280" cy="80" r="30" fill="url(#fireGradient)" opacity="0.2"/>
+                <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#fireGradient)">🔥</text>
+              </g>
+              <!-- Animated flame dots -->
+              <circle cx="25" cy="125" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.1s"/>
+              <circle cx="45" cy="120" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.3s"/>
+              <circle cx="65" cy="125" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.5s"/>
+            `, 'fireGradient'));
 
-            // CARD 3: TOP LANGUAGES
+            // CARD 3: TOP LANGUAGES - Blue Theme
+            const langContent = topLangs.map((lang, i) => {
+              const color = langColors[lang[0]] || '#58a6ff';
+              const yPos = 70 + (i * 28);
+              return `
+                <circle cx="25" cy="${yPos - 10}" r="5" fill="${color}" class="language-dot" style="--delay: ${i * 0.2}s"/>
+                <text x="40" y="${yPos}" class="text value" font-size="16" fill="#ffffff" style="animation-delay: ${0.3 + i * 0.1}s">
+                  ${lang[0]}
+                </text>
+                <text x="180" y="${yPos}" class="text value" font-size="16" fill="#8b949e" style="animation-delay: ${0.5 + i * 0.1}s">
+                  ${lang[1]} repos
+                </text>
+              `;
+            }).join('');
+
             fs.writeFileSync('languages.svg', createCard(`
-              <rect class="card" width="298" height="118" x="1" y="1"/>
-              <text x="20" y="30" class="text label animate">TOP LANGUAGES</text>
-              ${topLangs.map((l, i) => `<text x="20" y="${55+(i*20)}" class="text animate" font-size="14" style="animation-delay:${i*0.1}s">• ${l[0]}</text>`).join('')}
-            `));
+              <text x="25" y="45" class="text label" style="animation-delay: 0.3s">💻 TOP LANGUAGES</text>
+              ${langContent}
+              <g class="icon" style="opacity: 0.8">
+                <circle cx="280" cy="80" r="30" fill="url(#blueGradient)" opacity="0.2"/>
+                <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#blueGradient)">💻</text>
+              </g>
+              <rect x="25" y="125" width="30" height="3" rx="1.5" fill="url(#blueGradient)" class="accent-text"/>
+              <rect x="60" y="125" width="20" height="3" rx="1.5" fill="url(#blueGradient)" class="accent-text" style="animation-delay: 0.3s"/>
+              <rect x="85" y="125" width="15" height="3" rx="1.5" fill="url(#blueGradient)" class="accent-text" style="animation-delay: 0.6s"/>
+            `, 'blueGradient'));
 
-            // CARD 4: CONTRIBUTIONS
+            // CARD 4: CONTRIBUTIONS - Green Theme
+            const totalContribs = data.contributionsCollection.contributionCalendar.totalContributions;
             fs.writeFileSync('contributions.svg', createCard(`
-              <rect class="card" width="298" height="118" x="1" y="1"/>
-              <text x="20" y="40" class="text label animate">TOTAL CONTRIBUTIONS</text>
-              <text x="20" y="85" class="text animate" font-size="40" font-weight="bold" fill="#7ee787">${data.contributionsCollection.contributionCalendar.totalContributions}</text>
-            `));
+              <text x="25" y="45" class="text label" style="animation-delay: 0.4s">✨ TOTAL CONTRIBUTIONS</text>
+              <text x="25" y="100" class="text value" font-size="48" font-weight="bold" fill="url(#greenGradient)">${totalContribs.toLocaleString()}</text>
+              <g class="icon" style="opacity: 0.8">
+                <circle cx="280" cy="80" r="30" fill="url(#greenGradient)" opacity="0.2"/>
+                <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#greenGradient)">✨</text>
+              </g>
+              <!-- Animated sparkles -->
+              <text x="50" y="130" class="accent-text" font-size="16" fill="url(#greenGradient)" style="animation-delay: 0.1s">✦</text>
+              <text x="70" y="120" class="accent-text" font-size="12" fill="url(#greenGradient)" style="animation-delay: 0.3s">✧</text>
+              <text x="90" y="130" class="accent-text" font-size="14" fill="url(#greenGradient)" style="animation-delay: 0.5s">✦</text>
+            `, 'greenGradient'));
+
+            // Create a showcase SVG that combines all cards
+            const showcase = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="660" height="340" viewBox="0 0 660 340">
+              ${commonStyle}
+              <style>
+                .showcase-bg { fill: #0d1117; rx: 20; }
+                .showcase-title { font-family: 'Segoe UI', 'Inter', sans-serif; fill: #ffffff; font-size: 24px; font-weight: bold; }
+                .showcase-subtitle { font-family: 'Segoe UI', 'Inter', sans-serif; fill: #8b949e; font-size: 14px; }
+              </style>
+              <rect class="showcase-bg" width="656" height="336" x="2" y="2" rx="20"/>
+              <text x="30" y="50" class="showcase-title">🚀 GitHub Metrics Dashboard</text>
+              <text x="30" y="75" class="showcase-subtitle">Real-time contributions & coding insights</text>
+              
+              <!-- Card placements -->
+              <g transform="translate(20, 100)">
+                <foreignObject width="320" height="160">
+                  <iframe width="320" height="160" src="data:image/svg+xml;base64,${Buffer.from(fs.readFileSync('max_streak.svg')).toString('base64')}"></iframe>
+                </foreignObject>
+              </g>
+              <g transform="translate(350, 100)">
+                <foreignObject width="320" height="160">
+                  <iframe width="320" height="160" src="data:image/svg+xml;base64,${Buffer.from(fs.readFileSync('current_streak.svg')).toString('base64')}"></iframe>
+                </foreignObject>
+              </g>
+              <g transform="translate(20, 280)">
+                <foreignObject width="320" height="160">
+                  <iframe width="320" height="160" src="data:image/svg+xml;base64,${Buffer.from(fs.readFileSync('languages.svg')).toString('base64')}"></iframe>
+                </foreignObject>
+              </g>
+              <g transform="translate(350, 280)">
+                <foreignObject width="320" height="160">
+                  <iframe width="320" height="160" src="data:image/svg+xml;base64,${Buffer.from(fs.readFileSync('contributions.svg')).toString('base64')}"></iframe>
+                </foreignObject>
+              </g>
+            </svg>`;
+
+            fs.writeFileSync('showcase.svg', showcase);
           }
-          fetchData();
+          fetchData().catch(console.error);
           EOF
           GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} node generate-cards.js
 
@@ -138,6 +346,6 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add *.svg
           if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "💎 Update genuine 4-card aesthetic dashboard"
+            git commit -m "✨ Enhanced 4-card dashboard with premium animations & aesthetics"
             git push --force https://x-access-token:${{ secrets.METRICS_TOKEN }}@github.com/${{ github.repository }}.git main
           fi
