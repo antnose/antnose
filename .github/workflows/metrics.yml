@@ -56,7 +56,8 @@ jobs:
           plugin_traffic: yes
 
       - name: Generate GitHub Stats Card
-        uses: anuraghazra/github-readme-stats@latest
+        # Replaced @latest with @master to fix resolution error
+        uses: anuraghazra/github-readme-stats@master 
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           username: antnose
@@ -72,7 +73,8 @@ jobs:
           output: metrics/stats.svg
 
       - name: Generate Streak Stats
-        uses: denvercoder1/github-readme-streak-stats@latest
+        # Replaced @latest with @v2 to fix resolution error
+        uses: denvercoder1/github-readme-streak-stats@v2 
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           user: antnose
@@ -85,7 +87,8 @@ jobs:
           output: metrics/streak.svg
 
       - name: Generate Top Languages
-        uses: anuraghazra/github-readme-stats@latest
+        # Replaced @latest with @master to fix resolution error
+        uses: anuraghazra/github-readme-stats@master
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           username: antnose
