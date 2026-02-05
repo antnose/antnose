@@ -3,231 +3,57 @@ on:
   schedule:
     - cron: "0 0 * * *"
   workflow_dispatch:
-  push:
-    branches: [ main ]
+
+permissions:
+  contents: write
 
 jobs:
   generate-metrics:
     runs-on: ubuntu-latest
     
-    permissions:
-      contents: write
-    
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Generate GitHub Stats Card
+      - name: Clean up previous metrics
         run: |
-          # Install dependencies
-          npm install axios
-          
-          # Create a simple script to generate stats using GitHub API
-          cat > generate-stats.js << 'EOF'
-          const axios = require('axios');
-          const fs = require('fs');
-          
-          const username = 'antnose';
-          const token = process.env.GITHUB_TOKEN || '';
-          
-          async function getGitHubStats() {
-            try {
-              const headers = {
-                'Authorization': `token ${token}`,
-                'Accept': 'application/vnd.github.v3+json'
-              };
-              
-              // Get user info
-              const userRes = await axios.get(`https://api.github.com/users/${username}`, { headers });
-              const user = userRes.data;
-              
-              // Get repos
-              const reposRes = await axios.get(`https://api.github.com/users/${username}/repos?per_page=100`, { headers });
-              const repos = reposRes.data;
-              
-              // Calculate stats
-              const totalStars = repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
-              const totalForks = repos.reduce((sum, repo) => sum + repo.forks_count, 0);
-              const totalRepos = repos.length;
-              
-              // Create SVG for stats
-              const statsSVG = `
-              <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
-                <style>
-                  .card { fill: #161B22; stroke: #30363D; stroke-width: 2; rx: 20; }
-                  .title { fill: #58A6FF; font-family: Arial; font-size: 24px; font-weight: bold; }
-                  .stat { fill: #C9D1D9; font-family: Arial; font-size: 18px; }
-                  .value { fill: #F0F6FC; font-family: Arial; font-size: 28px; font-weight: bold; }
-                  .icon { fill: #58A6FF; }
-                </style>
-                
-                <!-- Card Background -->
-                <rect class="card" width="380" height="180" x="10" y="10"/>
-                
-                <!-- Title -->
-                <text class="title" x="30" y="50">${username}'s GitHub Stats</text>
-                
-                <!-- Stats -->
-                <g transform="translate(30, 80)">
-                  <text class="stat">Public Repositories:</text>
-                  <text class="value" x="200" y="0">${totalRepos}</text>
-                  
-                  <text class="stat" y="40">Total Stars:</text>
-                  <text class="value" x="200" y="40">${totalStars}</text>
-                  
-                  <text class="stat" y="80">Total Forks:</text>
-                  <text class="value" x="200" y="80">${totalForks}</text>
-                  
-                  <text class="stat" y="120">Followers:</text>
-                  <text class="value" x="200" y="120">${user.followers}</text>
-                </g>
-              </svg>
-              `;
-              
-              fs.writeFileSync('stats.svg', statsSVG);
-              console.log('Generated stats.svg');
-              
-            } catch (error) {
-              console.error('Error:', error.message);
-              // Create fallback SVG
-              const fallbackSVG = `
-              <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
-                <rect fill="#161B22" width="400" height="200" rx="20"/>
-                <text fill="#58A6FF" font-family="Arial" font-size="24" font-weight="bold" x="50" y="50">antnose's GitHub Stats</text>
-                <text fill="#C9D1D9" font-family="Arial" font-size="16" x="50" y="100">Check back soon for updated stats!</text>
-              </svg>
-              `;
-              fs.writeFileSync('stats.svg', fallbackSVG);
-            }
-          }
-          
-          getGitHubStats();
-          EOF
-          
-          # Run the script
-          GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} node generate-stats.js
+          rm -rf public
+          mkdir -p public
 
-      - name: Generate Streak Stats
+      - name: Generate Stats using External Services
         run: |
-          # Create streak SVG
-          cat > streak.svg << 'EOF'
-          <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
-            <style>
-              .card { fill: #161B22; stroke: #30363D; stroke-width: 2; rx: 20; }
-              .title { fill: #58A6FF; font-family: Arial; font-size: 24px; font-weight: bold; }
-              .fire { fill: #FF6D00; }
-              .streak { fill: #F0F6FC; font-family: Arial; font-size: 36px; font-weight: bold; }
-              .label { fill: #8B949E; font-family: Arial; font-size: 16px; }
-            </style>
-            
-            <!-- Card Background -->
-            <rect class="card" width="380" height="180" x="10" y="10"/>
-            
-            <!-- Title -->
-            <text class="title" x="30" y="50">🔥 GitHub Contribution Streak</text>
-            
-            <!-- Fire Icon -->
-            <path class="fire" d="M50,100 C40,80 60,70 70,90 C80,70 100,80 90,100 C100,120 80,130 70,110 C60,130 40,120 50,100 Z" />
-            
-            <!-- Streak Number -->
-            <text class="streak" x="120" y="115">157</text>
-            <text class="label" x="120" y="140">days streak</text>
-            
-            <!-- Current Streak -->
-            <text class="label" x="250" y="90">Current streak:</text>
-            <text class="streak" x="250" y="125" font-size="28">7 days</text>
-            
-            <!-- Best Streak -->
-            <text class="label" x="250" y="160">Best streak: 157 days</text>
-          </svg>
-          EOF
-
-      - name: Generate Top Languages
-        run: |
-          # Create languages SVG
-          cat > languages.svg << 'EOF'
-          <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200">
-            <style>
-              .card { fill: #161B22; stroke: #30363D; stroke-width: 2; rx: 20; }
-              .title { fill: #58A6FF; font-family: Arial; font-size: 24px; font-weight: bold; }
-              .language { fill: #C9D1D9; font-family: Arial; font-size: 16px; }
-              .bar-bg { fill: #30363D; }
-              .bar { fill: #58A6FF; }
-              .percent { fill: #8B949E; font-family: Arial; font-size: 14px; }
-            </style>
-            
-            <!-- Card Background -->
-            <rect class="card" width="380" height="180" x="10" y="10"/>
-            
-            <!-- Title -->
-            <text class="title" x="30" y="50">💻 Top Languages</text>
-            
-            <!-- Language Bars -->
-            <g transform="translate(30, 80)">
-              <!-- JavaScript -->
-              <text class="language" y="0">JavaScript</text>
-              <rect class="bar-bg" x="120" y="-10" width="150" height="20" rx="10"/>
-              <rect class="bar" x="120" y="-10" width="120" height="20" rx="10"/>
-              <text class="percent" x="280" y="5">40%</text>
-              
-              <!-- Python -->
-              <text class="language" y="30">Python</text>
-              <rect class="bar-bg" x="120" y="20" width="150" height="20" rx="10"/>
-              <rect class="bar" x="120" y="20" width="90" height="20" rx="10"/>
-              <text class="percent" x="280" y="35">30%</text>
-              
-              <!-- HTML -->
-              <text class="language" y="60">HTML</text>
-              <rect class="bar-bg" x="120" y="50" width="150" height="20" rx="10"/>
-              <rect class="bar" x="120" y="50" width="60" height="20" rx="10"/>
-              <text class="percent" x="280" y="65">20%</text>
-              
-              <!-- CSS -->
-              <text class="language" y="90">CSS</text>
-              <rect class="bar-bg" x="120" y="80" width="150" height="20" rx="10"/>
-              <rect class="bar" x="120" y="80" width="30" height="20" rx="10"/>
-              <text class="percent" x="280" y="95">10%</text>
-            </g>
-          </svg>
-          EOF
+          # Download GitHub Stats Card
+          curl -s -o public/stats.svg "https://github-readme-stats.vercel.app/api?username=antnose&show_icons=true&theme=dark&bg_color=0D1117&title_color=58A6FF&text_color=C9D1D9&icon_color=58A6FF&hide_border=true&count_private=true"
+          
+          # Download Streak Stats
+          curl -s -o public/streak.svg "https://github-readme-streak-stats.herokuapp.com/?user=antnose&theme=dark&background=0D1117&border=30363D&stroke=30363D&ring=58A6FF&fire=FF6D00&currStreakNum=58A6FF&sideNums=58A6FF&currStreakLabel=58A6FF"
+          
+          # Download Top Languages
+          curl -s -o public/languages.svg "https://github-readme-stats.vercel.app/api/top-langs/?username=antnose&layout=compact&theme=dark&bg_color=0D1117&title_color=58A6FF&text_color=C9D1D9&hide_border=true"
 
       - name: Create Modern Dashboard
         run: |
-          mkdir -p public
-          # Move generated files to public folder
-          [ -f stats.svg ] && mv stats.svg public/
-          [ -f streak.svg ] && mv streak.svg public/
-          [ -f languages.svg ] && mv languages.svg public/
-          # If github-metrics.svg was generated in root by lowlighter
-          [ -f github-metrics.svg ] && mv github-metrics.svg public/
-          
-          # Move SVGs to public folder
-          mv *.svg public/ 2>/dev/null || true
-          
-          # Create index.html with modern design
           cat > public/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="en">
           <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>antnose - Modern GitHub Stats</title>
+              <title>antnose - GitHub Stats Dashboard</title>
+              <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
               <style>
                   :root {
                       --bg: #0D1117;
                       --card-bg: #161B22;
                       --border: #30363D;
                       --primary: #58A6FF;
-                      --text: #C9D1D9;
-                      --text-muted: #8B949E;
                       --accent: #8250DF;
-                      --success: #238636;
+                      --text: #F0F6FC;
+                      --text-muted: #8B949E;
                       --gradient: linear-gradient(135deg, var(--primary), var(--accent));
+                      --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
                   }
                   
                   * {
@@ -242,6 +68,9 @@ jobs:
                       color: var(--text);
                       min-height: 100vh;
                       padding: 2rem;
+                      background-image: 
+                          radial-gradient(circle at 10% 20%, rgba(88, 166, 255, 0.1) 0%, transparent 20%),
+                          radial-gradient(circle at 90% 80%, rgba(130, 80, 223, 0.1) 0%, transparent 20%);
                   }
                   
                   .container {
@@ -252,10 +81,12 @@ jobs:
                   header {
                       text-align: center;
                       margin-bottom: 3rem;
+                      animation: fadeIn 1s ease;
                   }
                   
                   h1 {
                       font-size: 3.5rem;
+                      font-weight: 800;
                       background: var(--gradient);
                       -webkit-background-clip: text;
                       background-clip: text;
@@ -272,6 +103,7 @@ jobs:
                       display: grid;
                       grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
                       gap: 2rem;
+                      margin-bottom: 3rem;
                   }
                   
                   .card {
@@ -279,87 +111,40 @@ jobs:
                       border-radius: 20px;
                       border: 2px solid var(--border);
                       padding: 2rem;
-                      transition: all 0.3s ease;
-                      position: relative;
-                      overflow: hidden;
+                      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                      animation: slideUp 0.6s ease;
+                      animation-fill-mode: both;
                   }
+                  
+                  .card:nth-child(1) { animation-delay: 0.1s; }
+                  .card:nth-child(2) { animation-delay: 0.2s; }
+                  .card:nth-child(3) { animation-delay: 0.3s; }
                   
                   .card:hover {
-                      transform: translateY(-5px);
+                      transform: translateY(-10px);
                       border-color: var(--primary);
-                      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-                  }
-                  
-                  .card::before {
-                      content: '';
-                      position: absolute;
-                      top: 0;
-                      left: 0;
-                      right: 0;
-                      height: 4px;
-                      background: var(--gradient);
-                      transform: scaleX(0);
-                      transition: transform 0.3s ease;
-                  }
-                  
-                  .card:hover::before {
-                      transform: scaleX(1);
+                      box-shadow: var(--shadow), 0 0 30px rgba(88, 166, 255, 0.2);
                   }
                   
                   .card h2 {
                       color: var(--primary);
-                      margin-bottom: 1rem;
+                      margin-bottom: 1.5rem;
                       font-size: 1.5rem;
+                      display: flex;
+                      align-items: center;
+                      gap: 0.5rem;
                   }
                   
-                  .stat-image {
+                  .stats-img {
                       width: 100%;
-                      border-radius: 10px;
+                      border-radius: 12px;
                       transition: transform 0.3s ease;
                   }
                   
-                  .stat-image:hover {
+                  .stats-img:hover {
                       transform: scale(1.02);
                   }
                   
-                  footer {
-                      text-align: center;
-                      margin-top: 3rem;
-                      padding-top: 2rem;
-                      border-top: 1px solid var(--border);
-                      color: var(--text-muted);
-                  }
-                  
-                  @media (max-width: 768px) {
-                      .dashboard {
-                          grid-template-columns: 1fr;
-                      }
-                      
-                      h1 {
-                          font-size: 2.5rem;
-                      }
-                  }
-                  
-                  /* Animation classes */
-                  .fade-in {
-                      animation: fadeIn 0.8s ease;
-                  }
-                  
-                  .slide-up {
-                      animation: slideUp 0.6s ease;
-                  }
-                  
-                  @keyframes fadeIn {
-                      from { opacity: 0; }
-                      to { opacity: 1; }
-                  }
-                  
-                  @keyframes slideUp {
-                      from { transform: translateY(20px); opacity: 0; }
-                      to { transform: translateY(0); opacity: 1; }
-                  }
-                  
-                  /* Controls */
                   .controls {
                       display: flex;
                       justify-content: center;
@@ -373,8 +158,12 @@ jobs:
                       border: 1px solid var(--border);
                       border-radius: 50px;
                       color: var(--text);
+                      font-weight: 500;
                       cursor: pointer;
                       transition: all 0.3s ease;
+                      display: flex;
+                      align-items: center;
+                      gap: 0.5rem;
                   }
                   
                   .btn:hover {
@@ -382,122 +171,243 @@ jobs:
                       color: white;
                       border-color: var(--primary);
                   }
+                  
+                  footer {
+                      text-align: center;
+                      margin-top: 3rem;
+                      padding-top: 2rem;
+                      border-top: 1px solid var(--border);
+                      color: var(--text-muted);
+                      animation: fadeIn 1s ease 0.5s both;
+                  }
+                  
+                  .timestamp {
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      gap: 0.5rem;
+                      margin-top: 1rem;
+                  }
+                  
+                  .live-dot {
+                      width: 8px;
+                      height: 8px;
+                      background: #238636;
+                      border-radius: 50%;
+                      animation: pulse 2s infinite;
+                  }
+                  
+                  @keyframes fadeIn {
+                      from { opacity: 0; }
+                      to { opacity: 1; }
+                  }
+                  
+                  @keyframes slideUp {
+                      from { transform: translateY(20px); opacity: 0; }
+                      to { transform: translateY(0); opacity: 1; }
+                  }
+                  
+                  @keyframes pulse {
+                      0%, 100% { opacity: 1; }
+                      50% { opacity: 0.5; }
+                  }
+                  
+                  @media (max-width: 768px) {
+                      body { padding: 1rem; }
+                      h1 { font-size: 2.5rem; }
+                      .dashboard { grid-template-columns: 1fr; }
+                      .card { padding: 1.5rem; }
+                      .controls { flex-direction: column; align-items: center; }
+                      .btn { width: 100%; max-width: 300px; justify-content: center; }
+                  }
               </style>
           </head>
           <body>
               <div class="container">
-                  <header class="fade-in">
-                      <h1>🚀 antnose's GitHub Dashboard</h1>
-                      <p class="subtitle">Modern, animated GitHub statistics updated daily</p>
+                  <header>
+                      <h1>🚀 antnose's GitHub Analytics</h1>
+                      <p class="subtitle">Interactive dashboard with modern animations and real-time stats</p>
                   </header>
                   
                   <div class="controls">
-                      <button class="btn" onclick="refreshStats()">🔄 Refresh</button>
-                      <button class="btn" onclick="toggleAnimations()">✨ Toggle Animations</button>
+                      <button class="btn" onclick="refreshStats()">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M23 4v6h-6"/>
+                              <path d="M1 20v-6h6"/>
+                              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                          </svg>
+                          Refresh Stats
+                      </button>
+                      <button class="btn" onclick="toggleAnimations()">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <circle cx="12" cy="12" r="10"/>
+                              <polyline points="12 6 12 12 16 14"/>
+                          </svg>
+                          Toggle Animations
+                      </button>
                   </div>
                   
                   <div class="dashboard">
-                      <div class="card slide-up" style="animation-delay: 0.1s">
-                          <h2>🔥 GitHub Contribution Streak</h2>
-                          <img src="streak.svg" alt="GitHub Streak" class="stat-image">
+                      <div class="card">
+                          <h2>🔥 GitHub Streak</h2>
+                          <img src="streak.svg" alt="Contribution Streak" class="stats-img" id="streakImg">
                       </div>
                       
-                      <div class="card slide-up" style="animation-delay: 0.2s">
-                          <h2>📊 GitHub Statistics</h2>
-                          <img src="stats.svg" alt="GitHub Stats" class="stat-image">
+                      <div class="card">
+                          <h2>📊 GitHub Stats</h2>
+                          <img src="stats.svg" alt="GitHub Statistics" class="stats-img" id="statsImg">
                       </div>
                       
-                      <div class="card slide-up" style="animation-delay: 0.3s">
+                      <div class="card">
                           <h2>💻 Top Languages</h2>
-                          <img src="languages.svg" alt="Top Languages" class="stat-image">
+                          <img src="languages.svg" alt="Top Languages" class="stats-img" id="langImg">
                       </div>
                   </div>
                   
-                  <footer class="fade-in" style="animation-delay: 0.5s">
-                      <p>Dashboard updates automatically • Last updated: <span id="timestamp"></span></p>
-                      <p>GitHub: <a href="https://github.com/antnose" style="color: var(--primary);">@antnose</a></p>
+                  <footer>
+                      <p>Dashboard updates automatically every day • <a href="https://github.com/antnose" style="color: var(--primary); text-decoration: none;">GitHub Profile</a></p>
+                      <div class="timestamp">
+                          <span class="live-dot"></span>
+                          <span>Last updated: <span id="updateTime"></span></span>
+                      </div>
                   </footer>
               </div>
               
               <script>
-                  // Set timestamp
-                  document.getElementById('timestamp').textContent = new Date().toLocaleString();
+                  // Set initial timestamp
+                  function updateTimestamp() {
+                      const now = new Date();
+                      const options = {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit'
+                      };
+                      document.getElementById('updateTime').textContent = now.toLocaleDateString('en-US', options);
+                  }
+                  updateTimestamp();
                   
-                  // Refresh function
+                  // Refresh stats function
                   function refreshStats() {
                       const btn = event.target;
-                      btn.textContent = '🔄 Refreshing...';
+                      const originalHTML = btn.innerHTML;
+                      
+                      btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Refreshing...';
                       btn.disabled = true;
                       
-                      // Reload images with cache busting
-                      const images = document.querySelectorAll('.stat-image');
-                      images.forEach(img => {
-                          img.src = img.src.split('?')[0] + '?t=' + Date.now();
+                      // Refresh images with cache busting
+                      const images = ['streakImg', 'statsImg', 'langImg'];
+                      images.forEach(id => {
+                          const img = document.getElementById(id);
+                          if (img) {
+                              const src = img.src.split('?')[0];
+                              img.src = src + '?t=' + Date.now();
+                          }
                       });
                       
                       setTimeout(() => {
-                          btn.textContent = '🔄 Refresh';
+                          btn.innerHTML = originalHTML;
                           btn.disabled = false;
-                          document.getElementById('timestamp').textContent = new Date().toLocaleString();
-                      }, 1000);
+                          updateTimestamp();
+                          showNotification('Stats refreshed successfully!', 'success');
+                      }, 1500);
                   }
                   
                   // Toggle animations
                   function toggleAnimations() {
                       const cards = document.querySelectorAll('.card');
-                      cards.forEach(card => {
-                          card.style.animation = card.style.animation ? 'none' : 'slideUp 0.6s ease';
-                      });
+                      const btn = event.target;
+                      
+                      if (cards[0].style.animationPlayState === 'paused') {
+                          cards.forEach(card => {
+                              card.style.animationPlayState = 'running';
+                          });
+                          btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Pause Animations';
+                          showNotification('Animations enabled', 'info');
+                      } else {
+                          cards.forEach(card => {
+                              card.style.animationPlayState = 'paused';
+                          });
+                          btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Play Animations';
+                          showNotification('Animations paused', 'info');
+                      }
                   }
                   
-                  // Add hover animation to cards
+                  // Notification system
+                  function showNotification(message, type) {
+                      const notification = document.createElement('div');
+                      notification.innerHTML = message;
+                      notification.style.cssText = `
+                          position: fixed;
+                          top: 20px;
+                          right: 20px;
+                          background: ${type === 'success' ? '#238636' : 'var(--primary)'};
+                          color: white;
+                          padding: 1rem 1.5rem;
+                          border-radius: 10px;
+                          box-shadow: var(--shadow);
+                          z-index: 1000;
+                          animation: slideIn 0.3s ease;
+                      `;
+                      
+                      document.body.appendChild(notification);
+                      
+                      setTimeout(() => {
+                          notification.style.animation = 'slideOut 0.3s ease';
+                          setTimeout(() => notification.remove(), 300);
+                      }, 3000);
+                  }
+                  
+                  // Add notification animations
+                  const style = document.createElement('style');
+                  style.textContent = `
+                      @keyframes slideIn {
+                          from { transform: translateX(100%); opacity: 0; }
+                          to { transform: translateX(0); opacity: 1; }
+                      }
+                      @keyframes slideOut {
+                          from { transform: translateX(0); opacity: 1; }
+                          to { transform: translateX(100%); opacity: 0; }
+                      }
+                  `;
+                  document.head.appendChild(style);
+                  
+                  // Auto-refresh images every hour
+                  setInterval(() => {
+                      const images = ['streakImg', 'statsImg', 'langImg'];
+                      images.forEach(id => {
+                          const img = document.getElementById(id);
+                          if (img) {
+                              const src = img.src.split('?')[0];
+                              img.src = src + '?t=' + Date.now();
+                          }
+                      });
+                      updateTimestamp();
+                  }, 3600000);
+                  
+                  // Add hover effects to cards
                   document.querySelectorAll('.card').forEach(card => {
                       card.addEventListener('mouseenter', () => {
-                          card.style.transform = 'translateY(-5px) scale(1.02)';
+                          card.style.transform = 'translateY(-10px) scale(1.02)';
                       });
                       
                       card.addEventListener('mouseleave', () => {
                           card.style.transform = 'translateY(0) scale(1)';
                       });
                   });
-                  
-                  // Auto-refresh every hour
-                  setInterval(() => {
-                      const images = document.querySelectorAll('.stat-image');
-                      images.forEach(img => {
-                          img.src = img.src.split('?')[0] + '?t=' + Date.now();
-                      });
-                      document.getElementById('timestamp').textContent = new Date().toLocaleString();
-                  }, 3600000);
               </script>
           </body>
           </html>
           EOF
 
-     - name: Commit and Push
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
-          
-          # 1. Clean up the root directory
-          # Remove the script and any stray SVGs that were already moved to public/
-          rm -f generate-stats.js
-          rm -f *.svg 
-          
-          # 2. Add EVERYTHING
-          # This ensures no "unstaged changes" are left to block the rebase
-          git add .
-          
-          # 3. Commit only if there are changes
-          if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "📊 Update modern GitHub dashboard"
-          else
-            echo "No changes to commit"
-          fi
-          
-          # 4. Pull with rebase 
-          # We use --autostash just in case something is still lingering
-          git pull --rebase --autostash origin main
-          
-          # 5. Push
-          git push origin main
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
