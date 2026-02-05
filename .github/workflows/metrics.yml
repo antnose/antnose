@@ -22,7 +22,7 @@ jobs:
         run: mkdir -p metrics public
 
       - name: Generate Metrics (Detailed)
-        uses: lowlighter/metrics@latest
+        uses: lowlighter/metrics@v3.34
         with:
           filename: github-metrics.svg
           token: ${{ secrets.METRICS_TOKEN }}
@@ -33,11 +33,9 @@ jobs:
           plugin_achievements: yes
           plugin_habits: yes
           plugin_languages: yes
-          plugin_languages_limit: 8
 
       - name: Generate GitHub Stats Card
-        # Using the specific latest stable version tag
-        uses: anuraghazra/github-readme-stats@v2.11.0
+        uses: anuraghazra/github-readme-stats@master
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           username: antnose
@@ -46,7 +44,6 @@ jobs:
           output: metrics/stats.svg
 
       - name: Generate Streak Stats
-        # Switched to the specific main branch pointer for this action
         uses: denvercoder1/github-readme-streak-stats@main
         with:
           token: ${{ secrets.METRICS_TOKEN }}
@@ -55,7 +52,7 @@ jobs:
           output: metrics/streak.svg
 
       - name: Generate Top Languages
-        uses: anuraghazra/github-readme-stats@v2.11.0
+        uses: anuraghazra/github-readme-stats@master
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           username: antnose
