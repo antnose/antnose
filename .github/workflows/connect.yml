@@ -1,0 +1,68 @@
+name: Generate Socials Card
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create Social Card
+        run: |
+          cat > generate-socials.js << 'EOF'
+          const fs = require('fs');
+
+          const commonStyle = `
+          <style>
+            @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes hoverEffect { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+            .card { fill: #0d1117; stroke: #30363d; rx: 15; animation: fadeInUp 0.6s ease-out forwards; }
+            .text { font-family: 'Segoe UI', system-ui, sans-serif; fill: #ffffff; }
+            .label { fill: #8b949e; font-size: 11px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
+            .icon-bg { animation: hoverEffect 3s ease-in-out infinite; }
+          </style>`;
+
+          const svg = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="600" height="120">
+            ${commonStyle}
+            <rect class="card" width="598" height="118" x="1" y="1"/>
+            <text x="25" y="35" class="text label">🔗 CONNECT &amp; PORTFOLIO</text>
+            
+            <g transform="translate(40, 65)">
+              <circle cx="0" cy="0" r="22" fill="#6dd5ed" opacity="0.15" class="icon-bg"/>
+              <text x="0" y="6" text-anchor="middle" fill="#6dd5ed" font-size="20" font-weight="bold">🌐</text>
+              <text x="0" y="40" text-anchor="middle" fill="#8b949e" font-size="10">Portfolio</text>
+              
+              <circle cx="140" cy="0" r="22" fill="#ffffff" opacity="0.15" class="icon-bg" style="animation-delay: 0.5s"/>
+              <text x="140" y="6" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="bold">𝕏</text>
+              <text x="140" y="40" text-anchor="middle" fill="#8b949e" font-size="10">Twitter</text>
+              
+              <circle cx="280" cy="0" r="22" fill="#0A66C2" opacity="0.15" class="icon-bg" style="animation-delay: 1s"/>
+              <text x="280" y="6" text-anchor="middle" fill="#0A66C2" font-size="18" font-weight="bold">in</text>
+              <text x="280" y="40" text-anchor="middle" fill="#8b949e" font-size="10">LinkedIn</text>
+              
+              <circle cx="420" cy="0" r="22" fill="#F48024" opacity="0.15" class="icon-bg" style="animation-delay: 1.5s"/>
+              <text x="420" y="6" text-anchor="middle" fill="#F48024" font-size="18" font-weight="bold">SO</text>
+              <text x="420" y="40" text-anchor="middle" fill="#8b949e" font-size="10">Stack</text>
+            </g>
+          </svg>`;
+
+          fs.writeFileSync('socials_card.svg', svg);
+          EOF
+          node generate-socials.js
+
+      - name: Push Card
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add socials_card.svg
+          git commit -m "✨ Sync Socials Card" || exit 0
+          git push
