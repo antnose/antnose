@@ -1,0 +1,35 @@
+
+    <svg xmlns="http://www.w3.org/2000/svg" width="450" height="200" viewBox="0 0 450 200">
+      <style>
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes grow { from { width: 0; } to { width: 100%; } }
+        .card { fill: #0d1117; stroke: #30363d; stroke-width: 1; rx: 15; }
+        .text { font-family: 'Segoe UI', Ubuntu, Sans-Serif; fill: #c9d1d9; font-size: 14px; opacity: 0; animation: fadeIn 0.5s ease forwards; }
+        .title { fill: #58a6ff; font-size: 18px; font-weight: bold; }
+        .accent { fill: #8250df; font-weight: bold; }
+        .bar-bg { fill: #161b22; rx: 5; }
+        .bar-fill { fill: url(#grad); rx: 5; animation: grow 1.5s ease-out forwards; }
+      </style>
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" style="stop-color:#58a6ff;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#8250df;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect class="card" width="448" height="198" x="1" y="1"/>
+      <text class="text title" x="25" y="40" style="animation-delay: 0.1s">🚀 Developer Momentum</text>
+      <g transform="translate(25, 70)">
+        <text class="text" y="0" style="animation-delay: 0.2s">Repositories</text>
+        <rect class="bar-bg" x="120" y="-12" width="280" height="12"/>
+        <rect class="bar-fill" x="120" y="-12" width="240" height="12"/>
+        <text class="text accent" x="410" y="0" style="animation-delay: 0.3s">80</text>
+        <text class="text" y="40" style="animation-delay: 0.4s">Followers</text>
+        <rect class="bar-bg" x="120" y="28" width="280" height="12"/>
+        <rect class="bar-fill" x="120" y="28" width="200" height="12"/>
+        <text class="text accent" x="410" y="40" style="animation-delay: 0.5s">284</text>
+        <text class="text" y="80" style="animation-delay: 0.6s">Status</text>
+        <rect class="bar-bg" x="120" y="68" width="280" height="12"/>
+        <rect class="bar-fill" x="120" y="68" width="260" height="12"/>
+        <text class="text accent" x="410" y="80" style="animation-delay: 0.7s">Active</text>
+      </g>
+    </svg>

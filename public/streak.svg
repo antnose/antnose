@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="450" height="150" viewBox="0 0 450 150">
+  <style>
+    @keyframes pulse { 0% { filter: drop-shadow(0 0 2px #ff6d00); } 50% { filter: drop-shadow(0 0 8px #ff6d00); } 100% { filter: drop-shadow(0 0 2px #ff6d00); } }
+    .fire { font-size: 40px; animation: pulse 2s infinite; }
+    .card { fill: #0d1117; stroke: #30363d; rx: 15; }
+    .num { font-family: 'Segoe UI', sans-serif; fill: #ffffff; font-size: 45px; font-weight: bold; }
+    .label { font-family: 'Segoe UI', sans-serif; fill: #8b949e; font-size: 14px; }
+  </style>
+  <rect class="card" width="448" height="148" x="1" y="1"/>
+  <text x="30" y="85" class="fire">🔥</text>
+  <text x="90" y="85" class="num">157</text>
+  <text x="90" y="115" class="label">CURRENT STREAK (DAYS)</text>
+  <line x1="240" y1="40" x2="240" y2="110" stroke="#30363d" />
+  <text x="265" y="70" class="num" font-size="25">Best: 182</text>
+  <text x="265" y="100" class="label">All-time record</text>
+</svg>
