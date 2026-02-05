@@ -81,13 +81,19 @@ I believe in **learning step by step**, building real projects and being honest 
 
 ---
 
-## 🔗 **Connect with me**
+## 🌐 Connect with me
 
 <p align="center">
-  <a href="https://antnose.vercel.app" target="blank"><img align="center" src="https://cdn.jsdelivr.net/npm/simple-icons@3.0.1/icons/dev-dot-to.svg" alt="gautamkrishnar" height="30" width="40" /></a>
-<a href="https://x.com/_antnose" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/twitter.svg" alt="gautamkrishnar" height="30" width="40" /></a>
-<a href="https://linkedin.com/in/antnose" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="gautamkrishnar" height="30" width="40" /></a>
-<a href="https://stackoverflow.com/users/29213804/ant-nose" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/stack-overflow.svg" alt="4214976" height="30" width="40" /></a>
+  <a href="https://antnose.vercel.app/" target="_blank">
+    <img src="socials_card.svg" width="600" />
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://antnose.vercel.app/" target="_blank">Portfolio</a> • 
+  <a href="https://x.com/_antnose" target="_blank">Twitter (X)</a> • 
+  <a href="https://www.linkedin.com/in/antnose/" target="_blank">LinkedIn</a> • 
+  <a href="https://stackoverflow.com/users/29213804/ant-nose" target="_blank">StackOverflow</a>
 </p>
 
 
