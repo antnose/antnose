@@ -1,0 +1,24 @@
+
+  <svg xmlns="http://www.w3.org/2000/svg" width="400" height="150" viewBox="0 0 400 150">
+    <style>
+      @keyframes slide { from { width: 0; } to { width: var(--w); } }
+      .card { fill: #0d1117; stroke: #30363d; rx: 15; }
+      .text { font-family: 'Segoe UI', sans-serif; fill: #c9d1d9; font-size: 14px; }
+      .bar { height: 8px; rx: 4; animation: slide 1.5s ease-out forwards; }
+    </style>
+    <rect class="card" width="398" height="148" x="1" y="1"/>
+    <text x="25" y="35" class="text" font-weight="bold" fill="#58a6ff">Most Used Languages</text>
+    
+      <text x="25" y="65" class="text">JavaScript</text>
+      <rect x="120" y="55" width="230" height="8" fill="#161b22" rx="4"/>
+      <rect x="120" y="55" style="--w: 229.99999999999997px" width="0" height="8" fill="#8250df" class="bar"/>
+    
+      <text x="25" y="95" class="text">HTML</text>
+      <rect x="120" y="85" width="230" height="8" fill="#161b22" rx="4"/>
+      <rect x="120" y="85" style="--w: 105px" width="0" height="8" fill="#8250df" class="bar"/>
+    
+      <text x="25" y="125" class="text">Go</text>
+      <rect x="120" y="115" width="230" height="8" fill="#161b22" rx="4"/>
+      <rect x="120" y="115" style="--w: 20px" width="0" height="8" fill="#8250df" class="bar"/>
+    
+  </svg>

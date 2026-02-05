@@ -1,0 +1,12 @@
+
+  <svg xmlns="http://www.w3.org/2000/svg" width="400" height="150" viewBox="0 0 400 150">
+    <style>
+      .card { fill: #0d1117; stroke: #30363d; rx: 15; }
+      .text { font-family: 'Segoe UI', sans-serif; fill: #ffffff; }
+      .icon { fill: #3fb950; font-size: 30px; }
+    </style>
+    <rect class="card" width="398" height="148" x="1" y="1"/>
+    <text x="30" y="85" class="icon">📈</text>
+    <text x="80" y="75" class="text" font-size="35" font-weight="bold">224</text>
+    <text x="80" y="105" class="text" font-size="14" fill="#8b949e">TOTAL CONTRIBUTIONS</text>
+  </svg>

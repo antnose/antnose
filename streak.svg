@@ -1,0 +1,13 @@
+
+  <svg xmlns="http://www.w3.org/2000/svg" width="400" height="150" viewBox="0 0 400 150">
+    <style>
+      @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+      .card { fill: #0d1117; stroke: #30363d; rx: 15; }
+      .fire { font-size: 40px; animation: pulse 2s infinite; }
+      .text { font-family: 'Segoe UI', sans-serif; fill: #ffffff; }
+    </style>
+    <rect class="card" width="398" height="148" x="1" y="1"/>
+    <text x="30" y="85" class="fire">🔥</text>
+    <text x="90" y="75" class="text" font-size="40" font-weight="bold">157</text>
+    <text x="90" y="105" class="text" font-size="14" fill="#8b949e">CURRENT DAILY STREAK</text>
+  </svg>
