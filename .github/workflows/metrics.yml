@@ -31,46 +31,42 @@ jobs:
           const token = process.env.GITHUB_TOKEN;
 
           async function fetchData() {
-            const headers = { 'Authorization': `token ${token}` };
-            
-            // Optimized GraphQL Query - simpler but effective
-            const query = `
-            query {
-              user(login: "${username}") {
-                contributionsCollection {
-                  contributionCalendar {
-                    totalContributions
-                    weeks {
-                      contributionDays {
-                        contributionCount
-                        date
+            const headers = { 
+              'Authorization': `token ${token}`,
+              'Accept': 'application/vnd.github.v3+json'
+            };
+
+            try {
+              // --- FETCH REAL DATA USING REST API (More Reliable) ---
+              
+              // 1. Get contribution streaks (using GraphQL for this)
+              const graphqlQuery = `
+              query {
+                user(login: "${username}") {
+                  contributionsCollection {
+                    contributionCalendar {
+                      totalContributions
+                      weeks {
+                        contributionDays {
+                          contributionCount
+                          date
+                        }
                       }
                     }
                   }
                 }
-                repositories(
-                  first: 100,
-                  ownerAffiliations: [OWNER, COLLABORATOR],
-                  orderBy: {field: PUSHED_AT, direction: DESC}
-                ) {
-                  nodes {
-                    name
-                    primaryLanguage {
-                      name
-                      color
-                    }
-                    isFork
-                  }
-                }
-              }
-            }`;
-
-            try {
-              const res = await axios.post('https://api.github.com/graphql', { query }, { headers });
-              const data = res.data.data.user;
-
+              }`;
+              
+              const graphqlRes = await axios.post(
+                'https://api.github.com/graphql', 
+                { query: graphqlQuery }, 
+                { headers }
+              );
+              
+              const contributionData = graphqlRes.data.data.user.contributionsCollection.contributionCalendar;
+              
               // --- CALCULATE GENUINE STREAKS ---
-              const days = data.contributionsCollection.contributionCalendar.weeks
+              const days = contributionData.weeks
                 .flatMap(w => w.contributionDays)
                 .reverse();
               
@@ -90,33 +86,70 @@ jobs:
                 }
               });
 
-              // --- SMART LANGUAGE DETECTION (Based on Primary Usage) ---
+              // 2. Get repositories and languages (REST API - More Reliable)
+              let allRepos = [];
+              let page = 1;
+              const perPage = 100;
+              
+              // Fetch all pages of repos
+              while (true) {
+                const reposRes = await axios.get(
+                  `https://api.github.com/users/${username}/repos`,
+                  {
+                    headers,
+                    params: {
+                      per_page: perPage,
+                      page: page,
+                      sort: 'updated',
+                      direction: 'desc'
+                    }
+                  }
+                );
+                
+                if (reposRes.data.length === 0) break;
+                
+                allRepos = allRepos.concat(reposRes.data);
+                
+                // If we got less than perPage, we're done
+                if (reposRes.data.length < perPage) break;
+                
+                page++;
+                
+                // Safety limit
+                if (page > 10) break; // Max 1000 repos
+              }
+
+              console.log(`Total repos fetched: ${allRepos.length}`);
+
+              // --- SMART LANGUAGE DETECTION (Simple & Effective) ---
               const langMap = {};
               let totalReposWithLang = 0;
 
-              data.repositories.nodes.forEach(repo => {
-                // We only count the PRIMARY language of each repo to avoid "bloat"
-                if (repo.primaryLanguage && repo.primaryLanguage.name) {
-                  const langName = repo.primaryLanguage.name;
+              allRepos.forEach(repo => {
+                // Count only PRIMARY language
+                if (repo.language) {
+                  const langName = repo.language;
                   langMap[langName] = (langMap[langName] || 0) + 1;
                   totalReposWithLang++;
                 }
               });
+
+              console.log('Languages detected:', langMap);
+              console.log(`Repos with language: ${totalReposWithLang}`);
 
               // Convert to percentages based on Repo Count
               const langPercentages = Object.entries(langMap)
                 .map(([name, count]) => ({
                   name,
                   count,
-                  percentage: ((count / totalReposWithLang) * 100).toFixed(1)
+                  percentage: totalReposWithLang > 0 ? ((count / totalReposWithLang) * 100).toFixed(1) : '0.0'
                 }))
                 .sort((a, b) => b.count - a.count)
                 .slice(0, 3);
 
-              console.log('Top languages (smart detection):', langPercentages);
-              console.log(`Total repos with language: ${totalReposWithLang}`);
+              console.log('Top languages:', langPercentages);
 
-              // Language color mapping with fallback to GitHub colors
+              // Language color mapping
               const langColors = {
                 'JavaScript': '#f1e05a',
                 'TypeScript': '#3178c6',
@@ -155,7 +188,14 @@ jobs:
                 'Elixir': '#6e4a7e',
                 'Clojure': '#db5855',
                 'Haskell': '#5e5086',
-                'OCaml': '#3be133'
+                'OCaml': '#3be133',
+                'Assembly': '#6E4C13',
+                'Objective-C': '#438eff',
+                'Groovy': '#e69f56',
+                'Erlang': '#B83998',
+                'F#': '#b845fc',
+                'Fortran': '#4d41b1',
+                'Visual Basic': '#945db7'
               };
 
               const commonStyle = `
@@ -172,10 +212,6 @@ jobs:
                   0%, 100% { opacity: 1; }
                   50% { opacity: 0.7; }
                 }
-                @keyframes shimmer {
-                  0% { background-position: -200% center; }
-                  100% { background-position: 200% center; }
-                }
                 @keyframes borderGlow {
                   0%, 100% { stroke: #30363d; }
                   50% { stroke: #58a6ff; }
@@ -191,6 +227,10 @@ jobs:
                 @keyframes progressFill {
                   from { width: 0; }
                   to { width: var(--target-width); }
+                }
+                @keyframes glow {
+                  0%, 100% { filter: drop-shadow(0 0 2px currentColor); }
+                  50% { filter: drop-shadow(0 0 8px currentColor); }
                 }
                 .card { 
                   fill: #0d1117; 
@@ -247,8 +287,12 @@ jobs:
                   transform-origin: left;
                 }
                 .repo-count {
-                  font-size: 12px;
+                  font-size: 11px;
                   fill: #8b949e;
+                  font-weight: 500;
+                }
+                .glowing-text {
+                  animation: glow 2s ease-in-out infinite;
                 }
               </style>
               <defs>
@@ -279,6 +323,9 @@ jobs:
                     <feMergeNode in="SourceGraphic"/>
                   </feMerge>
                 </filter>
+                <pattern id="codePattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                  <path d="M0 10 L10 0 M10 20 L20 10" stroke="#58a6ff" stroke-width="0.5" stroke-opacity="0.1"/>
+                </pattern>
               </defs>
             `;
 
@@ -288,6 +335,7 @@ jobs:
                 ${commonStyle}
                 <rect class="card card-glow" width="316" height="156" x="2" y="2" rx="20"/>
                 <rect width="316" height="156" x="2" y="2" rx="20" ${bgFill}/>
+                <rect width="316" height="156" x="2" y="2" rx="20" fill="url(#codePattern)" opacity="0.05"/>
                 ${content}
               </svg>`;
             };
@@ -299,7 +347,7 @@ jobs:
               <text x="${25 + (maxStreak.toString().length * 28)}" y="100" class="text value" font-size="32" fill="#8b949e">Days</text>
               <g class="icon" style="opacity: 0.8">
                 <circle cx="280" cy="80" r="30" fill="url(#goldGradient)" opacity="0.2"/>
-                <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#goldGradient)">🏆</text>
+                <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#goldGradient)" class="glowing-text">🏆</text>
               </g>
               <circle cx="25" cy="125" r="4" fill="url(#goldGradient)" class="accent-text"/>
               <circle cx="40" cy="125" r="4" fill="url(#goldGradient)" class="accent-text" style="animation-delay: 0.2s"/>
@@ -313,14 +361,14 @@ jobs:
               <text x="${25 + (currentStreak.toString().length * 28)}" y="100" class="text value" font-size="32" fill="#8b949e">Days</text>
               <g class="icon" style="opacity: 0.8">
                 <circle cx="280" cy="80" r="30" fill="url(#fireGradient)" opacity="0.2"/>
-                <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#fireGradient)">🔥</text>
+                <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#fireGradient)" class="glowing-text">🔥</text>
               </g>
               <circle cx="25" cy="125" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.1s"/>
               <circle cx="45" cy="120" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.3s"/>
               <circle cx="65" cy="125" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.5s"/>
             `, 'fireGradient'));
 
-            // CARD 3: TOP LANGUAGES - Blue Theme (Using SMART DETECTION)
+            // CARD 3: TOP LANGUAGES - Blue Theme (FIXED - Using Simple REST API)
             const langContent = langPercentages.length > 0 
               ? langPercentages.map((lang, i) => {
                   const color = langColors[lang.name] || '#58a6ff';
@@ -346,23 +394,23 @@ jobs:
                   `;
                 }).join('')
               : `
-                <text x="25" y="80" class="text value" font-size="16" fill="#8b949e" style="animation-delay: 0.3s">
-                  Analyzing repositories...
+                <text x="25" y="80" class="text value" font-size="16" fill="#58a6ff" style="animation-delay: 0.3s">
+                  📊 Analyzing ${allRepos.length} repositories...
                 </text>
-                <text x="25" y="100" class="text value" font-size="14" fill="#8b949e" style="animation-delay: 0.5s">
-                  (Primary language data being processed)
+                <text x="25" y="100" class="text value" font-size="12" fill="#8b949e" style="animation-delay: 0.5s">
+                  Languages will appear here
                 </text>
               `;
 
             fs.writeFileSync('languages.svg', createCard(`
               <text x="25" y="45" class="text label" style="animation-delay: 0.3s">💻 TOP LANGUAGES</text>
               <text x="25" y="55" class="text" font-size="10" fill="#8b949e" style="animation-delay: 0.4s">
-                By primary language across ${totalReposWithLang} repos
+                Based on ${totalReposWithLang} repos with primary language
               </text>
               ${langContent}
               <g class="icon" style="opacity: 0.8">
                 <circle cx="280" cy="80" r="30" fill="url(#blueGradient)" opacity="0.2"/>
-                <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#blueGradient)">💻</text>
+                <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#blueGradient)" class="glowing-text">💻</text>
               </g>
               <rect x="25" y="125" width="30" height="3" rx="1.5" fill="url(#blueGradient)" class="accent-text"/>
               <rect x="60" y="125" width="20" height="3" rx="1.5" fill="url(#blueGradient)" class="accent-text" style="animation-delay: 0.3s"/>
@@ -370,13 +418,13 @@ jobs:
             `, 'blueGradient'));
 
             // CARD 4: CONTRIBUTIONS - Green Theme
-            const totalContribs = data.contributionsCollection.contributionCalendar.totalContributions;
+            const totalContribs = contributionData.totalContributions;
             fs.writeFileSync('contributions.svg', createCard(`
               <text x="25" y="45" class="text label" style="animation-delay: 0.4s">✨ TOTAL CONTRIBUTIONS</text>
               <text x="25" y="100" class="text value" font-size="48" font-weight="bold" fill="url(#greenGradient)">${totalContribs.toLocaleString()}</text>
               <g class="icon" style="opacity: 0.8">
                 <circle cx="280" cy="80" r="30" fill="url(#greenGradient)" opacity="0.2"/>
-                <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#greenGradient)">✨</text>
+                <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#greenGradient)" class="glowing-text">✨</text>
               </g>
               <text x="50" y="130" class="accent-text" font-size="16" fill="url(#greenGradient)" style="animation-delay: 0.1s">✦</text>
               <text x="70" y="120" class="accent-text" font-size="12" fill="url(#greenGradient)" style="animation-delay: 0.3s">✧</text>
@@ -391,10 +439,12 @@ jobs:
                 .showcase-bg { fill: #0d1117; rx: 20; }
                 .showcase-title { font-family: 'Segoe UI', 'Inter', sans-serif; fill: #ffffff; font-size: 24px; font-weight: bold; }
                 .showcase-subtitle { font-family: 'Segoe UI', 'Inter', sans-serif; fill: #8b949e; font-size: 14px; }
+                .timestamp { font-family: monospace; fill: #8b949e; font-size: 10px; }
               </style>
               <rect class="showcase-bg" width="656" height="336" x="2" y="2" rx="20"/>
-              <text x="30" y="50" class="showcase-title">🚀 GitHub Metrics Dashboard</text>
-              <text x="30" y="75" class="showcase-subtitle">Real-time contributions & coding insights</text>
+              <text x="30" y="50" class="showcase-title">🚀 ${username}'s GitHub Dashboard</text>
+              <text x="30" y="75" class="showcase-subtitle">Real-time coding metrics & insights</text>
+              <text x="30" y="320" class="timestamp">Updated: ${new Date().toISOString().replace('T', ' ').substring(0, 19)} UTC</text>
               
               <!-- Card placements -->
               <g transform="translate(20, 100)">
@@ -421,11 +471,43 @@ jobs:
 
             fs.writeFileSync('showcase.svg', showcase);
             
+            console.log('✅ All cards generated successfully!');
+            console.log(`📊 Summary: Streak ${currentStreak} days, ${totalContribs} contributions, ${langPercentages.length} languages detected`);
+            
             } catch (error) {
-              console.error('Error fetching data:', error.response?.data || error.message);
+              console.error('❌ Error fetching data:', error.message);
+              if (error.response) {
+                console.error('Response status:', error.response.status);
+                console.error('Response data:', error.response.data);
+              }
+              // Create fallback cards
+              createFallbackCards();
               throw error;
             }
           }
+
+          function createFallbackCards() {
+            const fallbackStyle = `
+            <style>
+              .card { fill: #0d1117; stroke: #30363d; rx: 20; }
+              .text { font-family: 'Segoe UI', sans-serif; fill: #ffffff; }
+              .label { fill: #8b949e; font-size: 12px; }
+            </style>`;
+
+            const fallbackCard = (title, value, color) => `
+            <svg xmlns="http://www.w3.org/2000/svg" width="320" height="160" viewBox="0 0 320 160">
+              ${fallbackStyle}
+              <rect class="card" width="316" height="156" x="2" y="2" rx="20"/>
+              <text x="25" y="45" class="text label">${title}</text>
+              <text x="25" y="100" class="text" font-size="48" font-weight="bold" fill="${color}">${value}</text>
+            </svg>`;
+
+            fs.writeFileSync('max_streak.svg', fallbackCard('MAX STREAK', '--', '#f1e05a'));
+            fs.writeFileSync('current_streak.svg', fallbackCard('CURRENT STREAK', '--', '#ff7b72'));
+            fs.writeFileSync('languages.svg', fallbackCard('TOP LANGUAGES', 'Loading...', '#58a6ff'));
+            fs.writeFileSync('contributions.svg', fallbackCard('TOTAL CONTRIBUTIONS', '--', '#7ee787'));
+          }
+
           fetchData();
           EOF
           GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} node generate-cards.js
@@ -436,6 +518,6 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add *.svg
           if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "🎯 Smart language detection + Enhanced animations"
+            git commit -m "🎯 Fixed language detection + Enhanced dashboard"
             git push --force https://x-access-token:${{ secrets.METRICS_TOKEN }}@github.com/${{ github.repository }}.git main
           fi
