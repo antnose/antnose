@@ -10,6 +10,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  workflows: write # Added to fix the "Resource not accessible" error seen in your logs
 
 jobs:
   generate-metrics:
@@ -33,35 +34,24 @@ jobs:
           base: ""
           config_timezone: America/New_York
           plugin_achievements: yes
-          plugin_achievements_secrets: yes
           plugin_achievements_threshold: C
           plugin_achievements_display: detailed
           plugin_habits: yes
           plugin_habits_from: 200
           plugin_habits_days: 365
-          plugin_habits_facts: yes
-          plugin_habits_charts: yes
           plugin_isocalendar: yes
           plugin_isocalendar_duration: full-year
           plugin_languages: yes
           plugin_languages_limit: 8
-          plugin_languages_threshold: 0.5%
-          plugin_languages_colors: github
-          plugin_languages_details: percentage
-          plugin_languages_analysis_timeout: 15
-          plugin_languages_sections: most-used
           plugin_notable: yes
-          plugin_people: yes
           plugin_stars: yes
-          plugin_traffic: yes
 
       - name: Generate GitHub Stats Card
-        # Replaced @latest with @master to fix resolution error
+        # Changed to @master to ensure version resolution
         uses: anuraghazra/github-readme-stats@master 
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           username: antnose
-          hide: commits,prs,issues
           show_icons: true
           include_all_commits: true
           theme: modern
@@ -73,8 +63,8 @@ jobs:
           output: metrics/stats.svg
 
       - name: Generate Streak Stats
-        # Replaced @latest with @v2 to fix resolution error
-        uses: denvercoder1/github-readme-streak-stats@v2 
+        # Changed from @v2 to @master to fix the resolution error shown in your screenshot
+        uses: denvercoder1/github-readme-streak-stats@master 
         with:
           token: ${{ secrets.METRICS_TOKEN }}
           user: antnose
@@ -83,11 +73,9 @@ jobs:
           dates: 58A6FF
           ring: 58A6FF
           fire: FF6D00
-          currStreakNum: FFFFFF
           output: metrics/streak.svg
 
       - name: Generate Top Languages
-        # Replaced @latest with @master to fix resolution error
         uses: anuraghazra/github-readme-stats@master
         with:
           token: ${{ secrets.METRICS_TOKEN }}
@@ -104,13 +92,14 @@ jobs:
 
       - name: Create Modern Dashboard
         run: |
-          # Copy all generated SVGs to public folder
+          # Ensure directories exist
+          mkdir -p public
+          # Copy generated files with force to overwrite
           [ -f github-metrics.svg ] && cp github-metrics.svg public/
           [ -f metrics/stats.svg ] && cp metrics/stats.svg public/
           [ -f metrics/streak.svg ] && cp metrics/streak.svg public/
           [ -f metrics/languages.svg ] && cp metrics/languages.svg public/
 
-          # Create modern dashboard HTML
           cat > public/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="en" data-theme="dark">
@@ -118,84 +107,33 @@ jobs:
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
               <title>antnose - Modern GitHub Stats</title>
-              <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
               <style>
                   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-                  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
-                  
                   :root {
-                      --primary: #58A6FF;
-                      --bg: #0D1117;
-                      --card-bg: #161B22;
-                      --text: #C9D1D9;
-                      --text-muted: #8B949E;
-                      --border: #30363D;
-                      --success: #238636;
+                      --primary: #58A6FF; --bg: #0D1117; --card-bg: #161B22;
+                      --text: #C9D1D9; --border: #30363D;
                       --gradient: linear-gradient(135deg, #58A6FF 0%, #8250DF 100%);
-                      --shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-                      --glow: 0 0 20px rgba(88, 166, 255, 0.3);
-                      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                   }
-                  
-                  * { margin: 0; padding: 0; box-sizing: border-box; }
-                  body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem; }
-                  .container { max-width: 1400px; margin: 0 auto; }
-                  
+                  body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); padding: 2rem; }
+                  .container { max-width: 1200px; margin: 0 auto; }
                   .header { text-align: center; margin-bottom: 3rem; }
-                  .header h1 { font-size: 3rem; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.5rem; }
-                  .header p { color: var(--text-muted); font-size: 1.1rem; }
-
-                  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; }
-                  
-                  .card { 
-                      background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border); 
-                      padding: 1.5rem; transition: var(--transition); box-shadow: var(--shadow);
-                  }
-                  .card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: var(--glow); }
-                  
-                  .card-header { display: flex; align-items: center; margin-bottom: 1rem; gap: 1rem; }
-                  .card-icon { width: 40px; height: 40px; background: rgba(88, 166, 255, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary); }
-                  
-                  .stats-image { width: 100%; border-radius: 10px; }
-                  
-                  .footer { text-align: center; margin-top: 4rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 2rem; }
-                  .pulse { display: inline-block; width: 8px; height: 8px; background: var(--success); border-radius: 50%; margin-right: 8px; animation: pulse 2s infinite; }
-                  
-                  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-                  @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } }
+                  .header h1 { font-size: 3rem; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+                  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; }
+                  .card { background: var(--card-bg); border-radius: 15px; border: 1px solid var(--border); padding: 1rem; text-align: center; }
+                  .stats-image { width: 100%; border-radius: 8px; }
+                  .full-width { grid-column: 1 / -1; }
               </style>
           </head>
           <body>
               <div class="container">
-                  <header class="header">
-                      <h1><i class="fas fa-chart-line"></i> antnose Analytics</h1>
-                      <p>GitHub contribution data and coding statistics</p>
-                  </header>
-                  
+                  <header class="header"><h1>antnose Stats</h1></header>
                   <div class="stats-grid">
-                      <div class="card">
-                          <div class="card-header"><div class="card-icon"><i class="fas fa-fire"></i></div><h3>Daily Streak</h3></div>
-                          <img src="streak.svg" class="stats-image">
-                      </div>
-                      <div class="card">
-                          <div class="card-header"><div class="card-icon"><i class="fas fa-code"></i></div><h3>Languages</h3></div>
-                          <img src="languages.svg" class="stats-image">
-                      </div>
-                      <div class="card">
-                          <div class="card-header"><div class="card-icon"><i class="fas fa-trophy"></i></div><h3>General Stats</h3></div>
-                          <img src="stats.svg" class="stats-image">
-                      </div>
-                      <div class="card" style="grid-column: 1 / -1;">
-                          <div class="card-header"><div class="card-icon"><i class="fas fa-terminal"></i></div><h3>Detailed Metrics Report</h3></div>
-                          <img src="github-metrics.svg" class="stats-image">
-                      </div>
+                      <div class="card"><img src="streak.svg" class="stats-image"></div>
+                      <div class="card"><img src="languages.svg" class="stats-image"></div>
+                      <div class="card"><img src="stats.svg" class="stats-image"></div>
+                      <div class="card full-width"><img src="github-metrics.svg" class="stats-image"></div>
                   </div>
-
-                  <footer class="footer">
-                      <div class="last-updated"><span class="pulse"></span> Last updated: <span id="date"></span></div>
-                  </footer>
               </div>
-              <script>document.getElementById('date').textContent = new Date().toLocaleString();</script>
           </body>
           </html>
           EOF
