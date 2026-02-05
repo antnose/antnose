@@ -1,1 +1,40 @@
-<html><body><h1>antnose GitHub Stats</h1><p>Coming soon...</p></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>antnose GitHub Stats</title>
+    <style>
+        body { background: #0D1117; color: #C9D1D9; font-family: sans-serif; padding: 2rem; }
+        .container { max-width: 1200px; margin: auto; }
+        h1 { color: #58A6FF; text-align: center; font-size: 2.5rem; }
+        .stats { display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center; margin-top: 2rem; }
+        img { width: 100%; max-width: 400px; border-radius: 1rem; }
+        .card { background: #161B22; padding: 1.5rem; border-radius: 1rem; border: 1px solid #30363D; }
+        footer { text-align: center; margin-top: 2rem; color: #8B949E; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 antnose's GitHub Stats</h1>
+        <div class="stats">
+            <div class="card">
+                <h3>🔥 Streak</h3>
+                <img src="streak.svg" alt="Streak">
+            </div>
+            <div class="card">
+                <h3>⭐ Stats</h3>
+                <img src="stats.svg" alt="Stats">
+            </div>
+            <div class="card">
+                <h3>💻 Languages</h3>
+                <img src="languages.svg" alt="Languages">
+            </div>
+        </div>
+        <footer>
+            <p>Updated: <span id="date"></span></p>
+        </footer>
+    </div>
+    <script>
+        document.getElementById('date').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>
