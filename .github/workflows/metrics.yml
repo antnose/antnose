@@ -10,7 +10,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
-  workflows: write # Added to fix the "Resource not accessible" error seen in your logs
+  actions: write # Use this instead of 'workflows' to fix access errors
 
 jobs:
   generate-metrics:
@@ -47,7 +47,6 @@ jobs:
           plugin_stars: yes
 
       - name: Generate GitHub Stats Card
-        # Changed to @master to ensure version resolution
         uses: anuraghazra/github-readme-stats@master 
         with:
           token: ${{ secrets.METRICS_TOKEN }}
@@ -63,7 +62,6 @@ jobs:
           output: metrics/stats.svg
 
       - name: Generate Streak Stats
-        # Changed from @v2 to @master to fix the resolution error shown in your screenshot
         uses: denvercoder1/github-readme-streak-stats@master 
         with:
           token: ${{ secrets.METRICS_TOKEN }}
@@ -92,9 +90,7 @@ jobs:
 
       - name: Create Modern Dashboard
         run: |
-          # Ensure directories exist
           mkdir -p public
-          # Copy generated files with force to overwrite
           [ -f github-metrics.svg ] && cp github-metrics.svg public/
           [ -f metrics/stats.svg ] && cp metrics/stats.svg public/
           [ -f metrics/streak.svg ] && cp metrics/streak.svg public/
@@ -102,43 +98,35 @@ jobs:
 
           cat > public/index.html << 'EOF'
           <!DOCTYPE html>
-          <html lang="en" data-theme="dark">
+          <html lang="en">
           <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>antnose - Modern GitHub Stats</title>
+              <title>antnose Stats</title>
               <style>
-                  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
-                  :root {
-                      --primary: #58A6FF; --bg: #0D1117; --card-bg: #161B22;
-                      --text: #C9D1D9; --border: #30363D;
-                      --gradient: linear-gradient(135deg, #58A6FF 0%, #8250DF 100%);
-                  }
-                  body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); padding: 2rem; }
-                  .container { max-width: 1200px; margin: 0 auto; }
-                  .header { text-align: center; margin-bottom: 3rem; }
-                  .header h1 { font-size: 3rem; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
-                  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; }
-                  .card { background: var(--card-bg); border-radius: 15px; border: 1px solid var(--border); padding: 1rem; text-align: center; }
-                  .stats-image { width: 100%; border-radius: 8px; }
-                  .full-width { grid-column: 1 / -1; }
+                  body { font-family: sans-serif; background: #0D1117; color: #C9D1D9; padding: 20px; text-align: center; }
+                  .container { max-width: 1000px; margin: auto; }
+                  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+                  .card { background: #161B22; border: 1px solid #30363D; padding: 10px; border-radius: 10px; }
+                  img { width: 100%; height: auto; border-radius: 5px; }
+                  .full { grid-column: 1 / -1; }
               </style>
           </head>
           <body>
               <div class="container">
-                  <header class="header"><h1>antnose Stats</h1></header>
-                  <div class="stats-grid">
-                      <div class="card"><img src="streak.svg" class="stats-image"></div>
-                      <div class="card"><img src="languages.svg" class="stats-image"></div>
-                      <div class="card"><img src="stats.svg" class="stats-image"></div>
-                      <div class="card full-width"><img src="github-metrics.svg" class="stats-image"></div>
+                  <h1>GitHub Analytics Dashboard</h1>
+                  <div class="grid">
+                      <div class="card"><img src="streak.svg"></div>
+                      <div class="card"><img src="languages.svg"></div>
+                      <div class="card"><img src="stats.svg"></div>
+                      <div class="card full"><img src="github-metrics.svg"></div>
                   </div>
               </div>
           </body>
           </html>
           EOF
 
-      - name: Upload to GitHub Pages
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v2
         with:
           path: ./public
