@@ -1,18 +1,523 @@
-name: Metrics
+name: Modern GitHub Metrics
 on:
-  schedule: [{cron: "0 0 * * *"}] # Updates daily
-  workflow_dispatch: # Allows you to run it manually
+  schedule:
+    - cron: "0 0 * * *" # Daily updates
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
 jobs:
-  github-metrics:
+  generate-metrics:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
     steps:
-      - uses: lowlighter/metrics@latest
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Generate GitHub Streak Stats
+        uses: streak-stats/lowlighter@latest
         with:
-          token: ${{ secrets.METRICS_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           user: antnose
-          template: classic
-          base: header, community, repositories, metadata
-          config_timezone: UTC
-          plugin_languages: yes
-          plugin_languages_sections: most-used
-          plugin_languages_details: percentage
+          theme: modern
+          animations: true
+          output: "metrics/streak.svg"
+          
+      - name: Generate GitHub Stats
+        uses: anuraghazra/github-readme-stats@latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          username: antnose
+          theme: modern
+          show_icons: true
+          include_all_commits: true
+          count_private: true
+          hide_border: true
+          bg_color: 0D1117
+          title_color: 58A6FF
+          text_color: C9D1D9
+          icon_color: 58A6FF
+          ring_color: 58A6FF
+          output: "metrics/stats.svg"
+          
+      - name: Generate Top Languages
+        uses: anuraghazra/github-readme-stats@latest
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          username: antnose
+          theme: modern
+          hide_border: true
+          bg_color: 0D1117
+          title_color: 58A6FF
+          text_color: C9D1D9
+          layout: compact
+          custom_title: Top Languages
+          output: "metrics/languages.svg"
+          
+      - name: Generate Animated Dashboard
+        run: |
+          # Create HTML dashboard with animations
+          cat > metrics/dashboard.html << 'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Modern GitHub Stats - antnose</title>
+              <style>
+                  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+                  
+                  :root {
+                      --bg-primary: #0D1117;
+                      --bg-secondary: #161B22;
+                      --accent-blue: #58A6FF;
+                      --accent-green: #238636;
+                      --text-primary: #C9D1D9;
+                      --text-secondary: #8B949E;
+                      --card-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+                      --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                  }
+                  
+                  * {
+                      margin: 0;
+                      padding: 0;
+                      box-sizing: border-box;
+                  }
+                  
+                  body {
+                      font-family: 'Inter', sans-serif;
+                      background: var(--bg-primary);
+                      color: var(--text-primary);
+                      min-height: 100vh;
+                      overflow-x: hidden;
+                  }
+                  
+                  .container {
+                      max-width: 1200px;
+                      margin: 0 auto;
+                      padding: 2rem;
+                  }
+                  
+                  header {
+                      text-align: center;
+                      margin-bottom: 3rem;
+                      opacity: 0;
+                      transform: translateY(-20px);
+                      animation: fadeInDown 0.8s ease forwards;
+                  }
+                  
+                  .title {
+                      font-size: 2.8rem;
+                      background: linear-gradient(135deg, var(--accent-blue), #8250DF);
+                      -webkit-background-clip: text;
+                      background-clip: text;
+                      color: transparent;
+                      font-weight: 700;
+                      margin-bottom: 0.5rem;
+                  }
+                  
+                  .subtitle {
+                      font-size: 1.1rem;
+                      color: var(--text-secondary);
+                      font-weight: 400;
+                  }
+                  
+                  .dashboard-grid {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                      gap: 2rem;
+                      margin-top: 2rem;
+                  }
+                  
+                  .card {
+                      background: var(--bg-secondary);
+                      border-radius: 16px;
+                      padding: 2rem;
+                      box-shadow: var(--card-shadow);
+                      border: 1px solid #30363D;
+                      opacity: 0;
+                      transform: translateY(30px);
+                      transition: var(--transition);
+                      overflow: hidden;
+                      position: relative;
+                  }
+                  
+                  .card:hover {
+                      transform: translateY(-5px);
+                      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+                      border-color: var(--accent-blue);
+                  }
+                  
+                  .card::before {
+                      content: '';
+                      position: absolute;
+                      top: 0;
+                      left: 0;
+                      width: 100%;
+                      height: 4px;
+                      background: linear-gradient(90deg, var(--accent-blue), #8250DF);
+                      transform: scaleX(0);
+                      transform-origin: left;
+                      transition: transform 0.6s ease;
+                  }
+                  
+                  .card:hover::before {
+                      transform: scaleX(1);
+                  }
+                  
+                  .card-header {
+                      display: flex;
+                      align-items: center;
+                      margin-bottom: 1.5rem;
+                  }
+                  
+                  .card-icon {
+                      width: 48px;
+                      height: 48px;
+                      background: rgba(88, 166, 255, 0.1);
+                      border-radius: 12px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      margin-right: 1rem;
+                  }
+                  
+                  .card-icon svg {
+                      width: 24px;
+                      height: 24px;
+                      color: var(--accent-blue);
+                  }
+                  
+                  .card-title {
+                      font-size: 1.5rem;
+                      font-weight: 600;
+                      color: var(--text-primary);
+                  }
+                  
+                  .card-content {
+                      position: relative;
+                      min-height: 200px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                  }
+                  
+                  .stats-img {
+                      max-width: 100%;
+                      border-radius: 8px;
+                      transition: var(--transition);
+                  }
+                  
+                  .stats-img:hover {
+                      transform: scale(1.02);
+                  }
+                  
+                  .slide-controls {
+                      display: flex;
+                      justify-content: center;
+                      gap: 1rem;
+                      margin-top: 2rem;
+                  }
+                  
+                  .slide-btn {
+                      background: var(--bg-secondary);
+                      border: 1px solid #30363D;
+                      color: var(--text-primary);
+                      padding: 0.75rem 1.5rem;
+                      border-radius: 50px;
+                      cursor: pointer;
+                      font-weight: 500;
+                      transition: var(--transition);
+                      display: flex;
+                      align-items: center;
+                      gap: 0.5rem;
+                  }
+                  
+                  .slide-btn:hover {
+                      background: var(--accent-blue);
+                      color: white;
+                      border-color: var(--accent-blue);
+                  }
+                  
+                  .slide-btn.active {
+                      background: var(--accent-blue);
+                      color: white;
+                      border-color: var(--accent-blue);
+                  }
+                  
+                  .loader {
+                      display: inline-block;
+                      width: 20px;
+                      height: 20px;
+                      border: 3px solid rgba(88, 166, 255, 0.3);
+                      border-radius: 50%;
+                      border-top-color: var(--accent-blue);
+                      animation: spin 1s ease-in-out infinite;
+                  }
+                  
+                  footer {
+                      text-align: center;
+                      margin-top: 3rem;
+                      padding-top: 2rem;
+                      border-top: 1px solid #30363D;
+                      color: var(--text-secondary);
+                      font-size: 0.9rem;
+                      opacity: 0;
+                      animation: fadeIn 1s ease 1s forwards;
+                  }
+                  
+                  @keyframes fadeInDown {
+                      to {
+                          opacity: 1;
+                          transform: translateY(0);
+                      }
+                  }
+                  
+                  @keyframes fadeIn {
+                      to {
+                          opacity: 1;
+                      }
+                  }
+                  
+                  @keyframes spin {
+                      to {
+                          transform: rotate(360deg);
+                      }
+                  }
+                  
+                  @keyframes slideIn {
+                      to {
+                          opacity: 1;
+                          transform: translateY(0);
+                      }
+                  }
+                  
+                  /* Responsive Design */
+                  @media (max-width: 768px) {
+                      .container {
+                          padding: 1rem;
+                      }
+                      
+                      .title {
+                          font-size: 2.2rem;
+                      }
+                      
+                      .dashboard-grid {
+                          grid-template-columns: 1fr;
+                          gap: 1.5rem;
+                      }
+                      
+                      .card {
+                          padding: 1.5rem;
+                      }
+                  }
+                  
+                  /* Animation delays for cards */
+                  .card:nth-child(1) {
+                      animation: slideIn 0.6s ease 0.2s forwards;
+                  }
+                  
+                  .card:nth-child(2) {
+                      animation: slideIn 0.6s ease 0.4s forwards;
+                  }
+                  
+                  .card:nth-child(3) {
+                      animation: slideIn 0.6s ease 0.6s forwards;
+                  }
+              </style>
+          </head>
+          <body>
+              <div class="container">
+                  <header>
+                      <h1 class="title">GitHub Analytics</h1>
+                      <p class="subtitle">Interactive dashboard showcasing GitHub activity and statistics</p>
+                  </header>
+                  
+                  <div class="slide-controls">
+                      <button class="slide-btn active" data-slide="all">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                              <line x1="3" y1="9" x2="21" y2="9"></line>
+                              <line x1="9" y1="21" x2="9" y2="9"></line>
+                          </svg>
+                          All Stats
+                      </button>
+                      <button class="slide-btn" data-slide="streak">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                          </svg>
+                          Streak
+                      </button>
+                      <button class="slide-btn" data-slide="stats">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <line x1="18" y1="20" x2="18" y2="10"></line>
+                              <line x1="12" y1="20" x2="12" y2="4"></line>
+                              <line x1="6" y1="20" x2="6" y2="14"></line>
+                          </svg>
+                          Stats
+                      </button>
+                      <button class="slide-btn" data-slide="languages">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                          </svg>
+                          Languages
+                      </button>
+                  </div>
+                  
+                  <div class="dashboard-grid" id="dashboard">
+                      <!-- GitHub Streak Card -->
+                      <div class="card" data-slide="streak">
+                          <div class="card-header">
+                              <div class="card-icon">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                  </svg>
+                              </div>
+                              <h2 class="card-title">GitHub Streak</h2>
+                          </div>
+                          <div class="card-content">
+                              <img src="streak.svg" alt="GitHub Contribution Streak" class="stats-img">
+                          </div>
+                      </div>
+                      
+                      <!-- GitHub Stats Card -->
+                      <div class="card" data-slide="stats">
+                          <div class="card-header">
+                              <div class="card-icon">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                      <line x1="18" y1="20" x2="18" y2="10"></line>
+                                      <line x1="12" y1="20" x2="12" y2="4"></line>
+                                      <line x1="6" y1="20" x2="6" y2="14"></line>
+                                  </svg>
+                              </div>
+                              <h2 class="card-title">GitHub Stats</h2>
+                          </div>
+                          <div class="card-content">
+                              <img src="stats.svg" alt="GitHub Statistics" class="stats-img">
+                          </div>
+                      </div>
+                      
+                      <!-- Top Languages Card -->
+                      <div class="card" data-slide="languages">
+                          <div class="card-header">
+                              <div class="card-icon">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                  </svg>
+                              </div>
+                              <h2 class="card-title">Top Languages</h2>
+                          </div>
+                          <div class="card-content">
+                              <img src="languages.svg" alt="Top Programming Languages" class="stats-img">
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <footer>
+                      <p>Dashboard updates daily • Last updated: <span id="currentDate"></span></p>
+                      <p>Data sourced from GitHub API • Built with GitHub Actions</p>
+                  </footer>
+              </div>
+              
+              <script>
+                  // Set current date in footer
+                  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                  });
+                  
+                  // Slide controls functionality
+                  const slideButtons = document.querySelectorAll('.slide-btn');
+                  const cards = document.querySelectorAll('.card');
+                  
+                  slideButtons.forEach(button => {
+                      button.addEventListener('click', () => {
+                          // Update active button
+                          slideButtons.forEach(btn => btn.classList.remove('active'));
+                          button.classList.add('active');
+                          
+                          const slide = button.dataset.slide;
+                          
+                          // Show/hide cards based on selection
+                          cards.forEach(card => {
+                              if (slide === 'all') {
+                                  card.style.display = 'block';
+                                  setTimeout(() => {
+                                      card.style.opacity = '1';
+                                      card.style.transform = 'translateY(0)';
+                                  }, 10);
+                              } else {
+                                  if (card.dataset.slide === slide) {
+                                      card.style.display = 'block';
+                                      setTimeout(() => {
+                                          card.style.opacity = '1';
+                                          card.style.transform = 'translateY(0)';
+                                      }, 10);
+                                  } else {
+                                      card.style.opacity = '0';
+                                      card.style.transform = 'translateY(20px)';
+                                      setTimeout(() => {
+                                          card.style.display = 'none';
+                                      }, 400);
+                                  }
+                              }
+                          });
+                          
+                          // Animate grid layout change
+                          const grid = document.getElementById('dashboard');
+                          grid.style.transition = 'grid-template-columns 0.5s ease';
+                          if (slide === 'all') {
+                              grid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(350px, 1fr))';
+                          } else {
+                              grid.style.gridTemplateColumns = '1fr';
+                          }
+                      });
+                  });
+                  
+                  // Add loading animation to images
+                  const images = document.querySelectorAll('.stats-img');
+                  images.forEach(img => {
+                      img.addEventListener('load', function() {
+                          this.style.opacity = '0';
+                          this.style.transition = 'opacity 0.5s ease';
+                          setTimeout(() => {
+                              this.style.opacity = '1';
+                          }, 100);
+                      });
+                      
+                      // If image is already loaded
+                      if (img.complete) {
+                          img.style.opacity = '1';
+                      }
+                  });
+                  
+                  // Auto-refresh dashboard every 24 hours
+                  setTimeout(() => {
+                      location.reload();
+                  }, 24 * 60 * 60 * 1000); // 24 hours
+              </script>
+          </body>
+          </html>
+          EOF
+          
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./metrics
+          publish_branch: gh-pages
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          
+      - name: Commit updated metrics
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add metrics/
+          git commit -m "Update GitHub metrics - $(date)" || echo "No changes to commit"
+          git push
