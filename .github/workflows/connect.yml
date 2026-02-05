@@ -1,4 +1,4 @@
-name: Generate Socials Card
+name: Generate Connect Card
 on:
   schedule:
     - cron: "0 0 * * *"
@@ -15,320 +15,250 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Create Social Card
+      - name: Create Connect Card
         run: |
-          cat > generate-socials.js << 'EOF'
+          cat > generate-connect.js << 'EOF'
           const fs = require('fs');
 
           const commonStyle = `
           <style>
-            @keyframes fadeInUp { 
-              from { opacity: 0; transform: translateY(20px); } 
-              to { opacity: 1; transform: translateY(0); } 
+            @keyframes floatCard {
+              0%, 100% { transform: translateY(0); }
+              50% { transform: translateY(-5px); }
             }
-            @keyframes float { 
-              0%, 100% { transform: translateY(0) scale(1); } 
-              50% { transform: translateY(-5px) scale(1.05); } 
+            @keyframes fadeInUp {
+              from { opacity: 0; transform: translateY(20px); }
+              to { opacity: 1; transform: translateY(0); }
             }
-            @keyframes pulse { 
-              0%, 100% { opacity: 1; transform: scale(1); } 
-              50% { opacity: 0.8; transform: scale(1.1); } 
+            @keyframes pulseGlow {
+              0%, 100% { filter: drop-shadow(0 0 5px currentColor); }
+              50% { filter: drop-shadow(0 0 15px currentColor); }
             }
-            @keyframes glow { 
-              0%, 100% { filter: drop-shadow(0 0 5px currentColor); } 
-              50% { filter: drop-shadow(0 0 15px currentColor); } 
+            @keyframes borderFlow {
+              0% { stroke-dashoffset: 0; }
+              100% { stroke-dashoffset: 50; }
             }
-            @keyframes shimmer { 
-              0% { background-position: -200% center; } 
-              100% { background-position: 200% center; } 
+            @keyframes iconFloat {
+              0%, 100% { transform: translateY(0) scale(1); }
+              50% { transform: translateY(-8px) scale(1.1); }
             }
-            @keyframes borderFlow { 
-              0% { stroke-dashoffset: 0; } 
-              100% { stroke-dashoffset: 50; } 
-            }
-            .card { 
-              fill: #0d1117; 
-              stroke: #30363d; 
-              stroke-width: 1.5;
-              rx: 20; 
-              animation: fadeInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            .connect-card {
+              fill: #0d1117;
+              stroke: #30363d;
+              rx: 20;
+              animation: fadeInUp 0.8s ease-out forwards;
               filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
               transition: all 0.3s ease;
             }
-            .card:hover { 
+            .connect-card:hover {
               stroke: #58a6ff;
               stroke-width: 2;
-              filter: drop-shadow(0 10px 20px rgba(88, 166, 255, 0.2));
+              filter: drop-shadow(0 10px 25px rgba(88, 166, 255, 0.2));
+              animation: floatCard 3s ease-in-out infinite;
             }
-            .border-glow {
+            .border-animated {
               stroke-dasharray: 10, 5;
-              animation: borderFlow 3s linear infinite;
-              stroke: url(#borderGradient);
+              animation: borderFlow 4s linear infinite;
             }
-            .text { 
-              font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
-              fill: #ffffff; 
-              font-weight: 500;
-            }
-            .label { 
-              fill: #58a6ff; 
-              font-size: 14px; 
+            .title-text {
+              font-family: 'Segoe UI', 'Inter', sans-serif;
+              fill: #58a6ff;
+              font-size: 16px;
               font-weight: 700;
-              letter-spacing: 1.2px;
+              letter-spacing: 1px;
               text-transform: uppercase;
               animation: fadeInUp 0.8s ease-out forwards;
-              animation-delay: 0.2s;
               opacity: 0;
             }
-            .platform-name { 
-              fill: #c9d1d9; 
-              font-size: 11px; 
-              font-weight: 600;
-              letter-spacing: 0.5px;
-              transition: fill 0.3s ease;
+            .subtitle-text {
+              font-family: 'Segoe UI', 'Inter', sans-serif;
+              fill: #8b949e;
+              font-size: 12px;
+              animation: fadeInUp 1s ease-out forwards;
+              opacity: 0;
             }
-            .icon-container {
+            .platform-card {
               cursor: pointer;
               transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+              animation: fadeInUp 1s ease-out forwards;
+              opacity: 0;
             }
-            .icon-container:hover {
-              transform: translateY(-8px) scale(1.1);
+            .platform-card:hover {
+              transform: translateY(-10px) scale(1.05);
             }
-            .icon-container:hover .icon-bg {
-              fill-opacity: 0.25;
-              transform: scale(1.15);
+            .platform-card:hover .icon-bg {
+              fill-opacity: 0.3;
             }
-            .icon-container:hover .platform-name {
+            .platform-card:hover .platform-name {
               fill: #ffffff;
+              font-weight: 600;
             }
             .icon-bg {
-              transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-              animation: float 4s ease-in-out infinite;
+              transition: all 0.4s ease;
+              animation: iconFloat 4s ease-in-out infinite;
             }
-            .icon {
-              font-weight: bold;
+            .platform-name {
+              font-family: 'Segoe UI', 'Inter', sans-serif;
+              fill: #c9d1d9;
+              font-size: 12px;
+              font-weight: 500;
               transition: all 0.3s ease;
             }
-            .glowing-icon {
-              animation: glow 3s ease-in-out infinite;
+            .icon-text {
+              font-weight: bold;
+              animation: pulseGlow 3s ease-in-out infinite;
             }
-            .background-pattern {
-              opacity: 0.03;
+            .connector-dot {
+              animation: pulseGlow 2s ease-in-out infinite;
             }
-            .connector-line {
-              stroke: #30363d;
-              stroke-width: 1;
-              stroke-dasharray: 5, 3;
-              animation: borderFlow 4s linear infinite reverse;
-            }
-            .sparkle {
-              animation: pulse 2s ease-in-out infinite;
-              opacity: 0;
+            .stats-text {
+              font-family: 'Segoe UI', 'Inter', sans-serif;
+              fill: #8b949e;
+              font-size: 10px;
+              font-style: italic;
             }
           </style>
           
           <defs>
-            <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="connectGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#58a6ff" />
-              <stop offset="50%" stop-color="#bc8cff" />
-              <stop offset="100%" stop-color="#58a6ff" />
+              <stop offset="100%" stop-color="#bc8cff" />
             </linearGradient>
-            
-            <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="portfolioGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#2193b0" />
               <stop offset="100%" stop-color="#6dd5ed" />
             </linearGradient>
-            
             <linearGradient id="twitterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#1DA1F2" />
               <stop offset="100%" stop-color="#1a8cd8" />
             </linearGradient>
-            
             <linearGradient id="linkedinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#0A66C2" />
               <stop offset="100%" stop-color="#004182" />
             </linearGradient>
-            
             <linearGradient id="stackGradient" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stop-color="#F48024" />
               <stop offset="100%" stop-color="#e76b11" />
             </linearGradient>
-            
-            <filter id="shadow">
-              <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0, 0, 0, 0.3)" flood-opacity="0.5"/>
+            <linearGradient id="githubGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#6e40c9" />
+              <stop offset="100%" stop-color="#bc8cff" />
+            </linearGradient>
+            <filter id="connectShadow">
+              <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(88, 166, 255, 0.15)"/>
             </filter>
-            
-            <filter id="glow">
-              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-              <feMerge>
-                <feMergeNode in="coloredBlur"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-            
-            <pattern id="networkPattern" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
-              <circle cx="15" cy="15" r="1" fill="#58a6ff" opacity="0.2"/>
-              <line x1="0" y1="15" x2="30" y2="15" stroke="#58a6ff" stroke-width="0.3" opacity="0.1"/>
-              <line x1="15" y1="0" x2="15" y2="30" stroke="#58a6ff" stroke-width="0.3" opacity="0.1"/>
-            </pattern>
           </defs>`;
 
-          const socialPlatforms = [
+          const platforms = [
             {
-              id: 'portfolio',
               name: 'Portfolio',
               icon: '🌐',
-              gradient: 'blueGradient',
+              gradient: 'portfolioGradient',
               color: '#6dd5ed',
-              x: 60,
-              animationDelay: '0.1s'
+              link: 'https://antnose.vercel.app/',
+              x: 90,
+              delay: '0.5s'
             },
             {
-              id: 'twitter',
               name: 'Twitter',
               icon: '𝕏',
               gradient: 'twitterGradient',
               color: '#1DA1F2',
-              x: 180,
-              animationDelay: '0.3s'
+              link: 'https://x.com/_antnose',
+              x: 190,
+              delay: '0.6s'
             },
             {
-              id: 'linkedin',
               name: 'LinkedIn',
               icon: 'in',
               gradient: 'linkedinGradient',
               color: '#0A66C2',
-              x: 300,
-              animationDelay: '0.5s'
+              link: 'https://www.linkedin.com/in/antnose/',
+              x: 290,
+              delay: '0.7s'
             },
             {
-              id: 'stackoverflow',
-              name: 'Stack Overflow',
+              name: 'Stack',
               icon: 'SO',
               gradient: 'stackGradient',
               color: '#F48024',
-              x: 420,
-              animationDelay: '0.7s'
+              link: 'https://stackoverflow.com/users/29213804/ant-nose',
+              x: 390,
+              delay: '0.8s'
             },
             {
-              id: 'github',
               name: 'GitHub',
               icon: '🐙',
-              gradient: 'purpleGradient',
+              gradient: 'githubGradient',
               color: '#bc8cff',
-              x: 540,
-              animationDelay: '0.9s'
+              link: 'https://github.com/antnose',
+              x: 490,
+              delay: '0.9s'
             }
           ];
 
-          const createSocialIcon = (platform) => `
-            <g class="icon-container" transform="translate(${platform.x}, 65)" style="animation-delay: ${platform.animationDelay}">
-              <!-- Hover effect circle -->
-              <circle cx="0" cy="0" r="30" fill="${platform.color}" opacity="0" class="icon-bg-hover"/>
-              
-              <!-- Main icon background -->
-              <circle cx="0" cy="0" r="22" fill="url(#${platform.gradient})" 
-                      fill-opacity="0.2" class="icon-bg" filter="url(#shadow)"
-                      style="animation-delay: ${platform.animationDelay}"/>
-              
-              <!-- Icon -->
-              <text x="0" y="5" text-anchor="middle" class="icon glowing-icon" 
-                    font-size="${platform.id === 'portfolio' ? '22' : platform.id === 'github' ? '20' : '18'}" 
-                    font-weight="bold" fill="url(#${platform.gradient})"
-                    style="animation-delay: ${platform.animationDelay}">
-                ${platform.icon}
-              </text>
-              
-              <!-- Platform name -->
-              <text x="0" y="38" text-anchor="middle" class="platform-name">
-                ${platform.name}
-              </text>
-              
-              <!-- Sparkle effect -->
-              <text x="-15" y="-10" class="sparkle" font-size="10" fill="${platform.color}"
-                    style="animation-delay: ${parseFloat(platform.animationDelay) + 0.2}s">✦</text>
-              <text x="15" y="15" class="sparkle" font-size="8" fill="${platform.color}"
-                    style="animation-delay: ${parseFloat(platform.animationDelay) + 0.4}s">✧</text>
+          const createPlatformCard = (platform) => `
+            <g class="platform-card" transform="translate(${platform.x}, 85)" style="animation-delay: ${platform.delay}">
+              <a href="${platform.link}" target="_blank">
+                <circle class="icon-bg" cx="0" cy="0" r="25" fill="url(#${platform.gradient})" fill-opacity="0.15"/>
+                <text x="0" y="5" text-anchor="middle" class="icon-text" font-size="${platform.name === 'Portfolio' || platform.name === 'GitHub' ? '22' : '18'}" fill="url(#${platform.gradient})">${platform.icon}</text>
+                <text x="0" y="38" text-anchor="middle" class="platform-name">${platform.name}</text>
+              </a>
             </g>
           `;
 
+          const currentDate = new Date().toLocaleDateString('en-US', { 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+
           const svg = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="650" height="160" viewBox="0 0 650 160">
+          <svg xmlns="http://www.w3.org/2000/svg" width="660" height="170" viewBox="0 0 660 170">
             ${commonStyle}
             
-            <!-- Background pattern -->
-            <rect width="650" height="160" fill="url(#networkPattern)" class="background-pattern"/>
-            
-            <!-- Main card -->
-            <rect class="card" width="646" height="156" x="2" y="2" rx="20"/>
-            <rect class="card border-glow" width="646" height="156" x="2" y="2" rx="20" fill="none" stroke-width="1.5"/>
+            <!-- Main Card -->
+            <rect class="connect-card" width="656" height="166" x="2" y="2" rx="20"/>
+            <rect class="connect-card border-animated" width="656" height="166" x="2" y="2" rx="20" fill="none" stroke="url(#connectGradient)" stroke-width="1.5"/>
             
             <!-- Title -->
-            <text x="325" y="40" text-anchor="middle" class="text label">🌟 CONNECT & COLLABORATE</text>
-            <text x="325" y="55" text-anchor="middle" class="text" font-size="10" fill="#8b949e" opacity="0.8">
-              Click to explore my digital presence
+            <text x="330" y="35" text-anchor="middle" class="title-text" style="animation-delay: 0.2s">
+              🔗 CONNECT & COLLABORATE
+            </text>
+            <text x="330" y="55" text-anchor="middle" class="subtitle-text" style="animation-delay: 0.4s">
+              Let's build something amazing together • Always open for new opportunities
             </text>
             
-            <!-- Social platforms -->
-            ${socialPlatforms.map(createSocialIcon).join('')}
+            <!-- Platforms -->
+            ${platforms.map(createPlatformCard).join('')}
             
-            <!-- Connector lines -->
-            <line x1="82" y1="65" x2="158" y2="65" class="connector-line"/>
-            <line x1="202" y1="65" x2="278" y2="65" class="connector-line"/>
-            <line x1="322" y1="65" x2="398" y2="65" class="connector-line"/>
-            <line x1="442" y1="65" x2="518" y2="65" class="connector-line"/>
+            <!-- Connector Dots -->
+            <circle cx="140" cy="85" r="3" fill="#58a6ff" class="connector-dot" style="animation-delay: 1s"/>
+            <circle cx="240" cy="85" r="3" fill="#1DA1F2" class="connector-dot" style="animation-delay: 1.1s"/>
+            <circle cx="340" cy="85" r="3" fill="#0A66C2" class="connector-dot" style="animation-delay: 1.2s"/>
+            <circle cx="440" cy="85" r="3" fill="#F48024" class="connector-dot" style="animation-delay: 1.3s"/>
             
-            <!-- Interactive dots -->
-            <circle cx="120" cy="65" r="2" fill="#58a6ff" opacity="0.5">
-              <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite"/>
-            </circle>
-            <circle cx="240" cy="65" r="2" fill="#1DA1F2" opacity="0.5">
-              <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" begin="0.5s"/>
-            </circle>
-            <circle cx="360" cy="65" r="2" fill="#0A66C2" opacity="0.5">
-              <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" begin="1s"/>
-            </circle>
-            <circle cx="480" cy="65" r="2" fill="#F48024" opacity="0.5">
-              <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" begin="1.5s"/>
-            </circle>
-            
-            <!-- Stats footer -->
-            <g transform="translate(325, 130)">
-              <text x="0" y="0" text-anchor="middle" class="text" font-size="10" fill="#8b949e">
-                Last updated: ${new Date().toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric',
-                  year: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
-                })}
+            <!-- Footer Stats -->
+            <g transform="translate(330, 145)">
+              <text x="0" y="0" text-anchor="middle" class="stats-text">
+                Updated: ${currentDate}
               </text>
-              <text x="0" y="12" text-anchor="middle" class="text" font-size="9" fill="#58a6ff" opacity="0.8">
-                ${socialPlatforms.length} platforms • Always open for collaboration
+              <text x="0" y="12" text-anchor="middle" class="stats-text">
+                • Click any platform to connect • Response time: &lt; 24h •
               </text>
             </g>
-            
-            <!-- Floating particles -->
-            <circle cx="50" cy="120" r="1" fill="#58a6ff" opacity="0.3">
-              <animate attributeName="cy" values="120;100;120" dur="4s" repeatCount="indefinite"/>
-            </circle>
-            <circle cx="600" cy="110" r="1" fill="#1DA1F2" opacity="0.3">
-              <animate attributeName="cy" values="110;130;110" dur="5s" repeatCount="indefinite" begin="1s"/>
-            </circle>
-            <circle cx="100" cy="140" r="1" fill="#0A66C2" opacity="0.3">
-              <animate attributeName="cx" values="100;120;100" dur="6s" repeatCount="indefinite" begin="2s"/>
-            </circle>
           </svg>`;
 
-          fs.writeFileSync('socials_card.svg', svg);
-          console.log('✅ Socials card generated successfully!');
+          fs.writeFileSync('connect_card.svg', svg);
+          console.log('✅ Connect card generated successfully!');
           EOF
-          node generate-socials.js
+          node generate-connect.js
 
       - name: Push Card
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
-          git add socials_card.svg
-          git commit -m "✨ Enhanced Socials Card with Premium Animations" || exit 0
+          git add connect_card.svg
+          git commit -m "✨ Generated new Connect Card matching GitHub Metrics" || exit 0
           git push
