@@ -10,6 +10,9 @@ jobs:
   generate-metrics:
     runs-on: ubuntu-latest
     
+    permissions:
+      contents: write
+    
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -471,22 +474,30 @@ jobs:
           </html>
           EOF
 
-      - name: Commit and Push
+     - name: Commit and Push
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
           
-          # 1. Remove temporary scripts so they don't block the rebase
+          # 1. Clean up the root directory
+          # Remove the script and any stray SVGs that were already moved to public/
           rm -f generate-stats.js
+          rm -f *.svg 
           
-          # 2. Add all changes in the public folder
-          git add public/
+          # 2. Add EVERYTHING
+          # This ensures no "unstaged changes" are left to block the rebase
+          git add .
           
           # 3. Commit only if there are changes
-          git commit -m "📊 Update modern GitHub dashboard" || echo "No changes to commit"
+          if [ -n "$(git status --porcelain)" ]; then
+            git commit -m "📊 Update modern GitHub dashboard"
+          else
+            echo "No changes to commit"
+          fi
           
-          # 4. Pull with rebase, now that the directory is cleaner
-          git pull --rebase origin main
+          # 4. Pull with rebase 
+          # We use --autostash just in case something is still lingering
+          git pull --rebase --autostash origin main
           
-          # 5. Push the final result
+          # 5. Push
           git push origin main
