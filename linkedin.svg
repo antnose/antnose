@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="250" height="125" viewBox="0 0 250 125">
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+    .card {
+      fill: #0d1117;
+      stroke: #30363d;
+      rx: 12;
+      animation: fadeIn 0.6s ease-out;
+    }
+    .card:hover {
+      stroke: #0A66C2;
+      stroke-width: 2;
+    }
+    .text {
+      font-family: 'Segoe UI', sans-serif;
+      fill: #ffffff;
+    }
+    .label {
+      fill: #8b949e;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .value {
+      font-size: 22px;
+      font-weight: bold;
+    }
+    .icon {
+      animation: float 3s ease-in-out infinite;
+      animation-delay: 1s;
+    }
+  </style>
+  <defs>
+    <linearGradient id="linkedinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0A66C2" />
+      <stop offset="100%" stop-color="#004182" />
+    </linearGradient>
+  </defs>
+  <rect class="card" width="246" height="121" x="2" y="2" rx="12"/>
+  <rect width="246" height="121" x="2" y="2" rx="12" fill="url(#linkedinGrad)" opacity="0.1"/>
+  <text x="15" y="30" class="text label">LINKEDIN</text>
+  <text x="15" y="65" class="text value" fill="url(#linkedinGrad)">Professional</text>
+  <text x="15" y="85" class="text" font-size="9" fill="#8b949e">Network</text>
+  <g class="icon">
+    <circle cx="210" cy="60" r="22" fill="url(#linkedinGrad)" opacity="0.2"/>
+    <text x="210" y="65" text-anchor="middle" font-size="18" fill="url(#linkedinGrad)">in</text>
+  </g>
+</svg>
