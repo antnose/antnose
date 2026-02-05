@@ -33,7 +33,7 @@ jobs:
           async function fetchData() {
             const headers = { 'Authorization': `token ${token}` };
             
-            // GraphQL Query for Genuine Streaks & Contributions
+            // Enhanced GraphQL Query for better language data
             const query = `
             query {
               user(login: "${username}") {
@@ -48,69 +48,122 @@ jobs:
                     }
                   }
                 }
-                repositories(first: 100, ownerAffiliations: OWNER) {
+                repositories(
+                  first: 100,
+                  ownerAffiliations: [OWNER, COLLABORATOR, ORGANIZATION_MEMBER],
+                  orderBy: {field: PUSHED_AT, direction: DESC}
+                ) {
                   nodes {
-                    primaryLanguage { name }
+                    name
+                    languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
+                      edges {
+                        size
+                        node {
+                          name
+                          color
+                        }
+                      }
+                    }
+                    isFork
                   }
                 }
               }
             }`;
 
-            const res = await axios.post('https://api.github.com/graphql', { query }, { headers });
-            const data = res.data.data.user;
+            try {
+              const res = await axios.post('https://api.github.com/graphql', { query }, { headers });
+              const data = res.data.data.user;
 
-            // --- CALCULATE GENUINE STREAKS ---
-            const days = data.contributionsCollection.contributionCalendar.weeks
-              .flatMap(w => w.contributionDays)
-              .reverse();
-            
-            let currentStreak = 0;
-            for (let day of days) {
-              if (day.contributionCount > 0) currentStreak++;
-              else if (currentStreak > 0) break;
-            }
-
-            let maxStreak = 0, tempStreak = 0;
-            [...days].reverse().forEach(day => {
-              if (day.contributionCount > 0) {
-                tempStreak++;
-                maxStreak = Math.max(maxStreak, tempStreak);
-              } else {
-                tempStreak = 0;
+              // --- CALCULATE GENUINE STREAKS ---
+              const days = data.contributionsCollection.contributionCalendar.weeks
+                .flatMap(w => w.contributionDays)
+                .reverse();
+              
+              let currentStreak = 0;
+              for (let day of days) {
+                if (day.contributionCount > 0) currentStreak++;
+                else if (currentStreak > 0) break;
               }
-            });
 
-            // --- CALCULATE LANGUAGES ---
-            const langMap = {};
-            data.repositories.nodes.forEach(r => {
-              if (r.primaryLanguage) langMap[r.primaryLanguage.name] = (langMap[r.primaryLanguage.name] || 0) + 1;
-            });
-            const topLangs = Object.entries(langMap).sort((a,b) => b[1] - a[1]).slice(0, 3);
+              let maxStreak = 0, tempStreak = 0;
+              [...days].reverse().forEach(day => {
+                if (day.contributionCount > 0) {
+                  tempStreak++;
+                  maxStreak = Math.max(maxStreak, tempStreak);
+                } else {
+                  tempStreak = 0;
+                }
+              });
 
-            // Language color mapping
-            const langColors = {
-              'JavaScript': '#f1e05a',
-              'TypeScript': '#3178c6',
-              'Python': '#3572A5',
-              'Java': '#b07219',
-              'Go': '#00ADD8',
-              'Rust': '#dea584',
-              'C++': '#f34b7d',
-              'C#': '#178600',
-              'PHP': '#4F5D95',
-              'Ruby': '#701516',
-              'Swift': '#ffac45',
-              'Kotlin': '#A97BFF',
-              'HTML': '#e34c26',
-              'CSS': '#563d7c',
-              'Vue': '#41b883',
-              'React': '#61dafb',
-              'Shell': '#89e051',
-              'Dart': '#00B4AB',
-              'Scala': '#c22d40'
-            };
+              // --- CALCULATE LANGUAGES PROPERLY ---
+              const langMap = {};
+              let totalLangSize = 0;
+              
+              // Process all repositories
+              data.repositories.nodes.forEach(repo => {
+                // Skip forks if you want only original repos
+                // if (repo.isFork) return;
+                
+                if (repo.languages && repo.languages.edges) {
+                  repo.languages.edges.forEach(edge => {
+                    const langName = edge.node.name;
+                    const langSize = edge.size;
+                    
+                    if (langName) {
+                      langMap[langName] = (langMap[langName] || 0) + langSize;
+                      totalLangSize += langSize;
+                    }
+                  });
+                }
+              });
 
-            const commonStyle = `
+              // Convert to percentages and sort
+              const langPercentages = Object.entries(langMap)
+                .map(([name, size]) => ({
+                  name,
+                  size,
+                  percentage: ((size / totalLangSize) * 100).toFixed(1)
+                }))
+                .sort((a, b) => b.size - a.size)
+                .slice(0, 3);
+
+              console.log('Top languages found:', langPercentages);
+
+              // Language color mapping (fallback)
+              const langColors = {
+                'JavaScript': '#f1e05a',
+                'TypeScript': '#3178c6',
+                'Python': '#3572A5',
+                'Java': '#b07219',
+                'Go': '#00ADD8',
+                'Rust': '#dea584',
+                'C++': '#f34b7d',
+                'C': '#555555',
+                'C#': '#178600',
+                'PHP': '#4F5D95',
+                'Ruby': '#701516',
+                'Swift': '#ffac45',
+                'Kotlin': '#A97BFF',
+                'HTML': '#e34c26',
+                'CSS': '#563d7c',
+                'SCSS': '#c6538c',
+                'Vue': '#41b883',
+                'React': '#61dafb',
+                'Shell': '#89e051',
+                'Dart': '#00B4AB',
+                'Scala': '#c22d40',
+                'R': '#198CE7',
+                'MATLAB': '#e16737',
+                'Julia': '#a270ba',
+                'Dockerfile': '#384d54',
+                'Makefile': '#427819',
+                'JSON': '#292929',
+                'YAML': '#cb171e',
+                'Markdown': '#083fa1',
+                'TeX': '#3D6117'
+              };
+
+              const commonStyle = `
               <style>
                 @keyframes float {
                   0%, 100% { transform: translateY(0px); }
@@ -185,6 +238,9 @@ jobs:
                 .icon {
                   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
                 }
+                .progress-bar {
+                  transition: width 1s ease-out;
+                }
               </style>
               <defs>
                 <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -250,26 +306,36 @@ jobs:
                 <circle cx="280" cy="80" r="30" fill="url(#fireGradient)" opacity="0.2"/>
                 <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#fireGradient)">🔥</text>
               </g>
-              <!-- Animated flame dots -->
               <circle cx="25" cy="125" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.1s"/>
               <circle cx="45" cy="120" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.3s"/>
               <circle cx="65" cy="125" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.5s"/>
             `, 'fireGradient'));
 
-            // CARD 3: TOP LANGUAGES - Blue Theme
-            const langContent = topLangs.map((lang, i) => {
-              const color = langColors[lang[0]] || '#58a6ff';
-              const yPos = 70 + (i * 28);
-              return `
-                <circle cx="25" cy="${yPos - 10}" r="5" fill="${color}" class="language-dot" style="--delay: ${i * 0.2}s"/>
-                <text x="40" y="${yPos}" class="text value" font-size="16" fill="#ffffff" style="animation-delay: ${0.3 + i * 0.1}s">
-                  ${lang[0]}
-                </text>
-                <text x="180" y="${yPos}" class="text value" font-size="16" fill="#8b949e" style="animation-delay: ${0.5 + i * 0.1}s">
-                  ${lang[1]} repos
+            // CARD 3: TOP LANGUAGES - Blue Theme (FIXED)
+            const langContent = langPercentages.length > 0 
+              ? langPercentages.map((lang, i) => {
+                  const color = langColors[lang.name] || '#58a6ff';
+                  const yPos = 70 + (i * 28);
+                  const percentage = lang.percentage;
+                  
+                  return `
+                    <circle cx="25" cy="${yPos - 10}" r="5" fill="${color}" class="language-dot" style="--delay: ${i * 0.2}s"/>
+                    <text x="40" y="${yPos}" class="text value" font-size="16" fill="#ffffff" style="animation-delay: ${0.3 + i * 0.1}s">
+                      ${lang.name}
+                    </text>
+                    <text x="200" y="${yPos}" class="text value" font-size="16" fill="${color}" font-weight="bold" style="animation-delay: ${0.5 + i * 0.1}s">
+                      ${percentage}%
+                    </text>
+                    <!-- Progress bar -->
+                    <rect x="40" y="${yPos + 8}" width="150" height="4" rx="2" fill="#30363d"/>
+                    <rect x="40" y="${yPos + 8}" width="${150 * (percentage / 100)}" height="4" rx="2" fill="${color}" class="progress-bar" style="animation-delay: ${0.7 + i * 0.1}s"/>
+                  `;
+                }).join('')
+              : `
+                <text x="25" y="80" class="text value" font-size="16" fill="#8b949e" style="animation-delay: 0.3s">
+                  No language data available
                 </text>
               `;
-            }).join('');
 
             fs.writeFileSync('languages.svg', createCard(`
               <text x="25" y="45" class="text label" style="animation-delay: 0.3s">💻 TOP LANGUAGES</text>
@@ -292,13 +358,12 @@ jobs:
                 <circle cx="280" cy="80" r="30" fill="url(#greenGradient)" opacity="0.2"/>
                 <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#greenGradient)">✨</text>
               </g>
-              <!-- Animated sparkles -->
               <text x="50" y="130" class="accent-text" font-size="16" fill="url(#greenGradient)" style="animation-delay: 0.1s">✦</text>
               <text x="70" y="120" class="accent-text" font-size="12" fill="url(#greenGradient)" style="animation-delay: 0.3s">✧</text>
               <text x="90" y="130" class="accent-text" font-size="14" fill="url(#greenGradient)" style="animation-delay: 0.5s">✦</text>
             `, 'greenGradient'));
 
-            // Create a showcase SVG that combines all cards
+            // Create a showcase SVG
             const showcase = `
             <svg xmlns="http://www.w3.org/2000/svg" width="660" height="340" viewBox="0 0 660 340">
               ${commonStyle}
@@ -335,8 +400,13 @@ jobs:
             </svg>`;
 
             fs.writeFileSync('showcase.svg', showcase);
+            
+            } catch (error) {
+              console.error('Error fetching data:', error.response?.data || error.message);
+              throw error;
+            }
           }
-          fetchData().catch(console.error);
+          fetchData();
           EOF
           GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} node generate-cards.js
 
@@ -346,6 +416,6 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add *.svg
           if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "✨ Enhanced 4-card dashboard with premium animations & aesthetics"
+            git commit -m "✨ Fixed language detection + Enhanced 4-card dashboard"
             git push --force https://x-access-token:${{ secrets.METRICS_TOKEN }}@github.com/${{ github.repository }}.git main
           fi
