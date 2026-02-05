@@ -20,10 +20,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+      - name: Setup Folders
+        run: mkdir -p metrics public
 
-      - name: Generate Metrics
+      - name: Generate Metrics (Detailed)
         uses: lowlighter/metrics@latest
         with:
           filename: github-metrics.svg
@@ -49,22 +49,11 @@ jobs:
           plugin_languages_colors: github
           plugin_languages_details: percentage
           plugin_languages_analysis_timeout: 15
-          plugin_languages_analysis_timeout_repositories: 15
           plugin_languages_sections: most-used
-          plugin_languages_recent_load: 300
           plugin_notable: yes
-          plugin_notable_from: organization
-          plugin_notable_repositories: 3
-          plugin_notable_types: commit
           plugin_people: yes
-          plugin_people_limit: 24
-          plugin_people_size: 28
-          plugin_people_types: followers
           plugin_stars: yes
-          plugin_stars_limit: 4
           plugin_traffic: yes
-          plugin_traffic_days: 14
-          plugin_traffic_mode: daily
 
       - name: Generate GitHub Stats Card
         uses: anuraghazra/github-readme-stats@latest
@@ -74,15 +63,12 @@ jobs:
           hide: commits,prs,issues
           show_icons: true
           include_all_commits: true
-          count_private: false
-          line_height: 30
           theme: modern
           bg_color: 0D1117
           title_color: 58A6FF
           text_color: C9D1D9
           icon_color: 58A6FF
           border_color: 30363D
-          custom_title: "antnose's GitHub Stats"
           output: metrics/stats.svg
 
       - name: Generate Streak Stats
@@ -91,14 +77,11 @@ jobs:
           token: ${{ secrets.METRICS_TOKEN }}
           user: antnose
           theme: modern
-          hide_border: true
           background: 0D1117
           dates: 58A6FF
           ring: 58A6FF
           fire: FF6D00
           currStreakNum: FFFFFF
-          sideNums: 58A6FF
-          currStreakLabel: 58A6FF
           output: metrics/streak.svg
 
       - name: Generate Top Languages
@@ -108,23 +91,21 @@ jobs:
           username: antnose
           hide: stars,commits,prs,issues,contribs
           layout: compact
-          card_width: 400
           theme: modern
           bg_color: 0D1117
           title_color: 58A6FF
           text_color: C9D1D9
           border_color: 30363D
-          custom_title: "Top Languages"
           langs_count: 8
-          exclude_repo:
           output: metrics/languages.svg
 
       - name: Create Modern Dashboard
         run: |
-          mkdir -p public
-
-          # Copy generated SVGs to public directory
-          cp metrics/*.svg public/
+          # Copy all generated SVGs to public folder
+          [ -f github-metrics.svg ] && cp github-metrics.svg public/
+          [ -f metrics/stats.svg ] && cp metrics/stats.svg public/
+          [ -f metrics/streak.svg ] && cp metrics/streak.svg public/
+          [ -f metrics/languages.svg ] && cp metrics/languages.svg public/
 
           # Create modern dashboard HTML
           cat > public/index.html << 'EOF'
@@ -141,656 +122,79 @@ jobs:
                   
                   :root {
                       --primary: #58A6FF;
-                      --primary-dark: #1F6FEB;
                       --bg: #0D1117;
                       --card-bg: #161B22;
                       --text: #C9D1D9;
                       --text-muted: #8B949E;
                       --border: #30363D;
                       --success: #238636;
-                      --warning: #D29922;
-                      --danger: #DA3633;
                       --gradient: linear-gradient(135deg, #58A6FF 0%, #8250DF 100%);
                       --shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
                       --glow: 0 0 20px rgba(88, 166, 255, 0.3);
                       --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                   }
                   
-                  * {
-                      margin: 0;
-                      padding: 0;
-                      box-sizing: border-box;
-                  }
+                  * { margin: 0; padding: 0; box-sizing: border-box; }
+                  body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 2rem; }
+                  .container { max-width: 1400px; margin: 0 auto; }
                   
-                  body {
-                      font-family: 'Space Grotesk', sans-serif;
-                      background: var(--bg);
-                      color: var(--text);
-                      min-height: 100vh;
-                      overflow-x: hidden;
-                  }
+                  .header { text-align: center; margin-bottom: 3rem; }
+                  .header h1 { font-size: 3rem; background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.5rem; }
+                  .header p { color: var(--text-muted); font-size: 1.1rem; }
+
+                  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem; }
                   
-                  .container {
-                      max-width: 1400px;
-                      margin: 0 auto;
-                      padding: 2rem;
+                  .card { 
+                      background: var(--card-bg); border-radius: 20px; border: 1px solid var(--border); 
+                      padding: 1.5rem; transition: var(--transition); box-shadow: var(--shadow);
                   }
+                  .card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: var(--glow); }
                   
-                  /* Header Styles */
-                  .header {
-                      text-align: center;
-                      margin-bottom: 4rem;
-                      padding-top: 2rem;
-                  }
+                  .card-header { display: flex; align-items: center; margin-bottom: 1rem; gap: 1rem; }
+                  .card-icon { width: 40px; height: 40px; background: rgba(88, 166, 255, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--primary); }
                   
-                  .header h1 {
-                      font-size: 3.5rem;
-                      font-weight: 700;
-                      margin-bottom: 0.5rem;
-                      background: var(--gradient);
-                      -webkit-background-clip: text;
-                      background-clip: text;
-                      color: transparent;
-                      opacity: 0;
-                      transform: translateY(-20px);
-                      animation: slideDown 0.8s ease forwards;
-                  }
+                  .stats-image { width: 100%; border-radius: 10px; }
                   
-                  .header p {
-                      font-size: 1.2rem;
-                      color: var(--text-muted);
-                      margin-bottom: 2rem;
-                      opacity: 0;
-                      animation: fadeIn 1s ease 0.3s forwards;
-                  }
+                  .footer { text-align: center; margin-top: 4rem; color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 2rem; }
+                  .pulse { display: inline-block; width: 8px; height: 8px; background: var(--success); border-radius: 50%; margin-right: 8px; animation: pulse 2s infinite; }
                   
-                  /* Stats Grid */
-                  .stats-grid {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-                      gap: 2rem;
-                      margin-bottom: 3rem;
-                  }
-                  
-                  /* Card Styles */
-                  .card {
-                      background: var(--card-bg);
-                      border-radius: 20px;
-                      border: 1px solid var(--border);
-                      padding: 2rem;
-                      position: relative;
-                      overflow: hidden;
-                      opacity: 0;
-                      transform: translateY(30px);
-                      transition: var(--transition);
-                      box-shadow: var(--shadow);
-                  }
-                  
-                  .card:nth-child(1) { animation: slideUp 0.6s ease 0.2s forwards; }
-                  .card:nth-child(2) { animation: slideUp 0.6s ease 0.4s forwards; }
-                  .card:nth-child(3) { animation: slideUp 0.6s ease 0.6s forwards; }
-                  
-                  .card:hover {
-                      transform: translateY(-10px);
-                      border-color: var(--primary);
-                      box-shadow: var(--shadow), var(--glow);
-                  }
-                  
-                  .card::before {
-                      content: '';
-                      position: absolute;
-                      top: 0;
-                      left: 0;
-                      right: 0;
-                      height: 4px;
-                      background: var(--gradient);
-                      transform: scaleX(0);
-                      transform-origin: left;
-                      transition: transform 0.5s ease;
-                  }
-                  
-                  .card:hover::before {
-                      transform: scaleX(1);
-                  }
-                  
-                  .card-header {
-                      display: flex;
-                      align-items: center;
-                      margin-bottom: 1.5rem;
-                  }
-                  
-                  .card-icon {
-                      width: 50px;
-                      height: 50px;
-                      background: rgba(88, 166, 255, 0.1);
-                      border-radius: 12px;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      margin-right: 1rem;
-                  }
-                  
-                  .card-icon i {
-                      font-size: 1.5rem;
-                      color: var(--primary);
-                  }
-                  
-                  .card-title {
-                      font-size: 1.5rem;
-                      font-weight: 600;
-                  }
-                  
-                  .card-content {
-                      position: relative;
-                  }
-                  
-                  .stats-image {
-                      width: 100%;
-                      border-radius: 12px;
-                      transition: var(--transition);
-                      display: block;
-                      margin: 0 auto;
-                  }
-                  
-                  .stats-image:hover {
-                      transform: scale(1.02);
-                  }
-                  
-                  /* Refresh Button */
-                  .refresh-btn {
-                      display: block;
-                      margin: 2rem auto;
-                      padding: 1rem 2rem;
-                      background: var(--gradient);
-                      color: white;
-                      border: none;
-                      border-radius: 50px;
-                      font-size: 1rem;
-                      font-weight: 600;
-                      cursor: pointer;
-                      transition: var(--transition);
-                      display: flex;
-                      align-items: center;
-                      gap: 0.5rem;
-                      opacity: 0;
-                      animation: fadeIn 1s ease 1s forwards;
-                  }
-                  
-                  .refresh-btn:hover {
-                      transform: translateY(-2px);
-                      box-shadow: var(--glow);
-                  }
-                  
-                  .refresh-btn:active {
-                      transform: translateY(0);
-                  }
-                  
-                  /* Footer */
-                  .footer {
-                      text-align: center;
-                      margin-top: 4rem;
-                      padding-top: 2rem;
-                      border-top: 1px solid var(--border);
-                      color: var(--text-muted);
-                      opacity: 0;
-                      animation: fadeIn 1s ease 1.2s forwards;
-                  }
-                  
-                  .last-updated {
-                      font-size: 0.9rem;
-                      margin-top: 1rem;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      gap: 0.5rem;
-                  }
-                  
-                  .pulse {
-                      display: inline-block;
-                      width: 10px;
-                      height: 10px;
-                      background: var(--success);
-                      border-radius: 50%;
-                      animation: pulse 2s infinite;
-                  }
-                  
-                  /* Loading Animation */
-                  .loading {
-                      display: inline-block;
-                      width: 20px;
-                      height: 20px;
-                      border: 3px solid rgba(88, 166, 255, 0.3);
-                      border-radius: 50%;
-                      border-top-color: var(--primary);
-                      animation: spin 1s ease-in-out infinite;
-                  }
-                  
-                  /* Animations */
-                  @keyframes slideDown {
-                      to {
-                          opacity: 1;
-                          transform: translateY(0);
-                      }
-                  }
-                  
-                  @keyframes slideUp {
-                      to {
-                          opacity: 1;
-                          transform: translateY(0);
-                      }
-                  }
-                  
-                  @keyframes fadeIn {
-                      to {
-                          opacity: 1;
-                      }
-                  }
-                  
-                  @keyframes spin {
-                      to {
-                          transform: rotate(360deg);
-                      }
-                  }
-                  
-                  @keyframes pulse {
-                      0%, 100% {
-                          opacity: 1;
-                      }
-                      50% {
-                          opacity: 0.5;
-                      }
-                  }
-                  
-                  @keyframes float {
-                      0%, 100% {
-                          transform: translateY(0);
-                      }
-                      50% {
-                          transform: translateY(-10px);
-                      }
-                  }
-                  
-                  /* Responsive Design */
-                  @media (max-width: 768px) {
-                      .container {
-                          padding: 1rem;
-                      }
-                      
-                      .header h1 {
-                          font-size: 2.5rem;
-                      }
-                      
-                      .stats-grid {
-                          grid-template-columns: 1fr;
-                          gap: 1.5rem;
-                      }
-                      
-                      .card {
-                          padding: 1.5rem;
-                      }
-                  }
-                  
-                  /* Carousel Mode */
-                  .carousel-mode .stats-grid {
-                      grid-template-columns: 1fr;
-                      max-width: 500px;
-                      margin: 0 auto;
-                  }
-                  
-                  .carousel-controls {
-                      display: flex;
-                      justify-content: center;
-                      gap: 1rem;
-                      margin: 2rem 0;
-                      opacity: 0;
-                      animation: fadeIn 1s ease 0.8s forwards;
-                  }
-                  
-                  .carousel-btn {
-                      width: 50px;
-                      height: 50px;
-                      border-radius: 50%;
-                      border: 2px solid var(--border);
-                      background: var(--card-bg);
-                      color: var(--text);
-                      font-size: 1.2rem;
-                      cursor: pointer;
-                      transition: var(--transition);
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                  }
-                  
-                  .carousel-btn:hover {
-                      border-color: var(--primary);
-                      color: var(--primary);
-                      transform: scale(1.1);
-                  }
-                  
-                  .carousel-dots {
-                      display: flex;
-                      justify-content: center;
-                      gap: 0.5rem;
-                      margin-top: 1rem;
-                  }
-                  
-                  .dot {
-                      width: 10px;
-                      height: 10px;
-                      border-radius: 50%;
-                      background: var(--border);
-                      cursor: pointer;
-                      transition: var(--transition);
-                  }
-                  
-                  .dot.active {
-                      background: var(--primary);
-                      transform: scale(1.2);
-                  }
+                  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+                  @media (max-width: 768px) { .stats-grid { grid-template-columns: 1fr; } }
               </style>
           </head>
           <body>
               <div class="container">
                   <header class="header">
-                      <h1>
-                          <i class="fas fa-chart-line"></i>
-                          antnose's GitHub Analytics
-                      </h1>
-                      <p>Interactive dashboard showcasing GitHub contributions, streaks, and coding statistics</p>
+                      <h1><i class="fas fa-chart-line"></i> antnose Analytics</h1>
+                      <p>GitHub contribution data and coding statistics</p>
                   </header>
                   
-                  <div class="carousel-controls">
-                      <button class="carousel-btn" id="prevBtn">
-                          <i class="fas fa-chevron-left"></i>
-                      </button>
-                      <button class="carousel-btn" id="viewToggle">
-                          <i class="fas fa-th"></i>
-                      </button>
-                      <button class="carousel-btn" id="nextBtn">
-                          <i class="fas fa-chevron-right"></i>
-                      </button>
-                  </div>
-                  
-                  <div class="carousel-dots">
-                      <div class="dot active" data-index="0"></div>
-                      <div class="dot" data-index="1"></div>
-                      <div class="dot" data-index="2"></div>
-                  </div>
-                  
-                  <div class="stats-grid" id="statsGrid">
-                      <!-- GitHub Streak -->
+                  <div class="stats-grid">
                       <div class="card">
-                          <div class="card-header">
-                              <div class="card-icon">
-                                  <i class="fas fa-fire"></i>
-                              </div>
-                              <h2 class="card-title">Contribution Streak</h2>
-                          </div>
-                          <div class="card-content">
-                              <img src="streak.svg" alt="GitHub Contribution Streak" class="stats-image" id="streakImg">
-                          </div>
+                          <div class="card-header"><div class="card-icon"><i class="fas fa-fire"></i></div><h3>Daily Streak</h3></div>
+                          <img src="streak.svg" class="stats-image">
                       </div>
-                      
-                      <!-- GitHub Stats -->
                       <div class="card">
-                          <div class="card-header">
-                              <div class="card-icon">
-                                  <i class="fas fa-chart-bar"></i>
-                              </div>
-                              <h2 class="card-title">GitHub Statistics</h2>
-                          </div>
-                          <div class="card-content">
-                              <img src="stats.svg" alt="GitHub Statistics" class="stats-image" id="statsImg">
-                          </div>
+                          <div class="card-header"><div class="card-icon"><i class="fas fa-code"></i></div><h3>Languages</h3></div>
+                          <img src="languages.svg" class="stats-image">
                       </div>
-                      
-                      <!-- Top Languages -->
                       <div class="card">
-                          <div class="card-header">
-                              <div class="card-icon">
-                                  <i class="fas fa-code"></i>
-                              </div>
-                              <h2 class="card-title">Top Languages</h2>
-                          </div>
-                          <div class="card-content">
-                              <img src="languages.svg" alt="Top Programming Languages" class="stats-image" id="langImg">
-                          </div>
+                          <div class="card-header"><div class="card-icon"><i class="fas fa-trophy"></i></div><h3>General Stats</h3></div>
+                          <img src="stats.svg" class="stats-image">
+                      </div>
+                      <div class="card" style="grid-column: 1 / -1;">
+                          <div class="card-header"><div class="card-icon"><i class="fas fa-terminal"></i></div><h3>Detailed Metrics Report</h3></div>
+                          <img src="github-metrics.svg" class="stats-image">
                       </div>
                   </div>
-                  
-                  <button class="refresh-btn" id="refreshBtn">
-                      <i class="fas fa-sync-alt"></i>
-                      Refresh Dashboard
-                  </button>
-                  
+
                   <footer class="footer">
-                      <p>Dashboard automatically updates daily • Powered by GitHub Actions</p>
-                      <div class="last-updated">
-                          <span class="pulse"></span>
-                          Last updated: <span id="currentDate"></span>
-                      </div>
+                      <div class="last-updated"><span class="pulse"></span> Last updated: <span id="date"></span></div>
                   </footer>
               </div>
-              
-              <script>
-                  // Set current date
-                  const now = new Date();
-                  document.getElementById('currentDate').textContent = 
-                      now.toLocaleDateString('en-US', { 
-                          weekday: 'long',
-                          year: 'numeric', 
-                          month: 'long', 
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                      });
-                  
-                  // Carousel functionality
-                  const cards = document.querySelectorAll('.card');
-                  const dots = document.querySelectorAll('.dot');
-                  const prevBtn = document.getElementById('prevBtn');
-                  const nextBtn = document.getElementById('nextBtn');
-                  const viewToggle = document.getElementById('viewToggle');
-                  const statsGrid = document.getElementById('statsGrid');
-                  let currentIndex = 0;
-                  let isCarouselMode = false;
-                  
-                  function updateCarousel() {
-                      cards.forEach((card, index) => {
-                          card.style.display = index === currentIndex ? 'block' : 'none';
-                          card.style.opacity = index === currentIndex ? '1' : '0';
-                          card.style.transform = index === currentIndex ? 'translateY(0)' : 'translateY(30px)';
-                      });
-                      
-                      dots.forEach((dot, index) => {
-                          dot.classList.toggle('active', index === currentIndex);
-                      });
-                  }
-                  
-                  function toggleViewMode() {
-                      isCarouselMode = !isCarouselMode;
-                      
-                      if (isCarouselMode) {
-                          statsGrid.classList.add('carousel-mode');
-                          viewToggle.innerHTML = '<i class="fas fa-th-large"></i>';
-                          updateCarousel();
-                      } else {
-                          statsGrid.classList.remove('carousel-mode');
-                          viewToggle.innerHTML = '<i class="fas fa-th"></i>';
-                          cards.forEach((card, index) => {
-                              card.style.display = 'block';
-                              card.style.opacity = '1';
-                              card.style.transform = 'translateY(0)';
-                          });
-                      }
-                  }
-                  
-                  // Event listeners
-                  prevBtn.addEventListener('click', () => {
-                      if (isCarouselMode) {
-                          currentIndex = (currentIndex - 1 + cards.length) % cards.length;
-                          updateCarousel();
-                      }
-                  });
-                  
-                  nextBtn.addEventListener('click', () => {
-                      if (isCarouselMode) {
-                          currentIndex = (currentIndex + 1) % cards.length;
-                          updateCarousel();
-                      }
-                  });
-                  
-                  viewToggle.addEventListener('click', toggleViewMode);
-                  
-                  dots.forEach(dot => {
-                      dot.addEventListener('click', () => {
-                          if (isCarouselMode) {
-                              currentIndex = parseInt(dot.dataset.index);
-                              updateCarousel();
-                          }
-                      });
-                  });
-                  
-                  // Refresh button
-                  document.getElementById('refreshBtn').addEventListener('click', function() {
-                      const btn = this;
-                      const originalHTML = btn.innerHTML;
-                      
-                      btn.innerHTML = '<span class="loading"></span> Refreshing...';
-                      btn.disabled = true;
-                      
-                      // Reload images with cache busting
-                      const images = ['streakImg', 'statsImg', 'langImg'];
-                      images.forEach(id => {
-                          const img = document.getElementById(id);
-                          if (img) {
-                              img.src = img.src.split('?')[0] + '?t=' + Date.now();
-                          }
-                      });
-                      
-                      // Simulate API call delay
-                      setTimeout(() => {
-                          btn.innerHTML = originalHTML;
-                          btn.disabled = false;
-                          
-                          // Show success message
-                          const footer = document.querySelector('.footer p');
-                          const originalText = footer.textContent;
-                          footer.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success); margin-right: 0.5rem;"></i> Dashboard refreshed successfully!';
-                          
-                          setTimeout(() => {
-                              footer.textContent = originalText;
-                          }, 3000);
-                          
-                          // Update timestamp
-                          const now = new Date();
-                          document.getElementById('currentDate').textContent = 
-                              now.toLocaleDateString('en-US', { 
-                                  weekday: 'long',
-                                  year: 'numeric', 
-                                  month: 'long', 
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                              });
-                      }, 1500);
-                  });
-                  
-                  // Add floating animation to cards on hover
-                  cards.forEach(card => {
-                      card.addEventListener('mouseenter', () => {
-                          if (!isCarouselMode) {
-                              card.style.animation = 'float 3s ease-in-out infinite';
-                          }
-                      });
-                      
-                      card.addEventListener('mouseleave', () => {
-                          card.style.animation = '';
-                      });
-                  });
-                  
-                  // Auto-rotate carousel
-                  let carouselInterval;
-                  
-                  function startCarouselAutoRotate() {
-                      if (isCarouselMode) {
-                          carouselInterval = setInterval(() => {
-                              currentIndex = (currentIndex + 1) % cards.length;
-                              updateCarousel();
-                          }, 5000);
-                      }
-                  }
-                  
-                  function stopCarouselAutoRotate() {
-                      clearInterval(carouselInterval);
-                  }
-                  
-                  // Auto-refresh dashboard every hour
-                  setInterval(() => {
-                      const images = ['streakImg', 'statsImg', 'langImg'];
-                      images.forEach(id => {
-                          const img = document.getElementById(id);
-                          if (img) {
-                              img.src = img.src.split('?')[0] + '?t=' + Date.now();
-                          }
-                      });
-                      
-                      // Update timestamp
-                      const now = new Date();
-                      document.getElementById('currentDate').textContent = 
-                          now.toLocaleDateString('en-US', { 
-                              weekday: 'long',
-                              year: 'numeric', 
-                              month: 'long', 
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit'
-                          });
-                  }, 60 * 60 * 1000); // 1 hour
-                  
-                  // Initialize
-                  updateCarousel();
-              </script>
+              <script>document.getElementById('date').textContent = new Date().toLocaleString();</script>
           </body>
           </html>
-          EOF
-
-          # Create a README for the metrics page
-          cat > public/README.md << 'EOF'
-          # 📊 Modern GitHub Stats Dashboard
-
-          Live dashboard for [antnose](https://github.com/antnose)'s GitHub statistics.
-
-          ## Features
-
-          - **Animated Cards**: Each stat card has smooth animations and hover effects
-          - **Interactive Carousel**: Toggle between grid view and carousel mode
-          - **Auto-refresh**: Stats update automatically
-          - **Modern Design**: GitHub dark theme with gradient accents
-          - **Responsive**: Works on all device sizes
-
-          ## Stats Included
-
-          1. **Contribution Streak** - GitHub contribution calendar and current streak
-          2. **GitHub Stats** - Stars, forks, commits, and more
-          3. **Top Languages** - Most used programming languages
-
-          ## How It Works
-
-          This dashboard is generated automatically using GitHub Actions:
-
-          1. Workflow runs daily at midnight UTC
-          2. Fetches latest stats from GitHub API
-          3. Generates beautiful SVG visualizations
-          4. Updates the dashboard with fresh data
-
-          ## Manual Refresh
-
-          Click the "Refresh Dashboard" button or run the workflow manually from the Actions tab.
-
-          ---
-
-          *Last updated automatically*
           EOF
 
       - name: Upload to GitHub Pages
@@ -801,7 +205,6 @@ jobs:
   deploy:
     needs: generate-metrics
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     permissions:
       pages: write
       id-token: write
