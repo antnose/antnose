@@ -74,6 +74,9 @@
       .icon {
         filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
       }
+      .progress-bar {
+        transition: width 1s ease-out;
+      }
     </style>
     <defs>
       <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">

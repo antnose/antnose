@@ -74,6 +74,9 @@
       .icon {
         filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
       }
+      .progress-bar {
+        transition: width 1s ease-out;
+      }
     </style>
     <defs>
       <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -109,12 +112,11 @@
       <rect width="316" height="156" x="2" y="2" rx="20" fill="url(#greenGradient)" opacity="0.1"/>
       
     <text x="25" y="45" class="text label" style="animation-delay: 0.4s">✨ TOTAL CONTRIBUTIONS</text>
-    <text x="25" y="100" class="text value" font-size="48" font-weight="bold" fill="url(#greenGradient)">1,059</text>
+    <text x="25" y="100" class="text value" font-size="48" font-weight="bold" fill="url(#greenGradient)">1,060</text>
     <g class="icon" style="opacity: 0.8">
       <circle cx="280" cy="80" r="30" fill="url(#greenGradient)" opacity="0.2"/>
       <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#greenGradient)">✨</text>
     </g>
-    <!-- Animated sparkles -->
     <text x="50" y="130" class="accent-text" font-size="16" fill="url(#greenGradient)" style="animation-delay: 0.1s">✦</text>
     <text x="70" y="120" class="accent-text" font-size="12" fill="url(#greenGradient)" style="animation-delay: 0.3s">✧</text>
     <text x="90" y="130" class="accent-text" font-size="14" fill="url(#greenGradient)" style="animation-delay: 0.5s">✦</text>

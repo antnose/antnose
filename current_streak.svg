@@ -74,6 +74,9 @@
       .icon {
         filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
       }
+      .progress-bar {
+        transition: width 1s ease-out;
+      }
     </style>
     <defs>
       <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -115,7 +118,6 @@
       <circle cx="280" cy="80" r="30" fill="url(#fireGradient)" opacity="0.2"/>
       <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#fireGradient)">🔥</text>
     </g>
-    <!-- Animated flame dots -->
     <circle cx="25" cy="125" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.1s"/>
     <circle cx="45" cy="120" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.3s"/>
     <circle cx="65" cy="125" r="4" fill="url(#fireGradient)" class="accent-text" style="animation-delay: 0.5s"/>
