@@ -207,7 +207,7 @@ jobs:
           function hexToRgb(hex) {
             const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
             return result ? 
-              `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : 
+              parseInt(result[1], 16) + ', ' + parseInt(result[2], 16) + ', ' + parseInt(result[3], 16) : 
               '88, 166, 255';
           }
 
@@ -215,49 +215,45 @@ jobs:
           platforms.forEach((platform, index) => {
             const fileName = platform.name.toLowerCase().replace(/\s+/g, '_') + '.svg';
             fs.writeFileSync(fileName, createCard(platform, index));
-            console.log(\`Generated: \${fileName}\`);
+            console.log('Generated: ' + fileName);
           });
 
           // Generate a combined showcase
+          const portfolioSvg = fs.readFileSync('portfolio.svg').toString('base64');
+          const twitterSvg = fs.readFileSync('twitter.svg').toString('base64');
+          const linkedinSvg = fs.readFileSync('linkedin.svg').toString('base64');
+          const stackSvg = fs.readFileSync('stack.svg').toString('base64');
+          const githubSvg = fs.readFileSync('github.svg').toString('base64');
+
           const showcase = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="680" height="340" viewBox="0 0 680 340">
+          <svg xmlns="http://www.w3.org/2000/svg" width="680" height="520" viewBox="0 0 680 520">
             <style>
               .title { font-family: 'Segoe UI', sans-serif; fill: #ffffff; font-size: 24px; font-weight: bold; }
               .subtitle { font-family: 'Segoe UI', sans-serif; fill: #8b949e; font-size: 14px; }
             </style>
-            <rect width="676" height="336" x="2" y="2" rx="20" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+            <rect width="676" height="516" x="2" y="2" rx="20" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
             <text x="30" y="50" class="title">🔗 Connect With Me</text>
             <text x="30" y="75" class="subtitle">Click any card to connect on that platform</text>
             
             <!-- Row 1 -->
             <g transform="translate(20, 100)">
-              <foreignObject width="320" height="160">
-                <iframe width="320" height="160" src="data:image/svg+xml;base64,${Buffer.from(fs.readFileSync('portfolio.svg')).toString('base64')}"></iframe>
-              </foreignObject>
+              <image href="data:image/svg+xml;base64,${portfolioSvg}" width="320" height="160"/>
             </g>
             <g transform="translate(350, 100)">
-              <foreignObject width="320" height="160">
-                <iframe width="320" height="160" src="data:image/svg+xml;base64,${Buffer.from(fs.readFileSync('twitter.svg')).toString('base64')}"></iframe>
-              </foreignObject>
+              <image href="data:image/svg+xml;base64,${twitterSvg}" width="320" height="160"/>
             </g>
             
             <!-- Row 2 -->
             <g transform="translate(20, 280)">
-              <foreignObject width="320" height="160">
-                <iframe width="320" height="160" src="data:image/svg+xml;base64,${Buffer.from(fs.readFileSync('linkedin.svg')).toString('base64')}"></iframe>
-              </foreignObject>
+              <image href="data:image/svg+xml;base64,${linkedinSvg}" width="320" height="160"/>
             </g>
             <g transform="translate(350, 280)">
-              <foreignObject width="320" height="160">
-                <iframe width="320" height="160" src="data:image/svg+xml;base64,${Buffer.from(fs.readFileSync('stack.svg')).toString('base64')}"></iframe>
-              </foreignObject>
+              <image href="data:image/svg+xml;base64,${stackSvg}" width="320" height="160"/>
             </g>
             
             <!-- Row 3 (centered GitHub card) -->
-            <g transform="translate(185, 460)">
-              <foreignObject width="320" height="160">
-                <iframe width="320" height="160" src="data:image/svg+xml;base64,${Buffer.from(fs.readFileSync('github.svg')).toString('base64')}"></iframe>
-              </foreignObject>
+            <g transform="translate(180, 460)">
+              <image href="data:image/svg+xml;base64,${githubSvg}" width="320" height="160"/>
             </g>
           </svg>`;
 
