@@ -1,10 +1,10 @@
 name: Modern GitHub Metrics
 on:
   schedule:
-    - cron: "0 0 * * *" 
-  workflow_dispatch: 
+    - cron: "0 0 * * *"  # Daily at midnight UTC
+  workflow_dispatch:  # Manual trigger
   push:
-    branches: [main, master]
+    branches: [ main, master ]
 
 permissions:
   contents: write
@@ -17,97 +17,981 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Setup Folders
-        run: mkdir -p metrics public
-
-      - name: Generate Metrics (Detailed)
-        uses: lowlighter/metrics@v3.34
         with:
-          filename: github-metrics.svg
+          fetch-depth: 0
+
+      - name: Generate GitHub Streak Stats
+        uses: lowlighter/metrics@latest
+        with:
+          filename: public/streak.svg
           token: ${{ secrets.METRICS_TOKEN }}
           user: antnose
           template: classic
           base: ""
           config_timezone: America/New_York
-          plugin_achievements: yes
           plugin_habits: yes
-          plugin_languages: yes
+          plugin_habits_from: 200
+          plugin_habits_days: 365
+          plugin_habits_facts: yes
+          plugin_habits_charts: yes
+          plugin_isocalendar: yes
+          plugin_isocalendar_duration: half-year
 
       - name: Generate GitHub Stats Card
-        uses: anuraghazra/github-readme-stats@master
+        uses: lowlighter/metrics@latest
         with:
-          token: ${{ secrets.METRICS_TOKEN }}
-          username: antnose
-          show_icons: true
-          theme: modern
-          output: metrics/stats.svg
-
-      - name: Generate Streak Stats
-        uses: denvercoder1/github-readme-streak-stats@main
-        with:
+          filename: public/stats.svg
           token: ${{ secrets.METRICS_TOKEN }}
           user: antnose
-          theme: modern
-          output: metrics/streak.svg
+          template: classic
+          base: ""
+          config_timezone: America/New_York
+          plugin_stars: yes
+          plugin_stars_limit: 4
+          plugin_followup: yes
+          plugin_introduction: yes
+          plugin_introduction_title: yes
+          plugin_achievements: yes
+          plugin_achievements_secrets: yes
+          plugin_achievements_display: compact
 
       - name: Generate Top Languages
-        uses: anuraghazra/github-readme-stats@master
+        uses: lowlighter/metrics@latest
         with:
+          filename: public/languages.svg
           token: ${{ secrets.METRICS_TOKEN }}
-          username: antnose
-          hide: stars,commits,prs,issues,contribs
-          layout: compact
-          theme: modern
-          langs_count: 8
-          output: metrics/languages.svg
+          user: antnose
+          template: classic
+          base: ""
+          config_timezone: America/New_York
+          plugin_languages: yes
+          plugin_languages_limit: 8
+          plugin_languages_threshold: 0.5%
+          plugin_languages_colors: github
+          plugin_languages_details: percentage
+          plugin_languages_sections: most-used
+          plugin_languages_analysis_timeout: 15
 
-      - name: Create Modern Dashboard
+      - name: Create Modern Dashboard HTML
         run: |
+          # Create the public directory if it doesn't exist
           mkdir -p public
-          [ -f github-metrics.svg ] && cp github-metrics.svg public/
-          [ -f metrics/stats.svg ] && cp metrics/stats.svg public/
-          [ -f metrics/streak.svg ] && cp metrics/streak.svg public/
-          [ -f metrics/languages.svg ] && cp metrics/languages.svg public/
-
+          
+          # Create the main dashboard HTML file
           cat > public/index.html << 'EOF'
           <!DOCTYPE html>
-          <html lang="en">
+          <html lang="en" data-theme="dark">
           <head>
               <meta charset="UTF-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>antnose Stats</title>
+              <title>antnose - Modern GitHub Stats Dashboard</title>
+              <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+              
               <style>
-                  body { font-family: sans-serif; background: #0D1117; color: #C9D1D9; padding: 20px; text-align: center; }
-                  .container { max-width: 1000px; margin: auto; }
-                  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-                  .card { background: #161B22; border: 1px solid #30363D; padding: 10px; border-radius: 10px; }
-                  img { width: 100%; height: auto; border-radius: 5px; }
-                  .full { grid-column: 1 / -1; }
+                  /* Modern CSS with animations */
+                  :root {
+                      --primary: #58A6FF;
+                      --primary-dark: #1F6FEB;
+                      --accent: #8250DF;
+                      --bg: #0D1117;
+                      --card-bg: #161B22;
+                      --text: #F0F6FC;
+                      --text-muted: #8B949E;
+                      --border: #30363D;
+                      --success: #238636;
+                      --warning: #D29922;
+                      --danger: #DA3633;
+                      --gradient: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+                      --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.5);
+                      --shadow-md: 0 10px 40px rgba(0, 0, 0, 0.3);
+                      --shadow-sm: 0 5px 20px rgba(0, 0, 0, 0.2);
+                      --glow: 0 0 30px rgba(88, 166, 255, 0.4);
+                      --transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+                  }
+                  
+                  * {
+                      margin: 0;
+                      padding: 0;
+                      box-sizing: border-box;
+                  }
+                  
+                  body {
+                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+                      background: var(--bg);
+                      color: var(--text);
+                      min-height: 100vh;
+                      overflow-x: hidden;
+                      background-image: 
+                          radial-gradient(circle at 10% 20%, rgba(88, 166, 255, 0.05) 0%, transparent 20%),
+                          radial-gradient(circle at 90% 80%, rgba(130, 80, 223, 0.05) 0%, transparent 20%);
+                  }
+                  
+                  .container {
+                      max-width: 1400px;
+                      margin: 0 auto;
+                      padding: 3rem 2rem;
+                  }
+                  
+                  /* Header */
+                  .header {
+                      text-align: center;
+                      margin-bottom: 5rem;
+                      position: relative;
+                  }
+                  
+                  .header::after {
+                      content: '';
+                      position: absolute;
+                      bottom: -2rem;
+                      left: 50%;
+                      transform: translateX(-50%);
+                      width: 200px;
+                      height: 3px;
+                      background: var(--gradient);
+                      border-radius: 2px;
+                  }
+                  
+                  .title {
+                      font-size: 4rem;
+                      font-weight: 800;
+                      margin-bottom: 1rem;
+                      background: var(--gradient);
+                      -webkit-background-clip: text;
+                      background-clip: text;
+                      color: transparent;
+                      letter-spacing: -1px;
+                      opacity: 0;
+                      transform: translateY(-30px);
+                      animation: slideDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+                  }
+                  
+                  .subtitle {
+                      font-size: 1.3rem;
+                      color: var(--text-muted);
+                      font-weight: 400;
+                      max-width: 600px;
+                      margin: 0 auto;
+                      line-height: 1.6;
+                      opacity: 0;
+                      animation: fadeIn 1s ease 0.5s forwards;
+                  }
+                  
+                  /* Dashboard Grid */
+                  .dashboard {
+                      display: grid;
+                      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+                      gap: 2.5rem;
+                      margin-bottom: 4rem;
+                  }
+                  
+                  /* Stats Card */
+                  .card {
+                      background: var(--card-bg);
+                      border-radius: 24px;
+                      border: 1px solid var(--border);
+                      padding: 2.5rem;
+                      position: relative;
+                      overflow: hidden;
+                      opacity: 0;
+                      transform: translateY(40px) rotateX(10deg);
+                      transition: var(--transition);
+                      box-shadow: var(--shadow-md);
+                  }
+                  
+                  .card::before {
+                      content: '';
+                      position: absolute;
+                      top: 0;
+                      left: 0;
+                      right: 0;
+                      height: 4px;
+                      background: var(--gradient);
+                      transform: scaleX(0);
+                      transform-origin: left;
+                      transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+                  }
+                  
+                  .card:hover {
+                      transform: translateY(-15px) rotateX(0);
+                      box-shadow: var(--shadow-lg), var(--glow);
+                      border-color: var(--primary);
+                  }
+                  
+                  .card:hover::before {
+                      transform: scaleX(1);
+                  }
+                  
+                  .card:nth-child(1) {
+                      animation: cardAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+                  }
+                  
+                  .card:nth-child(2) {
+                      animation: cardAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s forwards;
+                  }
+                  
+                  .card:nth-child(3) {
+                      animation: cardAppear 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.7s forwards;
+                  }
+                  
+                  .card-header {
+                      display: flex;
+                      align-items: center;
+                      margin-bottom: 2rem;
+                  }
+                  
+                  .card-icon {
+                      width: 56px;
+                      height: 56px;
+                      background: linear-gradient(135deg, rgba(88, 166, 255, 0.15), rgba(130, 80, 223, 0.15));
+                      border-radius: 16px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      margin-right: 1.5rem;
+                      transition: var(--transition);
+                  }
+                  
+                  .card:hover .card-icon {
+                      transform: scale(1.1) rotate(5deg);
+                      background: linear-gradient(135deg, rgba(88, 166, 255, 0.25), rgba(130, 80, 223, 0.25));
+                  }
+                  
+                  .icon {
+                      width: 28px;
+                      height: 28px;
+                      stroke: var(--primary);
+                      stroke-width: 2;
+                      fill: none;
+                  }
+                  
+                  .card-title {
+                      font-size: 1.8rem;
+                      font-weight: 700;
+                      background: linear-gradient(135deg, var(--text), var(--primary));
+                      -webkit-background-clip: text;
+                      background-clip: text;
+                      color: transparent;
+                  }
+                  
+                  .card-content {
+                      position: relative;
+                      min-height: 250px;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      border-radius: 16px;
+                      overflow: hidden;
+                      background: rgba(0, 0, 0, 0.2);
+                  }
+                  
+                  .stats-img {
+                      width: 100%;
+                      height: auto;
+                      border-radius: 12px;
+                      transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+                      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+                  }
+                  
+                  .stats-img:hover {
+                      transform: scale(1.03);
+                      filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4)) brightness(1.05);
+                  }
+                  
+                  /* Controls */
+                  .controls {
+                      display: flex;
+                      justify-content: center;
+                      gap: 1.5rem;
+                      margin: 3rem 0;
+                      opacity: 0;
+                      animation: fadeIn 1s ease 1s forwards;
+                  }
+                  
+                  .control-btn {
+                      padding: 1rem 2rem;
+                      background: linear-gradient(135deg, var(--card-bg), rgba(22, 27, 34, 0.8));
+                      border: 1px solid var(--border);
+                      border-radius: 50px;
+                      color: var(--text);
+                      font-size: 1rem;
+                      font-weight: 600;
+                      cursor: pointer;
+                      transition: var(--transition);
+                      display: flex;
+                      align-items: center;
+                      gap: 0.75rem;
+                      backdrop-filter: blur(10px);
+                  }
+                  
+                  .control-btn:hover {
+                      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+                      color: white;
+                      border-color: var(--primary);
+                      transform: translateY(-3px);
+                      box-shadow: var(--shadow-sm);
+                  }
+                  
+                  .control-btn:active {
+                      transform: translateY(-1px);
+                  }
+                  
+                  .control-btn.active {
+                      background: var(--gradient);
+                      color: white;
+                      border-color: transparent;
+                  }
+                  
+                  /* Footer */
+                  .footer {
+                      text-align: center;
+                      margin-top: 5rem;
+                      padding-top: 3rem;
+                      border-top: 1px solid var(--border);
+                      color: var(--text-muted);
+                      opacity: 0;
+                      animation: fadeIn 1s ease 1.2s forwards;
+                  }
+                  
+                  .update-info {
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                      gap: 1rem;
+                      margin-top: 1.5rem;
+                      font-size: 0.95rem;
+                  }
+                  
+                  .live-indicator {
+                      display: flex;
+                      align-items: center;
+                      gap: 0.5rem;
+                  }
+                  
+                  .pulse-dot {
+                      width: 10px;
+                      height: 10px;
+                      background: var(--success);
+                      border-radius: 50%;
+                      position: relative;
+                      animation: pulse 2s infinite;
+                  }
+                  
+                  .pulse-dot::after {
+                      content: '';
+                      position: absolute;
+                      top: 0;
+                      left: 0;
+                      right: 0;
+                      bottom: 0;
+                      background: var(--success);
+                      border-radius: 50%;
+                      animation: pulse-ring 2s infinite;
+                  }
+                  
+                  /* Loading Animation */
+                  .loader {
+                      display: inline-block;
+                      width: 24px;
+                      height: 24px;
+                      border: 3px solid rgba(88, 166, 255, 0.2);
+                      border-radius: 50%;
+                      border-top-color: var(--primary);
+                      animation: spin 1s ease-in-out infinite;
+                  }
+                  
+                  /* Animations */
+                  @keyframes slideDown {
+                      to {
+                          opacity: 1;
+                          transform: translateY(0);
+                      }
+                  }
+                  
+                  @keyframes cardAppear {
+                      to {
+                          opacity: 1;
+                          transform: translateY(0) rotateX(0);
+                      }
+                  }
+                  
+                  @keyframes fadeIn {
+                      to {
+                          opacity: 1;
+                      }
+                  }
+                  
+                  @keyframes spin {
+                      to {
+                          transform: rotate(360deg);
+                      }
+                  }
+                  
+                  @keyframes pulse {
+                      0%, 100% {
+                          opacity: 1;
+                          transform: scale(1);
+                      }
+                      50% {
+                          opacity: 0.7;
+                          transform: scale(1.05);
+                      }
+                  }
+                  
+                  @keyframes pulse-ring {
+                      0% {
+                          transform: scale(1);
+                          opacity: 0.7;
+                      }
+                      100% {
+                          transform: scale(2);
+                          opacity: 0;
+                      }
+                  }
+                  
+                  @keyframes float {
+                      0%, 100% {
+                          transform: translateY(0);
+                      }
+                      50% {
+                          transform: translateY(-20px);
+                      }
+                  }
+                  
+                  /* Slide Mode */
+                  .slide-mode .dashboard {
+                      grid-template-columns: 1fr;
+                      max-width: 500px;
+                      margin: 0 auto;
+                  }
+                  
+                  .slide-mode .card {
+                      display: none;
+                  }
+                  
+                  .slide-mode .card.active {
+                      display: block;
+                      animation: float 6s ease-in-out infinite;
+                  }
+                  
+                  /* Responsive Design */
+                  @media (max-width: 900px) {
+                      .container {
+                          padding: 2rem 1.5rem;
+                      }
+                      
+                      .title {
+                          font-size: 3rem;
+                      }
+                      
+                      .dashboard {
+                          grid-template-columns: 1fr;
+                          gap: 2rem;
+                      }
+                      
+                      .card {
+                          padding: 2rem;
+                      }
+                  }
+                  
+                  @media (max-width: 480px) {
+                      .container {
+                          padding: 1.5rem 1rem;
+                      }
+                      
+                      .title {
+                          font-size: 2.5rem;
+                      }
+                      
+                      .card {
+                          padding: 1.5rem;
+                      }
+                      
+                      .card-icon {
+                          width: 48px;
+                          height: 48px;
+                          margin-right: 1rem;
+                      }
+                      
+                      .controls {
+                          flex-direction: column;
+                          align-items: center;
+                      }
+                      
+                      .control-btn {
+                          width: 100%;
+                          max-width: 300px;
+                          justify-content: center;
+                      }
+                  }
               </style>
           </head>
           <body>
               <div class="container">
-                  <h1>GitHub Analytics Dashboard</h1>
-                  <div class="grid">
-                      <div class="card"><img src="streak.svg"></div>
-                      <div class="card"><img src="languages.svg"></div>
-                      <div class="card"><img src="stats.svg"></div>
-                      <div class="card full"><img src="github-metrics.svg"></div>
+                  <header class="header">
+                      <h1 class="title">
+                          <span style="display: inline-block; animation: float 6s ease-in-out infinite;">🚀</span>
+                          antnose's GitHub Analytics
+                      </h1>
+                      <p class="subtitle">Real-time GitHub statistics with modern animations and interactive controls</p>
+                  </header>
+                  
+                  <div class="controls">
+                      <button class="control-btn active" id="gridView">
+                          <svg class="icon" viewBox="0 0 24 24">
+                              <rect x="3" y="3" width="7" height="7"/>
+                              <rect x="14" y="3" width="7" height="7"/>
+                              <rect x="3" y="14" width="7" height="7"/>
+                              <rect x="14" y="14" width="7" height="7"/>
+                          </svg>
+                          Grid View
+                      </button>
+                      <button class="control-btn" id="slideView">
+                          <svg class="icon" viewBox="0 0 24 24">
+                              <circle cx="12" cy="12" r="10"/>
+                              <polyline points="12 6 12 12 16 14"/>
+                          </svg>
+                          Slide Show
+                      </button>
+                      <button class="control-btn" id="refreshBtn">
+                          <svg class="icon" viewBox="0 0 24 24">
+                              <path d="M23 4v6h-6"/>
+                              <path d="M1 20v-6h6"/>
+                              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                          </svg>
+                          Refresh Now
+                      </button>
                   </div>
+                  
+                  <div class="dashboard" id="dashboard">
+                      <!-- Streak Card -->
+                      <div class="card active" data-slide="0">
+                          <div class="card-header">
+                              <div class="card-icon">
+                                  <svg class="icon" viewBox="0 0 24 24">
+                                      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                                  </svg>
+                              </div>
+                              <h2 class="card-title">GitHub Contribution Streak</h2>
+                          </div>
+                          <div class="card-content">
+                              <img src="streak.svg" alt="GitHub Contribution Streak" class="stats-img" id="streakImage" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22><text x=%22200%22 y=%22100%22 text-anchor=%22middle%22 fill=%22%2358A6FF%22>Loading Streak...</text></svg>'">
+                          </div>
+                      </div>
+                      
+                      <!-- Stats Card -->
+                      <div class="card active" data-slide="1">
+                          <div class="card-header">
+                              <div class="card-icon">
+                                  <svg class="icon" viewBox="0 0 24 24">
+                                      <line x1="18" y1="20" x2="18" y2="10"/>
+                                      <line x1="12" y1="20" x2="12" y2="4"/>
+                                      <line x1="6" y1="20" x2="6" y2="14"/>
+                                  </svg>
+                              </div>
+                              <h2 class="card-title">GitHub Statistics</h2>
+                          </div>
+                          <div class="card-content">
+                              <img src="stats.svg" alt="GitHub Statistics" class="stats-img" id="statsImage" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22><text x=%22200%22 y=%22100%22 text-anchor=%22middle%22 fill=%22%2358A6FF%22>Loading Stats...</text></svg>'">
+                          </div>
+                      </div>
+                      
+                      <!-- Languages Card -->
+                      <div class="card active" data-slide="2">
+                          <div class="card-header">
+                              <div class="card-icon">
+                                  <svg class="icon" viewBox="0 0 24 24">
+                                      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                                  </svg>
+                              </div>
+                              <h2 class="card-title">Top Languages</h2>
+                          </div>
+                          <div class="card-content">
+                              <img src="languages.svg" alt="Top Programming Languages" class="stats-img" id="languagesImage" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22200%22><text x=%22200%22 y=%22100%22 text-anchor=%22middle%22 fill=%22%2358A6FF%22>Loading Languages...</text></svg>'">
+                          </div>
+                      </div>
+                  </div>
+                  
+                  <footer class="footer">
+                      <p>Dashboard updates automatically every day at midnight UTC</p>
+                      <div class="update-info">
+                          <div class="live-indicator">
+                              <span class="pulse-dot"></span>
+                              <span>Live</span>
+                          </div>
+                          <span>•</span>
+                          <span>Last updated: <span id="currentTime"></span></span>
+                          <span>•</span>
+                          <span>GitHub: <a href="https://github.com/antnose" style="color: var(--primary); text-decoration: none;">@antnose</a></span>
+                      </div>
+                  </footer>
               </div>
+              
+              <script>
+                  // Initialize dashboard
+                  document.addEventListener('DOMContentLoaded', function() {
+                      // Set current time
+                      updateTime();
+                      setInterval(updateTime, 60000); // Update every minute
+                      
+                      // View mode toggles
+                      const gridViewBtn = document.getElementById('gridView');
+                      const slideViewBtn = document.getElementById('slideView');
+                      const refreshBtn = document.getElementById('refreshBtn');
+                      const dashboard = document.getElementById('dashboard');
+                      const cards = document.querySelectorAll('.card');
+                      
+                      let currentSlide = 0;
+                      let slideInterval;
+                      
+                      // Grid view
+                      gridViewBtn.addEventListener('click', function() {
+                          gridViewBtn.classList.add('active');
+                          slideViewBtn.classList.remove('active');
+                          dashboard.classList.remove('slide-mode');
+                          
+                          // Show all cards
+                          cards.forEach(card => {
+                              card.classList.add('active');
+                              card.style.display = 'block';
+                          });
+                          
+                          // Stop slideshow
+                          clearInterval(slideInterval);
+                      });
+                      
+                      // Slide view
+                      slideViewBtn.addEventListener('click', function() {
+                          slideViewBtn.classList.add('active');
+                          gridViewBtn.classList.remove('active');
+                          dashboard.classList.add('slide-mode');
+                          
+                          // Hide all cards except current slide
+                          cards.forEach((card, index) => {
+                              card.classList.remove('active');
+                              card.style.display = 'none';
+                          });
+                          
+                          cards[currentSlide].classList.add('active');
+                          cards[currentSlide].style.display = 'block';
+                          
+                          // Start slideshow
+                          startSlideshow();
+                      });
+                      
+                      // Refresh button
+                      refreshBtn.addEventListener('click', function() {
+                          const btn = this;
+                          const originalHTML = btn.innerHTML;
+                          
+                          // Show loading state
+                          btn.innerHTML = '<span class="loader"></span> Refreshing...';
+                          btn.disabled = true;
+                          
+                          // Refresh images with cache busting
+                          const images = ['streakImage', 'statsImage', 'languagesImage'];
+                          images.forEach(imgId => {
+                              const img = document.getElementById(imgId);
+                              if (img) {
+                                  const src = img.src.split('?')[0];
+                                  img.src = src + '?t=' + Date.now();
+                              }
+                          });
+                          
+                          // Simulate API delay
+                          setTimeout(() => {
+                              btn.innerHTML = originalHTML;
+                              btn.disabled = false;
+                              
+                              // Show success feedback
+                              showNotification('Dashboard refreshed successfully!', 'success');
+                              
+                              // Update timestamp
+                              updateTime();
+                          }, 1500);
+                      });
+                      
+                      // Slideshow functionality
+                      function startSlideshow() {
+                          clearInterval(slideInterval);
+                          
+                          slideInterval = setInterval(() => {
+                              nextSlide();
+                          }, 5000); // Change slide every 5 seconds
+                      }
+                      
+                      function nextSlide() {
+                          cards[currentSlide].classList.remove('active');
+                          cards[currentSlide].style.display = 'none';
+                          
+                          currentSlide = (currentSlide + 1) % cards.length;
+                          
+                          cards[currentSlide].classList.add('active');
+                          cards[currentSlide].style.display = 'block';
+                          
+                          // Add animation
+                          cards[currentSlide].style.animation = 'none';
+                          setTimeout(() => {
+                              cards[currentSlide].style.animation = 'float 6s ease-in-out infinite';
+                          }, 10);
+                      }
+                      
+                      // Touch/swipe support for slideshow
+                      let touchStartX = 0;
+                      let touchEndX = 0;
+                      
+                      dashboard.addEventListener('touchstart', e => {
+                          touchStartX = e.changedTouches[0].screenX;
+                      });
+                      
+                      dashboard.addEventListener('touchend', e => {
+                          touchEndX = e.changedTouches[0].screenX;
+                          handleSwipe();
+                      });
+                      
+                      function handleSwipe() {
+                          if (dashboard.classList.contains('slide-mode')) {
+                              if (touchStartX - touchEndX > 50) {
+                                  // Swipe left - next slide
+                                  nextSlide();
+                              } else if (touchEndX - touchStartX > 50) {
+                                  // Swipe right - previous slide
+                                  cards[currentSlide].classList.remove('active');
+                                  cards[currentSlide].style.display = 'none';
+                                  
+                                  currentSlide = (currentSlide - 1 + cards.length) % cards.length;
+                                  
+                                  cards[currentSlide].classList.add('active');
+                                  cards[currentSlide].style.display = 'block';
+                              }
+                          }
+                      }
+                      
+                      // Keyboard navigation
+                      document.addEventListener('keydown', e => {
+                          if (dashboard.classList.contains('slide-mode')) {
+                              if (e.key === 'ArrowLeft') {
+                                  // Previous slide
+                                  cards[currentSlide].classList.remove('active');
+                                  cards[currentSlide].style.display = 'none';
+                                  
+                                  currentSlide = (currentSlide - 1 + cards.length) % cards.length;
+                                  
+                                  cards[currentSlide].classList.add('active');
+                                  cards[currentSlide].style.display = 'block';
+                              } else if (e.key === 'ArrowRight') {
+                                  // Next slide
+                                  nextSlide();
+                              } else if (e.key === ' ' || e.key === 'Spacebar') {
+                                  // Pause/resume slideshow
+                                  if (slideInterval) {
+                                      clearInterval(slideInterval);
+                                      slideInterval = null;
+                                      showNotification('Slideshow paused', 'info');
+                                  } else {
+                                      startSlideshow();
+                                      showNotification('Slideshow resumed', 'info');
+                                  }
+                              }
+                          }
+                      });
+                      
+                      // Auto-refresh images every hour
+                      setInterval(() => {
+                          const images = ['streakImage', 'statsImage', 'languagesImage'];
+                          images.forEach(imgId => {
+                              const img = document.getElementById(imgId);
+                              if (img) {
+                                  const src = img.src.split('?')[0];
+                                  img.src = src + '?t=' + Date.now();
+                              }
+                          });
+                          
+                          updateTime();
+                          showNotification('Stats auto-refreshed', 'info');
+                      }, 60 * 60 * 1000); // Every hour
+                      
+                      // Notification system
+                      function showNotification(message, type) {
+                          // Remove existing notification
+                          const existingNotification = document.querySelector('.notification');
+                          if (existingNotification) {
+                              existingNotification.remove();
+                          }
+                          
+                          // Create notification
+                          const notification = document.createElement('div');
+                          notification.className = `notification ${type}`;
+                          notification.innerHTML = `
+                              <span>${message}</span>
+                              <button onclick="this.parentElement.remove()">✕</button>
+                          `;
+                          
+                          // Add styles
+                          notification.style.cssText = `
+                              position: fixed;
+                              top: 20px;
+                              right: 20px;
+                              background: ${type === 'success' ? 'var(--success)' : 'var(--primary)'};
+                              color: white;
+                              padding: 1rem 1.5rem;
+                              border-radius: 12px;
+                              display: flex;
+                              align-items: center;
+                              justify-content: space-between;
+                              gap: 1rem;
+                              z-index: 1000;
+                              animation: slideIn 0.3s ease;
+                              box-shadow: var(--shadow-lg);
+                              max-width: 350px;
+                          `;
+                          
+                          document.body.appendChild(notification);
+                          
+                          // Auto-remove after 3 seconds
+                          setTimeout(() => {
+                              if (notification.parentElement) {
+                                  notification.style.animation = 'slideOut 0.3s ease';
+                                  setTimeout(() => notification.remove(), 300);
+                              }
+                          }, 3000);
+                      }
+                      
+                      // Add animation for notification
+                      const style = document.createElement('style');
+                      style.textContent = `
+                          @keyframes slideIn {
+                              from {
+                                  transform: translateX(100%);
+                                  opacity: 0;
+                              }
+                              to {
+                                  transform: translateX(0);
+                                  opacity: 1;
+                              }
+                          }
+                          
+                          @keyframes slideOut {
+                              from {
+                                  transform: translateX(0);
+                                  opacity: 1;
+                              }
+                              to {
+                                  transform: translateX(100%);
+                                  opacity: 0;
+                              }
+                          }
+                      `;
+                      document.head.appendChild(style);
+                  });
+                  
+                  // Update time function
+                  function updateTime() {
+                      const now = new Date();
+                      const timeString = now.toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          hour12: true
+                      });
+                      
+                      const dateString = now.toLocaleDateString('en-US', {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                      });
+                      
+                      document.getElementById('currentTime').textContent = 
+                          `${dateString} at ${timeString}`;
+                  }
+                  
+                  // Preload images for smoother experience
+                  window.addEventListener('load', function() {
+                      const images = [
+                          'streak.svg?t=' + Date.now(),
+                          'stats.svg?t=' + Date.now(),
+                          'languages.svg?t=' + Date.now()
+                      ];
+                      
+                      images.forEach(src => {
+                          const img = new Image();
+                          img.src = src;
+                      });
+                  });
+              </script>
           </body>
           </html>
           EOF
+          
+          # Create a simple README for the public folder
+          cat > public/README.md << 'EOF'
+          # 🚀 antnose's Modern GitHub Dashboard
+          
+          Welcome to the interactive GitHub statistics dashboard for [antnose](https://github.com/antnose).
+          
+          ## 🌐 Live Dashboard
+          Visit: https://antnose.github.io/YOUR-REPO-NAME/
+          
+          ## 📊 Features
+          
+          ### 1. GitHub Contribution Streak
+          - Daily contribution calendar
+          - Current streak counter
+          - Contribution heatmap
+          
+          ### 2. GitHub Statistics
+          - Repository statistics
+          - Star and fork counts
+          - Achievement badges
+          
+          ### 3. Top Languages
+          - Most used programming languages
+          - Percentage breakdown
+          - Language colors matching GitHub
+          
+          ## 🎨 Interactive Features
+          
+          - **Grid View**: See all stats at once
+          - **Slide Show**: Automatic rotating display
+          - **Refresh Button**: Manually update stats
+          - **Responsive Design**: Works on all devices
+          - **Touch Support**: Swipe through slides
+          - **Keyboard Navigation**: Arrow keys for slides
+          
+          ## ⚙️ Technical Details
+          
+          - Built with GitHub Actions
+          - Uses `lowlighter/metrics` for data
+          - Automatic daily updates
+          - Modern CSS animations
+          - SVG graphics for crisp display
+          
+          ## 🔄 Update Schedule
+          
+          - **Auto-update**: Daily at midnight UTC
+          - **Manual update**: Click refresh button
+          - **Cache busting**: Hourly image refresh
+          
+          ## 📱 Mobile Support
+          
+          - Touch-friendly controls
+          - Swipe navigation
+          - Responsive layout
+          - Fast loading
+          
+          ---
+          
+          *Last updated automatically by GitHub Actions*
+          EOF
 
-      - name: Upload Artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Upload to GitHub Pages
+        uses: actions/upload-pages-artifact@v2
         with:
           path: ./public
 
   deploy:
     needs: generate-metrics
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
     permissions:
       pages: write
       id-token: write
@@ -117,4 +1001,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v3
