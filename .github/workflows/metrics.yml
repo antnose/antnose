@@ -17,397 +17,76 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Clean up previous metrics
+      - name: Generate Stats
         run: |
-          rm -rf public
-          mkdir -p public
-
-      - name: Generate Stats using External Services
-        run: |
-          # Download GitHub Stats Card
-          curl -s -o public/stats.svg "https://github-readme-stats.vercel.app/api?username=antnose&show_icons=true&theme=dark&bg_color=0D1117&title_color=58A6FF&text_color=C9D1D9&icon_color=58A6FF&hide_border=true&count_private=true"
+          # Clean and create directory
+          rm -rf metrics
+          mkdir -p metrics
           
-          # Download Streak Stats
-          curl -s -o public/streak.svg "https://github-readme-streak-stats.herokuapp.com/?user=antnose&theme=dark&background=0D1117&border=30363D&stroke=30363D&ring=58A6FF&fire=FF6D00&currStreakNum=58A6FF&sideNums=58A6FF&currStreakLabel=58A6FF"
-          
-          # Download Top Languages
-          curl -s -o public/languages.svg "https://github-readme-stats.vercel.app/api/top-langs/?username=antnose&layout=compact&theme=dark&bg_color=0D1117&title_color=58A6FF&text_color=C9D1D9&hide_border=true"
+          # Download stats from external services
+          curl -s -o metrics/stats.svg "https://github-readme-stats.vercel.app/api?username=antnose&show_icons=true&theme=dark&bg_color=0D1117&title_color=58A6FF&text_color=C9D1D9&icon_color=58A6FF&hide_border=true&count_private=true"
+          curl -s -o metrics/streak.svg "https://github-readme-streak-stats.herokuapp.com/?user=antnose&theme=dark&background=0D1117&border=30363D&stroke=30363D&ring=58A6FF&fire=FF6D00&currStreakNum=58A6FF&sideNums=58A6FF&currStreakLabel=58A6FF"
+          curl -s -o metrics/languages.svg "https://github-readme-stats.vercel.app/api/top-langs/?username=antnose&layout=compact&theme=dark&bg_color=0D1117&title_color=58A6FF&text_color=C9D1D9&hide_border=true"
 
-      - name: Create Modern Dashboard
+      - name: Create Simple Dashboard
         run: |
-          cat > public/index.html << 'EOF'
+          cat > metrics/index.html << 'EOF'
           <!DOCTYPE html>
-          <html lang="en">
+          <html>
           <head>
-              <meta charset="UTF-8">
-              <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>antnose - GitHub Stats Dashboard</title>
-              <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+              <title>antnose GitHub Stats</title>
               <style>
-                  :root {
-                      --bg: #0D1117;
-                      --card-bg: #161B22;
-                      --border: #30363D;
-                      --primary: #58A6FF;
-                      --accent: #8250DF;
-                      --text: #F0F6FC;
-                      --text-muted: #8B949E;
-                      --gradient: linear-gradient(135deg, var(--primary), var(--accent));
-                      --shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-                  }
-                  
-                  * {
-                      margin: 0;
-                      padding: 0;
-                      box-sizing: border-box;
-                  }
-                  
-                  body {
-                      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                      background: var(--bg);
-                      color: var(--text);
-                      min-height: 100vh;
-                      padding: 2rem;
-                      background-image: 
-                          radial-gradient(circle at 10% 20%, rgba(88, 166, 255, 0.1) 0%, transparent 20%),
-                          radial-gradient(circle at 90% 80%, rgba(130, 80, 223, 0.1) 0%, transparent 20%);
-                  }
-                  
-                  .container {
-                      max-width: 1400px;
-                      margin: 0 auto;
-                  }
-                  
-                  header {
-                      text-align: center;
-                      margin-bottom: 3rem;
-                      animation: fadeIn 1s ease;
-                  }
-                  
-                  h1 {
-                      font-size: 3.5rem;
-                      font-weight: 800;
-                      background: var(--gradient);
-                      -webkit-background-clip: text;
-                      background-clip: text;
-                      color: transparent;
-                      margin-bottom: 1rem;
-                  }
-                  
-                  .subtitle {
-                      color: var(--text-muted);
-                      font-size: 1.2rem;
-                  }
-                  
-                  .dashboard {
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-                      gap: 2rem;
-                      margin-bottom: 3rem;
-                  }
-                  
-                  .card {
-                      background: var(--card-bg);
-                      border-radius: 20px;
-                      border: 2px solid var(--border);
-                      padding: 2rem;
-                      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                      animation: slideUp 0.6s ease;
-                      animation-fill-mode: both;
-                  }
-                  
-                  .card:nth-child(1) { animation-delay: 0.1s; }
-                  .card:nth-child(2) { animation-delay: 0.2s; }
-                  .card:nth-child(3) { animation-delay: 0.3s; }
-                  
-                  .card:hover {
-                      transform: translateY(-10px);
-                      border-color: var(--primary);
-                      box-shadow: var(--shadow), 0 0 30px rgba(88, 166, 255, 0.2);
-                  }
-                  
-                  .card h2 {
-                      color: var(--primary);
-                      margin-bottom: 1.5rem;
-                      font-size: 1.5rem;
-                      display: flex;
-                      align-items: center;
-                      gap: 0.5rem;
-                  }
-                  
-                  .stats-img {
-                      width: 100%;
-                      border-radius: 12px;
-                      transition: transform 0.3s ease;
-                  }
-                  
-                  .stats-img:hover {
-                      transform: scale(1.02);
-                  }
-                  
-                  .controls {
-                      display: flex;
-                      justify-content: center;
-                      gap: 1rem;
-                      margin: 2rem 0;
-                  }
-                  
-                  .btn {
-                      padding: 0.75rem 1.5rem;
-                      background: var(--card-bg);
-                      border: 1px solid var(--border);
-                      border-radius: 50px;
-                      color: var(--text);
-                      font-weight: 500;
-                      cursor: pointer;
-                      transition: all 0.3s ease;
-                      display: flex;
-                      align-items: center;
-                      gap: 0.5rem;
-                  }
-                  
-                  .btn:hover {
-                      background: var(--primary);
-                      color: white;
-                      border-color: var(--primary);
-                  }
-                  
-                  footer {
-                      text-align: center;
-                      margin-top: 3rem;
-                      padding-top: 2rem;
-                      border-top: 1px solid var(--border);
-                      color: var(--text-muted);
-                      animation: fadeIn 1s ease 0.5s both;
-                  }
-                  
-                  .timestamp {
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                      gap: 0.5rem;
-                      margin-top: 1rem;
-                  }
-                  
-                  .live-dot {
-                      width: 8px;
-                      height: 8px;
-                      background: #238636;
-                      border-radius: 50%;
-                      animation: pulse 2s infinite;
-                  }
-                  
-                  @keyframes fadeIn {
-                      from { opacity: 0; }
-                      to { opacity: 1; }
-                  }
-                  
-                  @keyframes slideUp {
-                      from { transform: translateY(20px); opacity: 0; }
-                      to { transform: translateY(0); opacity: 1; }
-                  }
-                  
-                  @keyframes pulse {
-                      0%, 100% { opacity: 1; }
-                      50% { opacity: 0.5; }
-                  }
-                  
-                  @media (max-width: 768px) {
-                      body { padding: 1rem; }
-                      h1 { font-size: 2.5rem; }
-                      .dashboard { grid-template-columns: 1fr; }
-                      .card { padding: 1.5rem; }
-                      .controls { flex-direction: column; align-items: center; }
-                      .btn { width: 100%; max-width: 300px; justify-content: center; }
-                  }
+                  body { background: #0D1117; color: #C9D1D9; font-family: sans-serif; padding: 2rem; }
+                  .container { max-width: 1200px; margin: auto; }
+                  h1 { color: #58A6FF; text-align: center; font-size: 2.5rem; }
+                  .stats { display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center; margin-top: 2rem; }
+                  img { width: 100%; max-width: 400px; border-radius: 1rem; }
+                  .card { background: #161B22; padding: 1.5rem; border-radius: 1rem; border: 1px solid #30363D; }
+                  footer { text-align: center; margin-top: 2rem; color: #8B949E; }
               </style>
           </head>
           <body>
               <div class="container">
-                  <header>
-                      <h1>🚀 antnose's GitHub Analytics</h1>
-                      <p class="subtitle">Interactive dashboard with modern animations and real-time stats</p>
-                  </header>
-                  
-                  <div class="controls">
-                      <button class="btn" onclick="refreshStats()">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                              <path d="M23 4v6h-6"/>
-                              <path d="M1 20v-6h6"/>
-                              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
-                          </svg>
-                          Refresh Stats
-                      </button>
-                      <button class="btn" onclick="toggleAnimations()">
-                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                              <circle cx="12" cy="12" r="10"/>
-                              <polyline points="12 6 12 12 16 14"/>
-                          </svg>
-                          Toggle Animations
-                      </button>
-                  </div>
-                  
-                  <div class="dashboard">
+                  <h1>📊 antnose's GitHub Stats</h1>
+                  <div class="stats">
                       <div class="card">
-                          <h2>🔥 GitHub Streak</h2>
-                          <img src="streak.svg" alt="Contribution Streak" class="stats-img" id="streakImg">
+                          <h3>🔥 Streak</h3>
+                          <img src="streak.svg" alt="Streak">
                       </div>
-                      
                       <div class="card">
-                          <h2>📊 GitHub Stats</h2>
-                          <img src="stats.svg" alt="GitHub Statistics" class="stats-img" id="statsImg">
+                          <h3>⭐ Stats</h3>
+                          <img src="stats.svg" alt="Stats">
                       </div>
-                      
                       <div class="card">
-                          <h2>💻 Top Languages</h2>
-                          <img src="languages.svg" alt="Top Languages" class="stats-img" id="langImg">
+                          <h3>💻 Languages</h3>
+                          <img src="languages.svg" alt="Languages">
                       </div>
                   </div>
-                  
                   <footer>
-                      <p>Dashboard updates automatically every day • <a href="https://github.com/antnose" style="color: var(--primary); text-decoration: none;">GitHub Profile</a></p>
-                      <div class="timestamp">
-                          <span class="live-dot"></span>
-                          <span>Last updated: <span id="updateTime"></span></span>
-                      </div>
+                      <p>Updated: <span id="date"></span></p>
                   </footer>
               </div>
-              
               <script>
-                  // Set initial timestamp
-                  function updateTimestamp() {
-                      const now = new Date();
-                      const options = {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          second: '2-digit'
-                      };
-                      document.getElementById('updateTime').textContent = now.toLocaleDateString('en-US', options);
-                  }
-                  updateTimestamp();
-                  
-                  // Refresh stats function
-                  function refreshStats() {
-                      const btn = event.target;
-                      const originalHTML = btn.innerHTML;
-                      
-                      btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Refreshing...';
-                      btn.disabled = true;
-                      
-                      // Refresh images with cache busting
-                      const images = ['streakImg', 'statsImg', 'langImg'];
-                      images.forEach(id => {
-                          const img = document.getElementById(id);
-                          if (img) {
-                              const src = img.src.split('?')[0];
-                              img.src = src + '?t=' + Date.now();
-                          }
-                      });
-                      
-                      setTimeout(() => {
-                          btn.innerHTML = originalHTML;
-                          btn.disabled = false;
-                          updateTimestamp();
-                          showNotification('Stats refreshed successfully!', 'success');
-                      }, 1500);
-                  }
-                  
-                  // Toggle animations
-                  function toggleAnimations() {
-                      const cards = document.querySelectorAll('.card');
-                      const btn = event.target;
-                      
-                      if (cards[0].style.animationPlayState === 'paused') {
-                          cards.forEach(card => {
-                              card.style.animationPlayState = 'running';
-                          });
-                          btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Pause Animations';
-                          showNotification('Animations enabled', 'info');
-                      } else {
-                          cards.forEach(card => {
-                              card.style.animationPlayState = 'paused';
-                          });
-                          btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Play Animations';
-                          showNotification('Animations paused', 'info');
-                      }
-                  }
-                  
-                  // Notification system
-                  function showNotification(message, type) {
-                      const notification = document.createElement('div');
-                      notification.innerHTML = message;
-                      notification.style.cssText = `
-                          position: fixed;
-                          top: 20px;
-                          right: 20px;
-                          background: ${type === 'success' ? '#238636' : 'var(--primary)'};
-                          color: white;
-                          padding: 1rem 1.5rem;
-                          border-radius: 10px;
-                          box-shadow: var(--shadow);
-                          z-index: 1000;
-                          animation: slideIn 0.3s ease;
-                      `;
-                      
-                      document.body.appendChild(notification);
-                      
-                      setTimeout(() => {
-                          notification.style.animation = 'slideOut 0.3s ease';
-                          setTimeout(() => notification.remove(), 300);
-                      }, 3000);
-                  }
-                  
-                  // Add notification animations
-                  const style = document.createElement('style');
-                  style.textContent = `
-                      @keyframes slideIn {
-                          from { transform: translateX(100%); opacity: 0; }
-                          to { transform: translateX(0); opacity: 1; }
-                      }
-                      @keyframes slideOut {
-                          from { transform: translateX(0); opacity: 1; }
-                          to { transform: translateX(100%); opacity: 0; }
-                      }
-                  `;
-                  document.head.appendChild(style);
-                  
-                  // Auto-refresh images every hour
-                  setInterval(() => {
-                      const images = ['streakImg', 'statsImg', 'langImg'];
-                      images.forEach(id => {
-                          const img = document.getElementById(id);
-                          if (img) {
-                              const src = img.src.split('?')[0];
-                              img.src = src + '?t=' + Date.now();
-                          }
-                      });
-                      updateTimestamp();
-                  }, 3600000);
-                  
-                  // Add hover effects to cards
-                  document.querySelectorAll('.card').forEach(card => {
-                      card.addEventListener('mouseenter', () => {
-                          card.style.transform = 'translateY(-10px) scale(1.02)';
-                      });
-                      
-                      card.addEventListener('mouseleave', () => {
-                          card.style.transform = 'translateY(0) scale(1)';
-                      });
-                  });
+                  document.getElementById('date').textContent = new Date().toLocaleString();
               </script>
           </body>
           </html>
           EOF
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
-          publish_branch: gh-pages
-          force_orphan: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+      - name: Commit and Push
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          
+          # Add only metrics directory
+          git add metrics/
+          
+          # Check if there are changes to commit
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "📊 Update GitHub stats [skip ci]"
+            # Pull latest changes and push
+            git pull --rebase origin main
+            git push origin main
+          fi
