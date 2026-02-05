@@ -22,40 +22,306 @@ jobs:
 
           const commonStyle = `
           <style>
-            @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-            @keyframes hoverEffect { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-            .card { fill: #0d1117; stroke: #30363d; rx: 15; animation: fadeInUp 0.6s ease-out forwards; }
-            .text { font-family: 'Segoe UI', system-ui, sans-serif; fill: #ffffff; }
-            .label { fill: #8b949e; font-size: 11px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; }
-            .icon-bg { animation: hoverEffect 3s ease-in-out infinite; }
-          </style>`;
+            @keyframes fadeInUp { 
+              from { opacity: 0; transform: translateY(20px); } 
+              to { opacity: 1; transform: translateY(0); } 
+            }
+            @keyframes float { 
+              0%, 100% { transform: translateY(0) scale(1); } 
+              50% { transform: translateY(-5px) scale(1.05); } 
+            }
+            @keyframes pulse { 
+              0%, 100% { opacity: 1; transform: scale(1); } 
+              50% { opacity: 0.8; transform: scale(1.1); } 
+            }
+            @keyframes glow { 
+              0%, 100% { filter: drop-shadow(0 0 5px currentColor); } 
+              50% { filter: drop-shadow(0 0 15px currentColor); } 
+            }
+            @keyframes shimmer { 
+              0% { background-position: -200% center; } 
+              100% { background-position: 200% center; } 
+            }
+            @keyframes borderFlow { 
+              0% { stroke-dashoffset: 0; } 
+              100% { stroke-dashoffset: 50; } 
+            }
+            .card { 
+              fill: #0d1117; 
+              stroke: #30363d; 
+              stroke-width: 1.5;
+              rx: 20; 
+              animation: fadeInUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+              filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.3));
+              transition: all 0.3s ease;
+            }
+            .card:hover { 
+              stroke: #58a6ff;
+              stroke-width: 2;
+              filter: drop-shadow(0 10px 20px rgba(88, 166, 255, 0.2));
+            }
+            .border-glow {
+              stroke-dasharray: 10, 5;
+              animation: borderFlow 3s linear infinite;
+              stroke: url(#borderGradient);
+            }
+            .text { 
+              font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+              fill: #ffffff; 
+              font-weight: 500;
+            }
+            .label { 
+              fill: #58a6ff; 
+              font-size: 14px; 
+              font-weight: 700;
+              letter-spacing: 1.2px;
+              text-transform: uppercase;
+              animation: fadeInUp 0.8s ease-out forwards;
+              animation-delay: 0.2s;
+              opacity: 0;
+            }
+            .platform-name { 
+              fill: #c9d1d9; 
+              font-size: 11px; 
+              font-weight: 600;
+              letter-spacing: 0.5px;
+              transition: fill 0.3s ease;
+            }
+            .icon-container {
+              cursor: pointer;
+              transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            }
+            .icon-container:hover {
+              transform: translateY(-8px) scale(1.1);
+            }
+            .icon-container:hover .icon-bg {
+              fill-opacity: 0.25;
+              transform: scale(1.15);
+            }
+            .icon-container:hover .platform-name {
+              fill: #ffffff;
+            }
+            .icon-bg {
+              transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+              animation: float 4s ease-in-out infinite;
+            }
+            .icon {
+              font-weight: bold;
+              transition: all 0.3s ease;
+            }
+            .glowing-icon {
+              animation: glow 3s ease-in-out infinite;
+            }
+            .background-pattern {
+              opacity: 0.03;
+            }
+            .connector-line {
+              stroke: #30363d;
+              stroke-width: 1;
+              stroke-dasharray: 5, 3;
+              animation: borderFlow 4s linear infinite reverse;
+            }
+            .sparkle {
+              animation: pulse 2s ease-in-out infinite;
+              opacity: 0;
+            }
+          </style>
+          
+          <defs>
+            <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#58a6ff" />
+              <stop offset="50%" stop-color="#bc8cff" />
+              <stop offset="100%" stop-color="#58a6ff" />
+            </linearGradient>
+            
+            <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#2193b0" />
+              <stop offset="100%" stop-color="#6dd5ed" />
+            </linearGradient>
+            
+            <linearGradient id="twitterGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#1DA1F2" />
+              <stop offset="100%" stop-color="#1a8cd8" />
+            </linearGradient>
+            
+            <linearGradient id="linkedinGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0A66C2" />
+              <stop offset="100%" stop-color="#004182" />
+            </linearGradient>
+            
+            <linearGradient id="stackGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#F48024" />
+              <stop offset="100%" stop-color="#e76b11" />
+            </linearGradient>
+            
+            <filter id="shadow">
+              <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="rgba(0, 0, 0, 0.3)" flood-opacity="0.5"/>
+            </filter>
+            
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            
+            <pattern id="networkPattern" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+              <circle cx="15" cy="15" r="1" fill="#58a6ff" opacity="0.2"/>
+              <line x1="0" y1="15" x2="30" y2="15" stroke="#58a6ff" stroke-width="0.3" opacity="0.1"/>
+              <line x1="15" y1="0" x2="15" y2="30" stroke="#58a6ff" stroke-width="0.3" opacity="0.1"/>
+            </pattern>
+          </defs>`;
+
+          const socialPlatforms = [
+            {
+              id: 'portfolio',
+              name: 'Portfolio',
+              icon: '🌐',
+              gradient: 'blueGradient',
+              color: '#6dd5ed',
+              x: 60,
+              animationDelay: '0.1s'
+            },
+            {
+              id: 'twitter',
+              name: 'Twitter',
+              icon: '𝕏',
+              gradient: 'twitterGradient',
+              color: '#1DA1F2',
+              x: 180,
+              animationDelay: '0.3s'
+            },
+            {
+              id: 'linkedin',
+              name: 'LinkedIn',
+              icon: 'in',
+              gradient: 'linkedinGradient',
+              color: '#0A66C2',
+              x: 300,
+              animationDelay: '0.5s'
+            },
+            {
+              id: 'stackoverflow',
+              name: 'Stack Overflow',
+              icon: 'SO',
+              gradient: 'stackGradient',
+              color: '#F48024',
+              x: 420,
+              animationDelay: '0.7s'
+            },
+            {
+              id: 'github',
+              name: 'GitHub',
+              icon: '🐙',
+              gradient: 'purpleGradient',
+              color: '#bc8cff',
+              x: 540,
+              animationDelay: '0.9s'
+            }
+          ];
+
+          const createSocialIcon = (platform) => `
+            <g class="icon-container" transform="translate(${platform.x}, 65)" style="animation-delay: ${platform.animationDelay}">
+              <!-- Hover effect circle -->
+              <circle cx="0" cy="0" r="30" fill="${platform.color}" opacity="0" class="icon-bg-hover"/>
+              
+              <!-- Main icon background -->
+              <circle cx="0" cy="0" r="22" fill="url(#${platform.gradient})" 
+                      fill-opacity="0.2" class="icon-bg" filter="url(#shadow)"
+                      style="animation-delay: ${platform.animationDelay}"/>
+              
+              <!-- Icon -->
+              <text x="0" y="5" text-anchor="middle" class="icon glowing-icon" 
+                    font-size="${platform.id === 'portfolio' ? '22' : platform.id === 'github' ? '20' : '18'}" 
+                    font-weight="bold" fill="url(#${platform.gradient})"
+                    style="animation-delay: ${platform.animationDelay}">
+                ${platform.icon}
+              </text>
+              
+              <!-- Platform name -->
+              <text x="0" y="38" text-anchor="middle" class="platform-name">
+                ${platform.name}
+              </text>
+              
+              <!-- Sparkle effect -->
+              <text x="-15" y="-10" class="sparkle" font-size="10" fill="${platform.color}"
+                    style="animation-delay: ${parseFloat(platform.animationDelay) + 0.2}s">✦</text>
+              <text x="15" y="15" class="sparkle" font-size="8" fill="${platform.color}"
+                    style="animation-delay: ${parseFloat(platform.animationDelay) + 0.4}s">✧</text>
+            </g>
+          `;
 
           const svg = `
-          <svg xmlns="http://www.w3.org/2000/svg" width="600" height="120">
+          <svg xmlns="http://www.w3.org/2000/svg" width="650" height="160" viewBox="0 0 650 160">
             ${commonStyle}
-            <rect class="card" width="598" height="118" x="1" y="1"/>
-            <text x="25" y="35" class="text label">🔗 CONNECT &amp; PORTFOLIO</text>
             
-            <g transform="translate(40, 65)">
-              <circle cx="0" cy="0" r="22" fill="#6dd5ed" opacity="0.15" class="icon-bg"/>
-              <text x="0" y="6" text-anchor="middle" fill="#6dd5ed" font-size="20" font-weight="bold">🌐</text>
-              <text x="0" y="40" text-anchor="middle" fill="#8b949e" font-size="10">Portfolio</text>
-              
-              <circle cx="140" cy="0" r="22" fill="#ffffff" opacity="0.15" class="icon-bg" style="animation-delay: 0.5s"/>
-              <text x="140" y="6" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="bold">𝕏</text>
-              <text x="140" y="40" text-anchor="middle" fill="#8b949e" font-size="10">Twitter</text>
-              
-              <circle cx="280" cy="0" r="22" fill="#0A66C2" opacity="0.15" class="icon-bg" style="animation-delay: 1s"/>
-              <text x="280" y="6" text-anchor="middle" fill="#0A66C2" font-size="18" font-weight="bold">in</text>
-              <text x="280" y="40" text-anchor="middle" fill="#8b949e" font-size="10">LinkedIn</text>
-              
-              <circle cx="420" cy="0" r="22" fill="#F48024" opacity="0.15" class="icon-bg" style="animation-delay: 1.5s"/>
-              <text x="420" y="6" text-anchor="middle" fill="#F48024" font-size="18" font-weight="bold">SO</text>
-              <text x="420" y="40" text-anchor="middle" fill="#8b949e" font-size="10">Stack</text>
+            <!-- Background pattern -->
+            <rect width="650" height="160" fill="url(#networkPattern)" class="background-pattern"/>
+            
+            <!-- Main card -->
+            <rect class="card" width="646" height="156" x="2" y="2" rx="20"/>
+            <rect class="card border-glow" width="646" height="156" x="2" y="2" rx="20" fill="none" stroke-width="1.5"/>
+            
+            <!-- Title -->
+            <text x="325" y="40" text-anchor="middle" class="text label">🌟 CONNECT & COLLABORATE</text>
+            <text x="325" y="55" text-anchor="middle" class="text" font-size="10" fill="#8b949e" opacity="0.8">
+              Click to explore my digital presence
+            </text>
+            
+            <!-- Social platforms -->
+            ${socialPlatforms.map(createSocialIcon).join('')}
+            
+            <!-- Connector lines -->
+            <line x1="82" y1="65" x2="158" y2="65" class="connector-line"/>
+            <line x1="202" y1="65" x2="278" y2="65" class="connector-line"/>
+            <line x1="322" y1="65" x2="398" y2="65" class="connector-line"/>
+            <line x1="442" y1="65" x2="518" y2="65" class="connector-line"/>
+            
+            <!-- Interactive dots -->
+            <circle cx="120" cy="65" r="2" fill="#58a6ff" opacity="0.5">
+              <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="240" cy="65" r="2" fill="#1DA1F2" opacity="0.5">
+              <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" begin="0.5s"/>
+            </circle>
+            <circle cx="360" cy="65" r="2" fill="#0A66C2" opacity="0.5">
+              <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" begin="1s"/>
+            </circle>
+            <circle cx="480" cy="65" r="2" fill="#F48024" opacity="0.5">
+              <animate attributeName="r" values="2;4;2" dur="2s" repeatCount="indefinite" begin="1.5s"/>
+            </circle>
+            
+            <!-- Stats footer -->
+            <g transform="translate(325, 130)">
+              <text x="0" y="0" text-anchor="middle" class="text" font-size="10" fill="#8b949e">
+                Last updated: ${new Date().toLocaleDateString('en-US', { 
+                  month: 'short', 
+                  day: 'numeric',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </text>
+              <text x="0" y="12" text-anchor="middle" class="text" font-size="9" fill="#58a6ff" opacity="0.8">
+                ${socialPlatforms.length} platforms • Always open for collaboration
+              </text>
             </g>
+            
+            <!-- Floating particles -->
+            <circle cx="50" cy="120" r="1" fill="#58a6ff" opacity="0.3">
+              <animate attributeName="cy" values="120;100;120" dur="4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="600" cy="110" r="1" fill="#1DA1F2" opacity="0.3">
+              <animate attributeName="cy" values="110;130;110" dur="5s" repeatCount="indefinite" begin="1s"/>
+            </circle>
+            <circle cx="100" cy="140" r="1" fill="#0A66C2" opacity="0.3">
+              <animate attributeName="cx" values="100;120;100" dur="6s" repeatCount="indefinite" begin="2s"/>
+            </circle>
           </svg>`;
 
           fs.writeFileSync('socials_card.svg', svg);
+          console.log('✅ Socials card generated successfully!');
           EOF
           node generate-socials.js
 
@@ -64,5 +330,5 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           git add socials_card.svg
-          git commit -m "✨ Sync Socials Card" || exit 0
+          git commit -m "✨ Enhanced Socials Card with Premium Animations" || exit 0
           git push
