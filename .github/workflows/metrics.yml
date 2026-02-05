@@ -196,6 +196,12 @@ jobs:
       - name: Create Modern Dashboard
         run: |
           mkdir -p public
+          # Move generated files to public folder
+          [ -f stats.svg ] && mv stats.svg public/
+          [ -f streak.svg ] && mv streak.svg public/
+          [ -f languages.svg ] && mv languages.svg public/
+          # If github-metrics.svg was generated in root by lowlighter
+          [ -f github-metrics.svg ] && mv github-metrics.svg public/
           
           # Move SVGs to public folder
           mv *.svg public/ 2>/dev/null || true
