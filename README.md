@@ -7,7 +7,7 @@
 
 <!-- Banner -->
 <p align="center">
-  <img src="https://i.ibb.co.com/11bpXf0/Git-Hub-Banner.png" alt="GitHub Banner" />
+  <img src="https://i.ibb.co.com/d02VHTKH/Wallpaper.png" alt="GitHub Banner" />
 </p>
 
 <!-- Profile Views -->
