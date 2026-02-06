@@ -63,6 +63,15 @@ I believe in **learning step by step**, building real projects and being honest 
 ## ⏱️ Weekly development brakdown
 
 <!--START_SECTION:waka-->
+
+```txt
+Go           16 hrs 6 mins   ████████████████████████▓   98.77 %
+Bash         11 mins         ▒░░░░░░░░░░░░░░░░░░░░░░░░   01.15 %
+Markdown     0 secs          ░░░░░░░░░░░░░░░░░░░░░░░░░   00.03 %
+Text         0 secs          ░░░░░░░░░░░░░░░░░░░░░░░░░   00.02 %
+Other        0 secs          ░░░░░░░░░░░░░░░░░░░░░░░░░   00.02 %
+```
+
 <!--END_SECTION:waka-->
 
 ---
