@@ -47,7 +47,7 @@ I believe in **learning step by step**, building real projects and being honest 
 
 ---
 
-## Currently Exploring & Learning
+## 🛰️ Currently Exploring & Learning
 
 > Beginner level — learning with practice and small projects
 
@@ -57,6 +57,13 @@ I believe in **learning step by step**, building real projects and being honest 
 - **Redis** – Basic caching ideas  
 - **CI/CD** – Basic understanding
 - **Linux** – Command-line & server  
+
+---
+
+## ⏱️ Weekly development brakdown
+
+<!--START_SECTION:waka-->
+<!--END_SECTION:waka-->
 
 ---
 
