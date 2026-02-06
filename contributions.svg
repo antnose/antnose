@@ -134,7 +134,7 @@
       <rect width="316" height="156" x="2" y="2" rx="20" fill="url(#codePattern)" opacity="0.05"/>
       
     <text x="25" y="45" class="text label" style="animation-delay: 0.4s">✨ TOTAL CONTRIBUTIONS</text>
-    <text x="25" y="100" class="text value" font-size="48" font-weight="bold" fill="url(#greenGradient)">1,082</text>
+    <text x="25" y="100" class="text value" font-size="48" font-weight="bold" fill="url(#greenGradient)">1,083</text>
     <g class="icon" style="opacity: 0.8">
       <circle cx="280" cy="80" r="30" fill="url(#greenGradient)" opacity="0.2"/>
       <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#greenGradient)" class="glowing-text">✨</text>
