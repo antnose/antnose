@@ -27,6 +27,14 @@ I believe in **learning step by step**, building real projects and being honest 
 
 ---
 
+## 🛠 Tech Stack
+
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=go,docker,kubernetes,postgres,git,github,linux,nodejs,express,react,tailwind,mongodb,js,vscode" />
+</p>
+
+---
+
 ## 🔧 What I Work With
 
 ### 🧠 Backend (Current Skills)
@@ -60,7 +68,7 @@ I believe in **learning step by step**, building real projects and being honest 
 
 ---
 
-## ⏱️ Weekly development brakdown
+## ⏱️ Weekly development breakdown
 
 <!--START_SECTION:waka-->
 
@@ -76,24 +84,14 @@ Other        0 secs          ░░░░░░░░░░░░░░░░░
 
 ---
 
-## 🛠 Tech Stack
+## 📊 GitHub Metrics
 
 <p align="center">
-  <img src="https://skillicons.dev/icons?i=go,docker,kubernetes,postgres,git,github,linux,nodejs,express,react,tailwind,mongodb,js,vscode" />
+  <img src="max_streak.svg" width="24%" alt="Max Streak" />
+  <img src="current_streak.svg" width="24%" alt="Current Streak" />
+  <img src="languages.svg" width="24%" alt="Top Languages" />
+  <img src="contributions.svg" width="24%" alt="Total Contributions" />
 </p>
-
----
-
-## 🎯 Career Goal
-
-🎯 **Goal:** Become a **Backend Developer by mid-2026**
-
-📌 Focus areas:
-- Strong backend fundamentals  
-- Golang for backend services  
-- Databases & API design  
-- Docker & Kubernetes basics  
-- Real-world backend projects  
 
 ---
 
@@ -111,19 +109,18 @@ Other        0 secs          ░░░░░░░░░░░░░░░░░
   </a>
 </p>
 
-
-
 ---
 
+## 🎯 Career Goal
 
-## 📊 GitHub Metrics
+🎯 **Goal:** Become a **Backend Developer by mid-2026**
 
-<p align="center">
-  <img src="max_streak.svg" width="24%" alt="Max Streak" />
-  <img src="current_streak.svg" width="24%" alt="Current Streak" />
-  <img src="languages.svg" width="24%" alt="Top Languages" />
-  <img src="contributions.svg" width="24%" alt="Total Contributions" />
-</p>
+📌 Focus areas:
+- Strong backend fundamentals  
+- Golang for backend services  
+- Databases & API design  
+- Docker & Kubernetes basics  
+- Real-world backend projects  
 
 ---
 
