@@ -68,29 +68,21 @@ I believe in **learning step by step**, building real projects and being honest 
 
 ---
 
-## ⏱️ Weekly development breakdown
-
-<!--START_SECTION:waka-->
-
-```txt
-Go           16 hrs 6 mins   ████████████████████████▓   98.77 %
-Bash         11 mins         ▒░░░░░░░░░░░░░░░░░░░░░░░░   01.15 %
-Markdown     0 secs          ░░░░░░░░░░░░░░░░░░░░░░░░░   00.03 %
-Text         0 secs          ░░░░░░░░░░░░░░░░░░░░░░░░░   00.02 %
-Other        0 secs          ░░░░░░░░░░░░░░░░░░░░░░░░░   00.02 %
-```
-
-<!--END_SECTION:waka-->
-
----
-
 ## 📊 GitHub Metrics
 
 <p align="center">
-  <img src="max_streak.svg" width="24%" alt="Max Streak" />
-  <img src="current_streak.svg" width="24%" alt="Current Streak" />
-  <img src="languages.svg" width="24%" alt="Top Languages" />
-  <img src="contributions.svg" width="24%" alt="Total Contributions" />
+  <a href="https://github.com/antnose">
+    <img src="max_streak.svg" width="310" alt="Max Streak" style="margin: 5px;" />
+  </a>
+  <a href="https://github.com/antnose">
+    <img src="current_streak.svg" width="310" alt="Current Streak" style="margin: 5px;" />
+  </a>
+  <a href="https://github.com/antnose">
+    <img src="languages.svg" width="310" alt="Top Languages" style="margin: 5px;" />
+  </a>
+  <a href="https://github.com/antnose">
+    <img src="contributions.svg" width="310" alt="Total Contributions" style="margin: 5px;" />
+  </a>
 </p>
 
 ---
@@ -108,6 +100,22 @@ Other        0 secs          ░░░░░░░░░░░░░░░░░
     <img src="linkedin.svg" width="250" alt="LinkedIn" />
   </a>
 </p>
+
+---
+
+## ⏱️ Weekly development breakdown
+
+<!--START_SECTION:waka-->
+
+```txt
+Go           16 hrs 6 mins   ████████████████████████▓   98.77 %
+Bash         11 mins         ▒░░░░░░░░░░░░░░░░░░░░░░░░   01.15 %
+Markdown     0 secs          ░░░░░░░░░░░░░░░░░░░░░░░░░   00.03 %
+Text         0 secs          ░░░░░░░░░░░░░░░░░░░░░░░░░   00.02 %
+Other        0 secs          ░░░░░░░░░░░░░░░░░░░░░░░░░   00.02 %
+```
+
+<!--END_SECTION:waka-->
 
 ---
 
