@@ -1,49 +1,146 @@
-
 <svg xmlns="http://www.w3.org/2000/svg" width="320" height="160" viewBox="0 0 320 160">
-  <style>
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
-    .card {
-      fill: #0d1117;
-      stroke: #30363d;
-      rx: 20;
-      animation: fadeInUp 0.8s ease-out;
-    }
-    .text { 
-      font-family: 'Segoe UI', sans-serif; 
-      fill: #ffffff; 
-    }
-    .label { 
-      fill: #8b949e; 
-      font-size: 12px; 
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-    .icon-float {
-      animation: float 3s ease-in-out infinite;
-    }
-  </style>
-  <defs>
-    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#7ee787" />
-      <stop offset="100%" stop-color="#7ee78799" />
-    </linearGradient>
-  </defs>
-  <rect class="card" width="316" height="156" x="2" y="2" rx="20"/>
-  <rect width="316" height="156" x="2" y="2" rx="20" fill="url(#greenGradient)" opacity="0.1"/>
+      
+    <style>
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+      }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+      }
+      @keyframes borderGlow {
+        0%, 100% { stroke: #30363d; }
+        50% { stroke: #58a6ff; }
+      }
+      @keyframes slideIn {
+        from { transform: translateX(-20px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes countUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes progressFill {
+        from { width: 0; }
+        to { width: var(--target-width); }
+      }
+      @keyframes glow {
+        0%, 100% { filter: drop-shadow(0 0 2px currentColor); }
+        50% { filter: drop-shadow(0 0 8px currentColor); }
+      }
+      .card { 
+        fill: #0d1117; 
+        stroke: #30363d; 
+        rx: 20; 
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        animation: fadeInUp 0.8s ease-out forwards;
+      }
+      .card:hover { 
+        transform: translateY(-8px) scale(1.02);
+        stroke: #58a6ff;
+        stroke-width: 2;
+        filter: drop-shadow(0 10px 20px rgba(88, 166, 255, 0.2));
+      }
+      .card-glow {
+        animation: borderGlow 3s ease-in-out infinite;
+      }
+      .text { 
+        font-family: 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; 
+        fill: #ffffff; 
+        font-weight: 500;
+      }
+      .label { 
+        fill: #8b949e; 
+        font-size: 12px; 
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        animation: slideIn 0.6s ease-out forwards;
+      }
+      .value { 
+        animation: countUp 1s ease-out forwards;
+        animation-delay: 0.3s;
+        opacity: 0;
+      }
+      .accent-text {
+        animation: float 3s ease-in-out infinite;
+      }
+      .language-dot {
+        animation: pulse 2s ease-in-out infinite;
+        animation-delay: var(--delay);
+      }
+      .icon {
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      }
+      .progress-bar-bg {
+        fill: #30363d;
+        rx: 3;
+      }
+      .progress-bar-fill {
+        rx: 3;
+        animation: progressFill 1.5s ease-out forwards;
+        transform-origin: left;
+      }
+      .repo-count {
+        font-size: 11px;
+        fill: #8b949e;
+        font-weight: 500;
+      }
+      .glowing-text {
+        animation: glow 2s ease-in-out infinite;
+      }
+    </style>
+    <defs>
+      <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FFD700" />
+        <stop offset="50%" stop-color="#FFA500" />
+        <stop offset="100%" stop-color="#FF6B00" />
+      </linearGradient>
+      <linearGradient id="fireGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FF416C" />
+        <stop offset="100%" stop-color="#FF4B2B" />
+      </linearGradient>
+      <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00b09b" />
+        <stop offset="100%" stop-color="#96c93d" />
+      </linearGradient>
+      <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#2193b0" />
+        <stop offset="100%" stop-color="#6dd5ed" />
+      </linearGradient>
+      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(88, 166, 255, 0.1)"/>
+      </filter>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <pattern id="codePattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+        <path d="M0 10 L10 0 M10 20 L20 10" stroke="#58a6ff" stroke-width="0.5" stroke-opacity="0.1"/>
+      </pattern>
+    </defs>
   
-  <text x="25" y="45" class="text label">TOTAL CONTRIBUTIONS</text>
-  <text x="25" y="100" class="text" font-size="48" font-weight="bold" fill="url(#greenGradient)">1,065</text>
+      <rect class="card card-glow" width="316" height="156" x="2" y="2" rx="20"/>
+      <rect width="316" height="156" x="2" y="2" rx="20" fill="url(#greenGradient)" opacity="0.1"/>
+      <rect width="316" height="156" x="2" y="2" rx="20" fill="url(#codePattern)" opacity="0.05"/>
+      
+    <text x="25" y="45" class="text label" style="animation-delay: 0.4s">✨ TOTAL CONTRIBUTIONS</text>
+    <text x="25" y="100" class="text value" font-size="48" font-weight="bold" fill="url(#greenGradient)">1,089</text>
+    <g class="icon" style="opacity: 0.8">
+      <circle cx="280" cy="80" r="30" fill="url(#greenGradient)" opacity="0.2"/>
+      <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#greenGradient)" class="glowing-text">✨</text>
+    </g>
+    <text x="50" y="130" class="accent-text" font-size="16" fill="url(#greenGradient)" style="animation-delay: 0.1s">✦</text>
+    <text x="70" y="120" class="accent-text" font-size="12" fill="url(#greenGradient)" style="animation-delay: 0.3s">✧</text>
+    <text x="90" y="130" class="accent-text" font-size="14" fill="url(#greenGradient)" style="animation-delay: 0.5s">✦</text>
   
-  <g class="icon-float">
-    <circle cx="280" cy="80" r="30" fill="url(#greenGradient)" opacity="0.2"/>
-    <text x="280" y="85" text-anchor="middle" font-size="24" fill="url(#greenGradient)">✨</text>
-  </g>
-</svg>
+    </svg>
