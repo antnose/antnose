@@ -108,11 +108,11 @@ I believe in **learning step by step**, building real projects and being honest 
 <!--START_SECTION:waka-->
 
 ```txt
-Go           13 hrs 30 mins  ████████████████████▒░░░░   81.98 %
-JSON         2 hrs 2 mins    ███░░░░░░░░░░░░░░░░░░░░░░   12.41 %
-YAML         51 mins         █▒░░░░░░░░░░░░░░░░░░░░░░░   05.18 %
-Git Config   2 mins          ░░░░░░░░░░░░░░░░░░░░░░░░░   00.23 %
-Bash         1 min           ░░░░░░░░░░░░░░░░░░░░░░░░░   00.17 %
+Go           15 hrs 16 mins  █████████████████████░░░░   83.80 %
+JSON         2 hrs 2 mins    ██▓░░░░░░░░░░░░░░░░░░░░░░   11.21 %
+YAML         51 mins         █▒░░░░░░░░░░░░░░░░░░░░░░░   04.68 %
+Git Config   2 mins          ░░░░░░░░░░░░░░░░░░░░░░░░░   00.20 %
+Bash         1 min           ░░░░░░░░░░░░░░░░░░░░░░░░░   00.09 %
 ```
 
 <!--END_SECTION:waka-->
