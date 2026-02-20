@@ -108,11 +108,10 @@ I believe in **learning step by step**, building real projects and being honest 
 <!--START_SECTION:waka-->
 
 ```txt
-Go      10 hrs 9 mins         ███████████████████████░░   91.59 %
-SQL     51 mins               ██░░░░░░░░░░░░░░░░░░░░░░░   07.73 %
-Bash    3 mins                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.54 %
-Other   0 secs                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.07 %
-Text    0 secs                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.06 %
+Go      11 hrs 6 mins         ███████████████████████░░   92.30 %
+SQL     51 mins               █▓░░░░░░░░░░░░░░░░░░░░░░░   07.13 %
+Bash    3 mins                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.50 %
+Other   0 secs                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.08 %
 ```
 
 <!--END_SECTION:waka-->
