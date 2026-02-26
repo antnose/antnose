@@ -108,7 +108,7 @@ I believe in **learning step by step**, building real projects and being honest 
 <!--START_SECTION:waka-->
 
 ```txt
-Go      12 hrs 43 mins        █████████████████████████   99.99 %
+Go      13 hrs                █████████████████████████   99.99 %
 Other   0 secs                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.01 %
 ```
 
