@@ -108,11 +108,8 @@ I believe in **learning step by step**, building real projects and being honest 
 <!--START_SECTION:waka-->
 
 ```txt
-Go           7 hrs 41 mins         ████████████████████████▓   98.06 %
-Bash         4 mins                ▒░░░░░░░░░░░░░░░░░░░░░░░░   01.02 %
-TOML         2 mins                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.49 %
-Other        1 min                 ░░░░░░░░░░░░░░░░░░░░░░░░░   00.23 %
-Git Config   0 secs                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.21 %
+Go      4 hrs 32 mins         █████████████████████████   99.77 %
+Other   0 secs                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.23 %
 ```
 
 <!--END_SECTION:waka-->
