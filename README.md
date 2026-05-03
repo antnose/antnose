@@ -108,11 +108,11 @@ I believe in **learning step by step**, building real projects and being honest 
 <!--START_SECTION:waka-->
 
 ```txt
-Go           4 hrs 54 mins         █████████████████▒░░░░░░░   68.85 %
-JavaScript   54 mins               ███▒░░░░░░░░░░░░░░░░░░░░░   12.71 %
-JSON         25 mins               █▓░░░░░░░░░░░░░░░░░░░░░░░   06.05 %
-CSS          14 mins               █░░░░░░░░░░░░░░░░░░░░░░░░   03.50 %
-Other        13 mins               ▓░░░░░░░░░░░░░░░░░░░░░░░░   03.06 %
+Go           5 hrs 4 mins          ███████████████████▒░░░░░   77.55 %
+JavaScript   35 mins               ██▒░░░░░░░░░░░░░░░░░░░░░░   09.01 %
+JSON         21 mins               █▒░░░░░░░░░░░░░░░░░░░░░░░   05.42 %
+Other        13 mins               ▓░░░░░░░░░░░░░░░░░░░░░░░░   03.32 %
+Bash         10 mins               ▓░░░░░░░░░░░░░░░░░░░░░░░░   02.62 %
 ```
 
 <!--END_SECTION:waka-->
