@@ -108,8 +108,8 @@ I believe in **learning step by step**, building real projects and being honest 
 <!--START_SECTION:waka-->
 
 ```txt
-Go           51 mins               █████████████████████░░░░   84.00 %
-TypeScript   9 mins                ████░░░░░░░░░░░░░░░░░░░░░   16.00 %
+TypeScript   9 mins                ████████████▓░░░░░░░░░░░░   50.89 %
+Go           9 mins                ████████████▒░░░░░░░░░░░░   49.11 %
 ```
 
 <!--END_SECTION:waka-->
