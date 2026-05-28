@@ -108,11 +108,9 @@ I believe in **learning step by step**, building real projects and being honest 
 <!--START_SECTION:waka-->
 
 ```txt
-Go                3 hrs 16 mins         █████████████████████▓░░░   86.95 %
-HTML              12 mins               █▒░░░░░░░░░░░░░░░░░░░░░░░   05.71 %
-Protocol Buffer   10 mins               █░░░░░░░░░░░░░░░░░░░░░░░░   04.64 %
-TypeScript        4 mins                ▒░░░░░░░░░░░░░░░░░░░░░░░░   01.97 %
-Bash              1 min                 ▒░░░░░░░░░░░░░░░░░░░░░░░░   00.69 %
+Python   33 mins               ██████████▓░░░░░░░░░░░░░░   42.08 %
+Go       33 mins               ██████████▒░░░░░░░░░░░░░░   41.65 %
+HTML     12 mins               ████░░░░░░░░░░░░░░░░░░░░░   16.26 %
 ```
 
 <!--END_SECTION:waka-->
