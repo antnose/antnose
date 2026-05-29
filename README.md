@@ -108,9 +108,8 @@ I believe in **learning step by step**, building real projects and being honest 
 <!--START_SECTION:waka-->
 
 ```txt
-Python   33 mins               ██████████▓░░░░░░░░░░░░░░   42.08 %
-Go       33 mins               ██████████▒░░░░░░░░░░░░░░   41.65 %
-HTML     12 mins               ████░░░░░░░░░░░░░░░░░░░░░   16.26 %
+Python   1 hr                  ████████████████████▒░░░░   81.05 %
+HTML     14 mins               ████▓░░░░░░░░░░░░░░░░░░░░   18.95 %
 ```
 
 <!--END_SECTION:waka-->
