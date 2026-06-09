@@ -108,11 +108,11 @@ I believe in **learning step by step**, building real projects and being honest 
 <!--START_SECTION:waka-->
 
 ```txt
-Python   2 hrs 33 mins         █████████████░░░░░░░░░░░░   51.77 %
-JSON     1 hr 58 mins          ██████████░░░░░░░░░░░░░░░   40.12 %
-HTML     23 mins               ██░░░░░░░░░░░░░░░░░░░░░░░   07.96 %
-Text     0 secs                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.09 %
-Liquid   0 secs                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.06 %
+JSON     1 hr 58 mins          ██████████████████░░░░░░░   72.51 %
+Python   35 mins               █████▒░░░░░░░░░░░░░░░░░░░   21.74 %
+HTML     9 mins                █▒░░░░░░░░░░░░░░░░░░░░░░░   05.65 %
+Text     0 secs                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.04 %
+Liquid   0 secs                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.04 %
 ```
 
 <!--END_SECTION:waka-->
