@@ -108,7 +108,7 @@ I believe in **learning step by step**, building real projects and being honest 
 <!--START_SECTION:waka-->
 
 ```txt
-Python   1 hr 23 mins          █████████████████████████   100.00 %
+Python   28 mins               █████████████████████████   100.00 %
 ```
 
 <!--END_SECTION:waka-->
