@@ -108,10 +108,9 @@ I believe in **learning step by step**, building real projects and being honest 
 <!--START_SECTION:waka-->
 
 ```txt
-JavaScript   2 hrs 36 mins         ██████████████░░░░░░░░░░░   55.58 %
-Python       2 hrs 2 mins          ███████████░░░░░░░░░░░░░░   43.48 %
-TypeScript   2 mins                ▒░░░░░░░░░░░░░░░░░░░░░░░░   00.90 %
-JSON         0 secs                ░░░░░░░░░░░░░░░░░░░░░░░░░   00.04 %
+JavaScript   2 hrs 36 mins         ████████████████████░░░░░   80.33 %
+Python       35 mins               ████▓░░░░░░░░░░░░░░░░░░░░   18.38 %
+TypeScript   2 mins                ▒░░░░░░░░░░░░░░░░░░░░░░░░   01.30 %
 ```
 
 <!--END_SECTION:waka-->
